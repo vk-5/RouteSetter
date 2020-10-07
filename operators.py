@@ -2,52 +2,24 @@ import bpy
 import os
 
 
-def add_mesh(file_name, object_name, context):
+def add_mesh(file_name, context):
     filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
     with bpy.data.libraries.load(filepath, link=False) as (data_from, data_to):
-        data_to.objects = [name for name in data_from.objects if name == object_name]
+        data_to.objects = [name for name in data_from.objects]
 
-    if data_to.objects:
-        for obj in data_to.objects:
-            bpy.context.collection.objects.link(obj)
-        return True
-    return False
+    for obj in data_to.objects:
+        bpy.context.collection.objects.link(obj)
 
 
-class AddFlatWallOperator(bpy.types.Operator):
+class AddWallOperator(bpy.types.Operator):
     """Create an Operator"""
-    bl_idname = "object.flat"
-    bl_label = "Flat"
+    bl_idname = "object.wall"
+    bl_label = "Wall"
 
     def execute(self, context):
-        if add_mesh("wall_library.blend", "FlatWall", context):
-            return {'FINISHED'}
-        self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "wall_library.blend"))
-        return {'CANCELLED'}
-
-
-class AddNoseWallOperator(bpy.types.Operator):
-    """Create an Operator"""
-    bl_idname = "object.nose"
-    bl_label = "Nose"
-
-    def execute(self, context):
-        if add_mesh("wall_library.blend", "NoseWall", context):
-            return {'FINISHED'}
-        self.report({'WARNING'}, "{} not found in {}".format("NoseWall", "wall_library.blend"))
-        return {'CANCELLED'}
-
-
-class AddOverHangWallOperator(bpy.types.Operator):
-    """Create an Operator"""
-    bl_idname = "object.overhang"
-    bl_label = "Overhang"
-
-    def execute(self, context):
-        if add_mesh("wall_library.blend", "OverhangWall", context):
-            return {'FINISHED'}
-        self.report({'WARNING'}, "{} not found in {}".format("OverhangWall", "wall_library.blend"))
-        return {'CANCELLED'}
+        add_mesh('libraries\\wall_library\\1.blend', context )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "wall_library.blend"))
+        return {'FINISHED'}
 
 
 class AddRiggedHumanOperator(bpy.types.Operator):
@@ -56,16 +28,14 @@ class AddRiggedHumanOperator(bpy.types.Operator):
     bl_label = "Human"
 
     def execute(self, context):
-        if add_mesh("wall_library.blend", "Human", context):
+        if add_mesh("wall_library.blend", context):
             return {'FINISHED'}
         self.report({'WARNING'}, "{} not found in {}".format("Human", "wall_library.blend"))
         return {'CANCELLED'}
 
 
 classes = (
-    AddNoseWallOperator,
-    AddFlatWallOperator,
-    AddOverHangWallOperator,
+    AddWallOperator,
     AddRiggedHumanOperator
 )
 

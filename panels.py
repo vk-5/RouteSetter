@@ -18,9 +18,8 @@ class ClimbingWallPanel(bpy.types.Panel):
         row.label(text="Add Wall")
 
         row = layout.row()
-        row.operator("object.flat")
-        row.operator("object.nose")
-        row.operator("object.overhang")
+        row.operator("object.wall")
+
 
 
 class RouteSetterPanel(bpy.types.Panel):
