@@ -2,7 +2,7 @@ import bpy
 
 class EditPanel(bpy.types.Panel):
     """Creates a Panel in the Object properties window"""
-    bl_label = "Edit selected"
+    bl_label = "Edit"
     bl_idname = "OBJECT_PT_edit"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -14,11 +14,8 @@ class EditPanel(bpy.types.Panel):
         obj = context.object
 
         row = layout.row()
-        row.label(text="Move")
-        row.label(text="Delete")
-
-        row = layout.row()
         row.operator("object.move_object_with_snapping")
+        row.operator("object.rotate_object_by_normal")
         row.operator("object.delete")
 
 
