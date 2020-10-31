@@ -1,5 +1,26 @@
 import bpy
 
+class EditPanel(bpy.types.Panel):
+    """Creates a Panel in the Object properties window"""
+    bl_label = "Edit selected"
+    bl_idname = "OBJECT_PT_edit"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = 'RouteSetter'
+
+    def draw(self, context):
+        layout = self.layout
+
+        obj = context.object
+
+        row = layout.row()
+        row.label(text="Move")
+        row.label(text="Delete")
+
+        row = layout.row()
+        row.operator("object.move_object_with_snapping")
+        row.operator("object.delete")
+
 
 class ClimbingWallPanel(bpy.types.Panel):
     """Creates a Panel in the Object properties window"""
@@ -84,6 +105,7 @@ class RiggedHumanPanel(bpy.types.Panel):
 
 
 classes = (
+    EditPanel,
     ClimbingWallPanel,
     RouteSetterPanel,
     ClimbingHoldsPanel,

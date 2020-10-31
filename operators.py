@@ -1,6 +1,45 @@
 import bpy
 import os
 
+class MoveObjectWithSnapping(bpy.types.Operator):
+    """Create an Operator"""
+    bl_idname = "object.move_object_with_snapping"
+    bl_label = "Move"
+
+    def execute(self, context):
+        bpy.context.scene.tool_settings.use_snap = True
+        bpy.context.scene.tool_settings.snap_elements = {'FACE'}
+        bpy.context.scene.tool_settings.use_snap_rotate = True
+        bpy.context.scene.tool_settings.use_snap_translate = True
+        bpy.context.scene.tool_settings.use_snap_project = True
+        bpy.context.scene.tool_settings.use_snap_align_rotation = True
+        return {'FINISHED'}
+
+class DeleteObject(bpy.types.Operator):
+    """Create an Operator"""
+    bl_idname = "object.delete"
+    bl_label = "Delete"
+
+    def execute(self, context):
+        for obj in bpy.context.selected_objects:
+            bpy.data.objects.remove(obj, do_unlink=True)
+        return {'FINISHED'} 
+
+class DeleteObjectOperator(bpy.types.Operator):
+    """Create an Operator"""
+    bl_idname = "object.move_object_with_snapping"
+    bl_label = "Move"
+
+    def execute(self, context):
+        bpy.context.scene.tool_settings.use_snap = True
+        bpy.context.scene.tool_settings.snap_elements = {'FACE'}
+        bpy.context.scene.tool_settings.use_snap_rotate = True
+        bpy.context.scene.tool_settings.use_snap_translate = True
+        bpy.context.scene.tool_settings.use_snap_project = True
+        bpy.context.scene.tool_settings.use_snap_align_rotation = True
+        return {'FINISHED'}
+
+
 
 def add_mesh(file_name, context):
     filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
@@ -35,6 +74,8 @@ class AddRiggedHumanOperator(bpy.types.Operator):
 
 
 classes = (
+    MoveObjectWithSnapping,
+    DeleteObject,
     AddWallOperator,
     AddRiggedHumanOperator
 )
