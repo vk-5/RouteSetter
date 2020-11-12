@@ -15,7 +15,7 @@ class EditPanel(bpy.types.Panel):
 
         row = layout.row()
         row.operator("object.move_object_with_snapping")
-        row.operator("object.rotate_object_by_normal")
+        row.operator("object.rotate_modal")
         row.operator("object.delete")
 
 
