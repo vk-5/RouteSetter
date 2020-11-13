@@ -1,5 +1,4 @@
 import bpy, math, mathutils
-#from bpy_extras import view3d_utils
 import os
 
 def rotation_store(context, boolSettings):
@@ -20,28 +19,47 @@ def rotation_set_up(context, boolSettings, snap_elements):
 
 
 class MoveObjectWithSnapping(bpy.types.Operator):
-    """Create an Operator"""
+    """Move selected object"""
     bl_idname = "object.move_object_with_snapping"
     bl_label = "Move"
 
-    boolSettings = [True] * 5
-    snap_elements = {'FACE'}
+    start_settings = [True] * 5
+    start_snap_elements = {'FACE'}
+    start_location = [0,0,0]
+    start_rotation = [0,0,0]
 
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects and bpy.context.active_object.mode == 'OBJECT'
+        return bpy.context.selected_objects and bpy.context.active_object and bpy.context.active_object.mode == 'OBJECT'
 
-    def execute(self, context):
-        boolSettings = [True] * 5
+    def modal(self, context, event):
+        settings = [True] * 5
         snap_elements = {'FACE'}
-        rotation_set_up(context, boolSettings, snap_elements)
-        return {'FINISHED'}
+        rotation_set_up(context, settings, snap_elements)
+
+        ob = bpy.context.object
+
+        if event.type in ['LEFTMOUSE','ENTER']:
+            rotation_set_up(context, self.start_settings, self.start_snap_elements)
+            return{'FINISHED'}
+
+        if event.type in ['ESC','RIGHTMOUSE']:
+            rotation_set_up(context, self.start_settings, self.start_snap_elements)
+            ob.rotation_euler = self.start_rotation
+            ob.location = self.start_location
+            return {'CANCELLED'}
+
+        return {'RUNNING_MODAL'}
     
-    #def invoke(self, context):
-    #    self.snap_elements = rotation_store(context, self.boolSettings)
+    def invoke(self, context, event):
+        self.start_snap_elements = rotation_store(context, self.start_settings)
+        self.start_location = bpy.context.object.location.copy()
+        self.start_rotation = bpy.context.object.rotation_euler.copy()
+        context.window_manager.modal_handler_add(self)
+        return {'RUNNING_MODAL'}
 
 class RotateModal(bpy.types.Operator):
-    """Create an Operator"""
+    """Rotate selected object"""
     bl_idname = "object.rotate_modal"
     bl_label = "Rotate"
     x = 0
@@ -63,7 +81,6 @@ class RotateModal(bpy.types.Operator):
         if event.type in ['ESC','RIGHTMOUSE']:
             ob.rotation_euler = self.start_rotation
             return {'CANCELLED'}
-
         return {'RUNNING_MODAL'}
 
 
@@ -71,12 +88,11 @@ class RotateModal(bpy.types.Operator):
         self.start_rotation = bpy.context.object.rotation_euler.copy()
         self.x = event.mouse_x
         context.window_manager.modal_handler_add(self)
-
         return {'RUNNING_MODAL'}
 
 
 class DeleteObject(bpy.types.Operator):
-    """Create an Operator"""
+    """Delete selected objects"""
     bl_idname = "object.delete"
     bl_label = "Delete"
 
