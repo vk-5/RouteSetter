@@ -130,8 +130,8 @@ class AddWallOperator(bpy.types.Operator):
     bl_label = "Wall"
 
     def execute(self, context):
-        add_mesh('libraries\\wall_library\\1.blend', context )
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "wall_library.blend"))
+        add_mesh('libraries\\props\\wall_1.blend', context )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
 
@@ -141,9 +141,9 @@ class AddRiggedHumanOperator(bpy.types.Operator):
     bl_label = "Human"
 
     def execute(self, context):
-        if add_mesh("wall_library.blend", context):
+        if add_mesh("props.blend", context):
             return {'FINISHED'}
-        self.report({'WARNING'}, "{} not found in {}".format("Human", "wall_library.blend"))
+        self.report({'WARNING'}, "{} not found in {}".format("Human", "props.blend"))
         return {'CANCELLED'}
 
 
