@@ -1,4 +1,5 @@
-import bpy, math, mathutils
+import bpy, math, mathutils, bpy_extras
+from bpy_extras.view3d_utils import region_2d_to_location_3d
 import os
 
 def rotation_store(context, boolSettings):
@@ -10,8 +11,8 @@ def rotation_store(context, boolSettings):
     return bpy.context.scene.tool_settings.snap_elements
 
 def rotation_set_up(context, boolSettings, snap_elements):
-    bpy.context.scene.tool_settings.use_snap = boolSettings[0]
     bpy.context.scene.tool_settings.snap_elements = snap_elements
+    bpy.context.scene.tool_settings.use_snap = boolSettings[0]
     bpy.context.scene.tool_settings.use_snap_rotate = boolSettings[1]
     bpy.context.scene.tool_settings.use_snap_translate = boolSettings[2]
     bpy.context.scene.tool_settings.use_snap_project = boolSettings[3]
@@ -23,69 +24,85 @@ class MoveObjectWithSnapping(bpy.types.Operator):
     bl_idname = "object.move_object_with_snapping"
     bl_label = "Move"
 
-    start_settings = [True] * 5
-    start_snap_elements = {'FACE'}
-    start_location = [0,0,0]
-    start_rotation = [0,0,0]
-
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects and bpy.context.active_object and bpy.context.active_object.mode == 'OBJECT'
+        return bpy.context.selected_objects and bpy.context.active_object
+        
+    
+    def execute(self, context):
+        obj = bpy.context.object
+        x,y,z = obj.location.x, obj.location.y, obj.location.z
+        loc = bpy_extras.view3d_utils.location_3d_to_region_2d(bpy.context.region, bpy.context.space_data.region_3d, (x, y, z), (0, 0))
+        context.window.cursor_warp(loc.x, loc.y)
 
-    def modal(self, context, event):
-        settings = [True] * 5
-        snap_elements = {'FACE'}
-        rotation_set_up(context, settings, snap_elements)
+        rotation_set_up(context, [True] * 5, {'FACE'})
+        bpy.ops.transform.translate('INVOKE_DEFAULT') 
 
-        ob = bpy.context.object
+        return {'FINISHED'}
+    
+
+    '''def modal(self, context, event):
+        obj = bpy.context.object
+
+        if event.type == 'MOUSEMOVE':
+            x, y = event.mouse_region_x, event.mouse_region_y
+            loc = region_2d_to_location_3d(context.region, context.space_data.region_3d, (x, y), (0, 0, 0))
+            obj.location = loc
 
         if event.type in ['LEFTMOUSE','ENTER']:
-            rotation_set_up(context, self.start_settings, self.start_snap_elements)
+            rotation_set_up(context, self.init_settings, self.start_snap_elements)
             return{'FINISHED'}
 
         if event.type in ['ESC','RIGHTMOUSE']:
-            rotation_set_up(context, self.start_settings, self.start_snap_elements)
-            ob.rotation_euler = self.start_rotation
-            ob.location = self.start_location
+            rotation_set_up(context, self.init_settings, self.start_snap_elements)
+            obj.rotation_euler = self.init_rotation
+            obj.location = self.init_location
             return {'CANCELLED'}
 
         return {'RUNNING_MODAL'}
+        
+            def invoke(self, context, event):
+        self.start_snap_elements = rotation_store(context, self.init_settings)
+        #self.init_location = bpy.context.object.location.copy()
+        #self.init_rotation = bpy.context.object.rotation_euler.copy()
+        settings = [True] * 5
+        snap_elements = {'FACE'}
+        rotation_set_up(context, settings, snap_elements)
+        #context.window_manager.modal_handler_add(self)
+        #return {'RUNNING_MODAL'}
+        return self.execute(context)'''
     
-    def invoke(self, context, event):
-        self.start_snap_elements = rotation_store(context, self.start_settings)
-        self.start_location = bpy.context.object.location.copy()
-        self.start_rotation = bpy.context.object.rotation_euler.copy()
-        context.window_manager.modal_handler_add(self)
-        return {'RUNNING_MODAL'}
-
 class RotateModal(bpy.types.Operator):
     """Rotate selected object"""
     bl_idname = "object.rotate_modal"
     bl_label = "Rotate"
     x = 0
-    start_rotation = [0,0,0]
+    init_rotation = [0,0,0]
 
     @classmethod
     def poll(self, context):
         return bpy.context.selected_objects and bpy.context.active_object and bpy.context.active_object.mode == 'OBJECT'
     
     def modal(self, context, event):
-        ob = bpy.context.object
-        change_x = event.mouse_region_x
-        ob.rotation_euler.rotate_axis("Z", math.radians(change_x-self.x))
-        self.x = change_x
+        obj = bpy.context.object
+
+        if event.type == 'MOUSEMOVE':
+            change_x = event.mouse_region_x
+            obj.rotation_euler.rotate_axis("Z", math.radians(change_x-self.x))
+            self.x = change_x
 
         if event.type in ['LEFTMOUSE','ENTER']:
             return{'FINISHED'}
 
         if event.type in ['ESC','RIGHTMOUSE']:
-            ob.rotation_euler = self.start_rotation
+            obj.rotation_euler = self.init_rotation
             return {'CANCELLED'}
+
         return {'RUNNING_MODAL'}
 
 
     def invoke(self, context, event):
-        self.start_rotation = bpy.context.object.rotation_euler.copy()
+        self.init_rotation = bpy.context.object.rotation_euler.copy()
         self.x = event.mouse_x
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
