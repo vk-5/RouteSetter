@@ -10,6 +10,7 @@ def rotation_store(context, boolSettings):
     boolSettings[4] = bpy.context.scene.tool_settings.use_snap_align_rotation
     return bpy.context.scene.tool_settings.snap_elements
 
+
 def rotation_set_up(context, boolSettings, snap_elements):
     bpy.context.scene.tool_settings.snap_elements = snap_elements
     bpy.context.scene.tool_settings.use_snap = boolSettings[0]
@@ -24,9 +25,10 @@ class MoveObjectWithSnapping(bpy.types.Operator):
     bl_idname = "object.move_object_with_snapping"
     bl_label = "Move"
 
+
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects and bpy.context.active_object
+        return bpy.context.selected_objects and bpy.context.active_object and bpy.context.active_object.mode == 'OBJECT'
         
     
     def execute(self, context):
@@ -37,40 +39,8 @@ class MoveObjectWithSnapping(bpy.types.Operator):
 
         rotation_set_up(context, [True] * 5, {'FACE'})
         bpy.ops.transform.translate('INVOKE_DEFAULT') 
-
         return {'FINISHED'}
     
-
-    '''def modal(self, context, event):
-        obj = bpy.context.object
-
-        if event.type == 'MOUSEMOVE':
-            x, y = event.mouse_region_x, event.mouse_region_y
-            loc = region_2d_to_location_3d(context.region, context.space_data.region_3d, (x, y), (0, 0, 0))
-            obj.location = loc
-
-        if event.type in ['LEFTMOUSE','ENTER']:
-            rotation_set_up(context, self.init_settings, self.start_snap_elements)
-            return{'FINISHED'}
-
-        if event.type in ['ESC','RIGHTMOUSE']:
-            rotation_set_up(context, self.init_settings, self.start_snap_elements)
-            obj.rotation_euler = self.init_rotation
-            obj.location = self.init_location
-            return {'CANCELLED'}
-
-        return {'RUNNING_MODAL'}
-        
-            def invoke(self, context, event):
-        self.start_snap_elements = rotation_store(context, self.init_settings)
-        #self.init_location = bpy.context.object.location.copy()
-        #self.init_rotation = bpy.context.object.rotation_euler.copy()
-        settings = [True] * 5
-        snap_elements = {'FACE'}
-        rotation_set_up(context, settings, snap_elements)
-        #context.window_manager.modal_handler_add(self)
-        #return {'RUNNING_MODAL'}
-        return self.execute(context)'''
     
 class RotateModal(bpy.types.Operator):
     """Rotate selected object"""
@@ -79,9 +49,11 @@ class RotateModal(bpy.types.Operator):
     x = 0
     init_rotation = [0,0,0]
 
+
     @classmethod
     def poll(self, context):
         return bpy.context.selected_objects and bpy.context.active_object and bpy.context.active_object.mode == 'OBJECT'
+    
     
     def modal(self, context, event):
         obj = bpy.context.object
@@ -106,6 +78,22 @@ class RotateModal(bpy.types.Operator):
         self.x = event.mouse_x
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
+    
+
+class ScaleObject(bpy.types.Operator):
+    """Scale selected object"""
+    bl_idname = "object.scale"
+    bl_label = "Scale"
+
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects and bpy.context.active_object and bpy.context.active_object.mode == 'OBJECT'
+
+
+    def execute(self, context):
+        bpy.ops.transform.resize('INVOKE_DEFAULT') 
+        return {'FINISHED'} 
 
 
 class DeleteObject(bpy.types.Operator):
@@ -125,6 +113,7 @@ class DeleteObject(bpy.types.Operator):
         for obj in bpy.context.selected_objects:
             bpy.data.objects.remove(obj, do_unlink=True)
         return {'FINISHED'} 
+
 
 def add_mesh(file_name, context):
     filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
@@ -161,6 +150,7 @@ class AddRiggedHumanOperator(bpy.types.Operator):
 classes = (
     MoveObjectWithSnapping,
     RotateModal,
+    ScaleObject,
     DeleteObject,
     AddWallOperator,
     AddRiggedHumanOperator
