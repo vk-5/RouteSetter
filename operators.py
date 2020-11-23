@@ -124,13 +124,13 @@ def add_mesh(file_name, context):
         bpy.context.collection.objects.link(obj)
 
 
-class AddWallOperator(bpy.types.Operator):
-    """Create an Operator"""
-    bl_idname = "object.wall"
-    bl_label = "Wall"
+class AddObject(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.obj"
+    bl_label = "Add"
 
     def execute(self, context):
-        add_mesh('libraries\\props\\wall_1.blend', context )
+        add_mesh('libraries\\walls\\wall_1.blend', context )
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
@@ -152,7 +152,7 @@ classes = (
     RotateModal,
     ScaleObject,
     DeleteObject,
-    AddWallOperator,
+    AddObject,
     AddRiggedHumanOperator
 )
 
