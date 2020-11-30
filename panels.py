@@ -47,6 +47,27 @@ def enum_previews_from_directory_walls(self, context):
     pcoll.walls_previews_dir = directory
     return pcoll.walls_previews
 
+def enum_previews_from_directory_structures(self, context):
+    """EnumProperty callback"""
+    enum_items = []
+
+    if context is None:
+        return enum_items
+
+    wm = context.window_manager
+    directory = wm.structures_previews_dir
+
+    pcoll = preview_collections["structures"]
+
+    if directory == pcoll.structures_previews_dir:
+        return pcoll.structures_previews
+
+    enum_previews_from_directory(directory, pcoll, enum_items)
+
+    pcoll.structures_previews = enum_items
+    pcoll.structures_previews_dir = directory
+    return pcoll.structures_previews
+
 
 def enum_previews_from_directory_holds(self, context):
     """EnumProperty callback"""
@@ -105,6 +126,23 @@ class WallPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.obj")
 
+class StructuresPreviewsPanel(bpy.types.Panel):
+    bl_label = "Structures"
+    bl_idname = "OBJECT_PT_preview_structures"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = 'RouteSetter'
+
+    def draw(self, context):
+        layout = self.layout
+        wm = context.window_manager
+
+        row = layout.row()
+        row.template_icon_view(wm, "structures_previews")
+
+        row = layout.row()
+        row.operator("object.obj")
+
 
 class HoldsPreviewPanel(bpy.types.Panel):
     bl_label = "Holds"
@@ -145,6 +183,7 @@ class RiggedHumanPanel(bpy.types.Panel):
 classes = (
     EditPanel,
     WallPreviewsPanel,
+    StructuresPreviewsPanel,
     HoldsPreviewPanel,
     RiggedHumanPanel
 )
@@ -168,6 +207,17 @@ def register():
         items=enum_previews_from_directory_walls,
     )
 
+    WindowManager.structures_previews_dir = StringProperty(
+        name="Folder Path",
+        subtype='DIR_PATH',
+        default=os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), "libraries\\structures")
+    )
+
+    WindowManager.structures_previews = EnumProperty(
+        items=enum_previews_from_directory_structures,
+    )
+
     WindowManager.holds_previews_dir = StringProperty(
         name="Folder Path",
         subtype='DIR_PATH',
@@ -182,11 +232,15 @@ def register():
     pcoll_walls = bpy.utils.previews.new()
     pcoll_walls.walls_previews_dir = ""
     pcoll_walls.walls_previews = ()
+    pcoll_structures = bpy.utils.previews.new()
+    pcoll_structures.structures_previews_dir = ""
+    pcoll_structures.structures_previews = ()
     pcoll_holds = bpy.utils.previews.new()
     pcoll_holds.holds_previews_dir = ""
     pcoll_holds.holds_previews = ()
 
     preview_collections["walls"] = pcoll_walls
+    preview_collections["structures"] = pcoll_structures
     preview_collections["holds"] = pcoll_holds
 
     for cls in classes:
