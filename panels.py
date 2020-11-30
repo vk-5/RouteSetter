@@ -1,8 +1,10 @@
-import bpy, os, bpy.utils.previews
+import bpy
+import os
+import bpy.utils.previews
 from bpy.props import (
     StringProperty,
     EnumProperty,
-    )
+)
 
 
 class EditPanel(bpy.types.Panel):
@@ -24,8 +26,7 @@ class EditPanel(bpy.types.Panel):
         row.operator("object.delete")
 
 
-
-def enum_previews_from_directory_items(self, context):
+def enum_previews_from_directory_walls(self, context):
     """EnumProperty callback"""
     enum_items = []
 
@@ -35,33 +36,19 @@ def enum_previews_from_directory_items(self, context):
     wm = context.window_manager
     directory = wm.walls_previews_dir
 
-    pcoll_walls = preview_collections["walls"]
+    pcoll = preview_collections["walls"]
 
-    if directory == pcoll_walls.walls_previews_dir:
-        return pcoll_walls.walls_previews
+    if directory == pcoll.walls_previews_dir:
+        return pcoll.walls_previews
 
-    if directory and os.path.exists(directory):
-        VALID_EXTENSIONS = ('.png', '.jpg', '.jpeg')
-        image_paths = []
-        for fn in os.listdir(directory):
-            if fn.lower().endswith(VALID_EXTENSIONS):
-                image_paths.append(fn)
-        
+    enum_previews_from_directory(directory, pcoll, enum_items)
 
-        for i, name in enumerate(image_paths):
-            filepath = os.path.join(directory, name)
-            icon = pcoll_walls.get(name)
-            if not icon:
-                thumb = pcoll_walls.load(name, filepath, 'IMAGE')
-            else:
-                thumb = pcoll_walls[name]
-            enum_items.append((name, name, "", thumb.icon_id, i))
+    pcoll.walls_previews = enum_items
+    pcoll.walls_previews_dir = directory
+    return pcoll.walls_previews
 
-    pcoll_walls.walls_previews = enum_items
-    pcoll_walls.walls_previews_dir = directory
-    return pcoll_walls.walls_previews
 
-def enum_previews_from_directory_items2(self, context):
+def enum_previews_from_directory_holds(self, context):
     """EnumProperty callback"""
     enum_items = []
 
@@ -71,31 +58,34 @@ def enum_previews_from_directory_items2(self, context):
     wm = context.window_manager
     directory = wm.holds_previews_dir
 
-    pcoll_walls = preview_collections["holds"]
+    pcoll = preview_collections["holds"]
 
-    if directory == pcoll_walls.holds_previews_dir:
-        return pcoll_walls.holds_previews
+    if directory == pcoll.holds_previews_dir:
+        return pcoll.holds_previews
 
+    enum_previews_from_directory(directory, pcoll, enum_items)
+
+    pcoll.holds_previews = enum_items
+    pcoll.holds_previews_dir = directory
+    return pcoll.holds_previews
+
+
+def enum_previews_from_directory(directory, pcoll, enum_items):
     if directory and os.path.exists(directory):
         VALID_EXTENSIONS = ('.png', '.jpg', '.jpeg')
         image_paths = []
         for fn in os.listdir(directory):
             if fn.lower().endswith(VALID_EXTENSIONS):
                 image_paths.append(fn)
-        
 
         for i, name in enumerate(image_paths):
             filepath = os.path.join(directory, name)
-            icon = pcoll_walls.get(name)
+            icon = pcoll.get(name)
             if not icon:
-                thumb = pcoll_walls.load(name, filepath, 'IMAGE')
+                thumb = pcoll.load(name, filepath, 'IMAGE')
             else:
-                thumb = pcoll_walls[name]
+                thumb = pcoll[name]
             enum_items.append((name, name, "", thumb.icon_id, i))
-
-    pcoll_walls.holds_previews = enum_items
-    pcoll_walls.holds_previews_dir = directory
-    return pcoll_walls.holds_previews
 
 
 class WallPreviewsPanel(bpy.types.Panel):
@@ -163,30 +153,31 @@ classes = (
 def register():
     from bpy.types import WindowManager
     from bpy.props import (
-            StringProperty,
-            EnumProperty,
-            )
+        StringProperty,
+        EnumProperty,
+    )
 
     WindowManager.walls_previews_dir = StringProperty(
-            name="Folder Path",
-            subtype='DIR_PATH',
-            default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls")
-            )
+        name="Folder Path",
+        subtype='DIR_PATH',
+        default=os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), "libraries\\walls")
+    )
 
     WindowManager.walls_previews = EnumProperty(
-            items=enum_previews_from_directory_items,
-            )
+        items=enum_previews_from_directory_walls,
+    )
 
     WindowManager.holds_previews_dir = StringProperty(
-            name="Folder Path",
-            subtype='DIR_PATH',
-            default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds")
-            )
+        name="Folder Path",
+        subtype='DIR_PATH',
+        default=os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), "libraries\\holds")
+    )
 
     WindowManager.holds_previews = EnumProperty(
-            items=enum_previews_from_directory_items2,
-            )
-
+        items=enum_previews_from_directory_holds,
+    )
 
     pcoll_walls = bpy.utils.previews.new()
     pcoll_walls.walls_previews_dir = ""
@@ -204,7 +195,7 @@ def register():
 
 def unregister():
     from bpy.types import WindowManager
- 
+
     del WindowManager.walls_previews
 
     for pcoll_walls in preview_collections.values():
@@ -213,5 +204,3 @@ def unregister():
 
     for cls in classes:
         bpy.utils.unregister_class(cls)
-
-
