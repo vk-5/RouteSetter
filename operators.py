@@ -38,7 +38,7 @@ class MoveObjectWithSnapping(bpy.types.Operator):
         context.window.cursor_warp(loc.x, loc.y)
 
         rotation_set_up(context, [True] * 5, {'FACE'})
-        bpy.ops.transform.translate('INVOKE_DEFAULT') 
+        bpy.ops.transform.translate('INVOKE_DEFAULT')
         return {'FINISHED'}
     
     
@@ -104,7 +104,7 @@ class DeleteObject(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects and bpy.context.active_object.mode == 'OBJECT'
+        return bpy.context.selected_objects #and bpy.context.active_object.mode == 'OBJECT'
 
 
     def execute(self, context):

@@ -1,5 +1,4 @@
 import bpy, os, bpy.utils.previews
-from bpy.types import WindowManager,StringProperty, EnumProperty,Scene
 from bpy.props import (
     StringProperty,
     EnumProperty,
@@ -25,7 +24,8 @@ class EditPanel(bpy.types.Panel):
         row.operator("object.delete")
 
 
-def enum_previews_from_directory_items(self, context): # edited blender ui template jak mam citovat?
+
+def enum_previews_from_directory_items(self, context):
     """EnumProperty callback"""
     enum_items = []
 
@@ -33,13 +33,12 @@ def enum_previews_from_directory_items(self, context): # edited blender ui templ
         return enum_items
 
     wm = context.window_manager
-    directory = wm.my_previews_dir
+    directory = wm.walls_previews_dir
 
-    pcoll = preview_collections["main"]
+    pcoll_walls = preview_collections["walls"]
 
-    if directory == pcoll.my_previews_dir:
-        return pcoll.my_previews
-
+    if directory == pcoll_walls.walls_previews_dir:
+        return pcoll_walls.walls_previews
 
     if directory and os.path.exists(directory):
         VALID_EXTENSIONS = ('.png', '.jpg', '.jpeg')
@@ -51,19 +50,55 @@ def enum_previews_from_directory_items(self, context): # edited blender ui templ
 
         for i, name in enumerate(image_paths):
             filepath = os.path.join(directory, name)
-            icon = pcoll.get(name)
+            icon = pcoll_walls.get(name)
             if not icon:
-                thumb = pcoll.load(name, filepath, 'IMAGE')
+                thumb = pcoll_walls.load(name, filepath, 'IMAGE')
             else:
-                thumb = pcoll[name]
+                thumb = pcoll_walls[name]
             enum_items.append((name, name, "", thumb.icon_id, i))
 
-    pcoll.my_previews = enum_items
-    pcoll.my_previews_dir = directory
-    return pcoll.my_previews
+    pcoll_walls.walls_previews = enum_items
+    pcoll_walls.walls_previews_dir = directory
+    return pcoll_walls.walls_previews
+
+def enum_previews_from_directory_items2(self, context):
+    """EnumProperty callback"""
+    enum_items = []
+
+    if context is None:
+        return enum_items
+
+    wm = context.window_manager
+    directory = wm.holds_previews_dir
+
+    pcoll_walls = preview_collections["holds"]
+
+    if directory == pcoll_walls.holds_previews_dir:
+        return pcoll_walls.holds_previews
+
+    if directory and os.path.exists(directory):
+        VALID_EXTENSIONS = ('.png', '.jpg', '.jpeg')
+        image_paths = []
+        for fn in os.listdir(directory):
+            if fn.lower().endswith(VALID_EXTENSIONS):
+                image_paths.append(fn)
+        
+
+        for i, name in enumerate(image_paths):
+            filepath = os.path.join(directory, name)
+            icon = pcoll_walls.get(name)
+            if not icon:
+                thumb = pcoll_walls.load(name, filepath, 'IMAGE')
+            else:
+                thumb = pcoll_walls[name]
+            enum_items.append((name, name, "", thumb.icon_id, i))
+
+    pcoll_walls.holds_previews = enum_items
+    pcoll_walls.holds_previews_dir = directory
+    return pcoll_walls.holds_previews
 
 
-class WallPreviewsPanel(bpy.types.Panel): # edited blender ui template jak mam citovat?
+class WallPreviewsPanel(bpy.types.Panel):
     bl_label = "Walls"
     bl_idname = "OBJECT_PT_preview_walls"
     bl_space_type = 'VIEW_3D'
@@ -75,7 +110,25 @@ class WallPreviewsPanel(bpy.types.Panel): # edited blender ui template jak mam c
         wm = context.window_manager
 
         row = layout.row()
-        row.template_icon_view(wm, "my_previews")
+        row.template_icon_view(wm, "walls_previews")
+
+        row = layout.row()
+        row.operator("object.obj")
+
+
+class HoldsPreviewPanel(bpy.types.Panel):
+    bl_label = "Holds"
+    bl_idname = "OBJECT_PT_preview_holds"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = 'RouteSetter'
+
+    def draw(self, context):
+        layout = self.layout
+        wm = context.window_manager
+
+        row = layout.row()
+        row.template_icon_view(wm, "holds_previews")
 
         row = layout.row()
         row.operator("object.obj")
@@ -102,38 +155,60 @@ class RiggedHumanPanel(bpy.types.Panel):
 classes = (
     EditPanel,
     WallPreviewsPanel,
+    HoldsPreviewPanel,
     RiggedHumanPanel
 )
 
 
 def register():
+    from bpy.types import WindowManager
     from bpy.props import (
             StringProperty,
             EnumProperty,
             )
 
-    WindowManager.my_previews_dir = os.path.join(os.path.dirname(__file__), "libraries\\walls")
+    WindowManager.walls_previews_dir = StringProperty(
+            name="Folder Path",
+            subtype='DIR_PATH',
+            default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls")
+            )
 
-    WindowManager.my_previews = EnumProperty(
-        items=enum_previews_from_directory_items,
-    )
+    WindowManager.walls_previews = EnumProperty(
+            items=enum_previews_from_directory_items,
+            )
 
-    pcoll = bpy.utils.previews.new()
-    pcoll.my_previews_dir = ""
-    pcoll.my_previews = ()
+    WindowManager.holds_previews_dir = StringProperty(
+            name="Folder Path",
+            subtype='DIR_PATH',
+            default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds")
+            )
 
-    preview_collections["main"] = pcoll
+    WindowManager.holds_previews = EnumProperty(
+            items=enum_previews_from_directory_items2,
+            )
+
+
+    pcoll_walls = bpy.utils.previews.new()
+    pcoll_walls.walls_previews_dir = ""
+    pcoll_walls.walls_previews = ()
+    pcoll_holds = bpy.utils.previews.new()
+    pcoll_holds.holds_previews_dir = ""
+    pcoll_holds.holds_previews = ()
+
+    preview_collections["walls"] = pcoll_walls
+    preview_collections["holds"] = pcoll_holds
 
     for cls in classes:
         bpy.utils.register_class(cls)
 
 
 def unregister():
+    from bpy.types import WindowManager
  
-    del WindowManager.my_previews
+    del WindowManager.walls_previews
 
-    for pcoll in preview_collections.values():
-        bpy.utils.previews.remove(pcoll)
+    for pcoll_walls in preview_collections.values():
+        bpy.utils.previews.remove(pcoll_walls)
     preview_collections.clear()
 
     for cls in classes:
