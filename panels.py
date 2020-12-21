@@ -124,7 +124,7 @@ class WallPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "walls_previews")
 
         row = layout.row()
-        row.operator("object.obj")
+        row.operator("object.wall")
 
 class StructuresPreviewsPanel(bpy.types.Panel):
     bl_label = "Structures"
@@ -141,7 +141,7 @@ class StructuresPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "structures_previews")
 
         row = layout.row()
-        row.operator("object.obj")
+        row.operator("object.structure")
 
 
 class HoldsPreviewPanel(bpy.types.Panel):
@@ -159,7 +159,7 @@ class HoldsPreviewPanel(bpy.types.Panel):
         row.template_icon_view(wm, "holds_previews")
 
         row = layout.row()
-        row.operator("object.obj")
+        row.operator("object.hold")
 
 
 preview_collections = {}

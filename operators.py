@@ -134,6 +134,42 @@ class AddObject(bpy.types.Operator):
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
+class AddWallFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.wall"
+    bl_label = "Add"
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].walls_previews
+        asset = icon.split('.')[0] + ".blend"
+        add_mesh('libraries\\walls\\' + asset, context )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class AddStructuresFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.structure"
+    bl_label = "Add"
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].structures_previews
+        asset = icon.split('.')[0] + ".blend"
+        add_mesh('libraries\\structures\\' + asset, context )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class AddHoldsFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.hold"
+    bl_label = "Add"
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].holds_previews
+        asset = icon.split('.')[0] + ".blend"
+        add_mesh('libraries\\holds\\' + asset, context )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
 
 class AddRiggedHumanOperator(bpy.types.Operator):
     """Create an Operator"""
@@ -152,6 +188,9 @@ classes = (
     RotateModal,
     ScaleObject,
     DeleteObject,
+    AddWallFromCollection,
+    AddStructuresFromCollection,
+    AddHoldsFromCollection,
     AddObject,
     AddRiggedHumanOperator
 )
