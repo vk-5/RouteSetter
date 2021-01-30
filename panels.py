@@ -126,6 +126,9 @@ class WallPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.wall")
 
+        row = layout.row()
+        row.operator("object.wall_library")
+
 class StructuresPreviewsPanel(bpy.types.Panel):
     bl_label = "Structures"
     bl_idname = "OBJECT_PT_preview_structures"

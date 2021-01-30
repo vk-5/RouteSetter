@@ -1,6 +1,7 @@
 import bpy, math, mathutils, bpy_extras
 from bpy_extras.view3d_utils import region_2d_to_location_3d
-import os
+import os 
+from os import listdir
 
 def rotation_store(context, boolSettings):
     boolSettings[0] = bpy.context.scene.tool_settings.use_snap
@@ -137,7 +138,7 @@ class AddObject(bpy.types.Operator):
 class AddWallFromCollection(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.wall"
-    bl_label = "Add"
+    bl_label = "Add wall"
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].walls_previews
@@ -146,10 +147,43 @@ class AddWallFromCollection(bpy.types.Operator):
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
+class AddToWallLibrary(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.wall_library"
+    bl_label = "Add to library"
+
+    def execute(self, context):
+        ob = set(bpy.context.selected_objects)
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
+
+        name = 0
+        for f in listdir(filepath):
+            if int(f.split('.')[0]) > 0:
+                name = int(f.split('.')[0])
+        name += 1
+
+        bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
+
+        camera_data = bpy.data.cameras.new(name='Camera')
+        cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
+        bpy.context.scene.camera = cam_obj
+        bpy.ops.view3d.camera_to_view_selected()
+
+        bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
+        bpy.ops.render.render(write_still = True)
+        bpy.ops.script.reload()
+
+        #bpy.ops.wm.save_as_mainfile(filepath="path/to/myfilename")
+        #icon = bpy.data.window_managers["WinMan"].walls_previews
+        #asset = icon.split('.')[0] + ".blend"
+        #add_mesh('libraries\\walls\\' + asset, context )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
 class AddStructuresFromCollection(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.structure"
-    bl_label = "Add"
+    bl_label = "Add structure"
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].structures_previews
@@ -161,7 +195,7 @@ class AddStructuresFromCollection(bpy.types.Operator):
 class AddHoldsFromCollection(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.hold"
-    bl_label = "Add"
+    bl_label = "Add hold"
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].holds_previews
@@ -191,6 +225,7 @@ classes = (
     AddWallFromCollection,
     AddStructuresFromCollection,
     AddHoldsFromCollection,
+    AddToWallLibrary,
     AddObject,
     AddRiggedHumanOperator
 )

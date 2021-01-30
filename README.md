@@ -1,10 +1,25 @@
 # RouteSetter
 
-TODO:
+Installation:
+- Download 'RouteSetter.zip' from gitHub
+- Open Blender
+- Go to Edit -> Preferences -> Add-ons
+- Click on 'Install...'
+- Choose downloaded add-on file 
+- Click on 'Install Add-on'
+- Now you should see your addon in addon list
+- Enable add on by check box
+- Now you have installed and enabled addon
+- You can find addon tab in 'N panel' of '3D viewport'
+- '3D viewport' is the default viewport when you start Blender, by pressing N on you keyboard you hide/unhide 'N panel'
+- Now when you are in right viewport by pressing N on you keyboard you unhide 'N panel'
+- You should see some vertical tabs and one of them should be RouteSetter, probably the last one
+- Click on the tab and you are ready to build
+- Happy route setting!
 
--napsat postup pro instalaci (hope download as zip, preferences-> install addon will work)
--menus for walls, sctructures, holds
--restructure file system of props
+
+TODO:
+-menus for walls, sctructures, holds (add to collection, remove from collection, reload)
 -render button for props
 
 -make poll func of operators properly
