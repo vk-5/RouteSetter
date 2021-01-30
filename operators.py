@@ -135,22 +135,14 @@ class AddObject(bpy.types.Operator):
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
-class AddWallFromCollection(bpy.types.Operator):
-    """Add Operator"""
-    bl_idname = "object.wall"
-    bl_label = "Add wall"
-
-    def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].walls_previews
-        asset = icon.split('.')[0] + ".blend"
-        add_mesh('libraries\\walls\\' + asset, context )
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
-
 class AddToWallLibrary(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.wall_library"
     bl_label = "Add to library"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects
 
     def execute(self, context):
         ob = set(bpy.context.selected_objects)
@@ -199,6 +191,18 @@ def focus_light():
         light_obj = bpy.data.objects.get("Light Asset")
 
     light_obj.rotation_euler = (math.radians(45),math.radians(45),0)
+
+class AddWallFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.wall"
+    bl_label = "Add wall"
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].walls_previews
+        asset = icon.split('.')[0] + ".blend"
+        add_mesh('libraries\\walls\\' + asset, context )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
 
 class AddStructuresFromCollection(bpy.types.Operator):
     """Add Operator"""

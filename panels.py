@@ -45,7 +45,7 @@ def enum_previews_from_directory_walls(self, context):
 
     pcoll.walls_previews = enum_items
     pcoll.walls_previews_dir = directory
-    return pcoll.walls_previews
+    return enum_items
 
 def enum_previews_from_directory_structures(self, context):
     """EnumProperty callback"""
@@ -108,6 +108,9 @@ def enum_previews_from_directory(directory, pcoll, enum_items):
                 thumb = pcoll[name]
             enum_items.append((name, name, "", thumb.icon_id, i))
 
+def update_walls_collection(self, context):
+    enum_previews_from_directory_walls(self, context)
+    return None
 
 class WallPreviewsPanel(bpy.types.Panel):
     bl_label = "Walls"
@@ -208,6 +211,8 @@ def register():
 
     WindowManager.walls_previews = EnumProperty(
         items=enum_previews_from_directory_walls,
+        default=None,
+        update=update_walls_collection,
     )
 
     WindowManager.structures_previews_dir = StringProperty(
@@ -219,6 +224,7 @@ def register():
 
     WindowManager.structures_previews = EnumProperty(
         items=enum_previews_from_directory_structures,
+        default=None,
     )
 
     WindowManager.holds_previews_dir = StringProperty(
@@ -230,6 +236,7 @@ def register():
 
     WindowManager.holds_previews = EnumProperty(
         items=enum_previews_from_directory_holds,
+        default=None,
     )
 
     pcoll_walls = bpy.utils.previews.new()
@@ -254,9 +261,12 @@ def unregister():
     from bpy.types import WindowManager
 
     del WindowManager.walls_previews
+    del WindowManager.structures_previews_dir
+    del WindowManager.holds_previews_dir
 
-    for pcoll_walls in preview_collections.values():
-        bpy.utils.previews.remove(pcoll_walls)
+
+    for pcoll in preview_collections.values():
+        bpy.utils.previews.remove(pcoll)
     preview_collections.clear()
 
     for cls in classes:
