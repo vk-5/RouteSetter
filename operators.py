@@ -155,18 +155,10 @@ class AddToWallLibrary(bpy.types.Operator):
     def execute(self, context):
         ob = set(bpy.context.selected_objects)
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
-
-        name = 0
-        for f in listdir(filepath):
-            if int(f.split('.')[0]) > 0:
-                name = int(f.split('.')[0])
-        name += 1
-
+        name = get_name(filepath)
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
-
         focus_camera()
         focus_light()
-
         bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
         bpy.ops.render.render(write_still = True)
         #bpy.ops.script.reload()
@@ -177,6 +169,14 @@ class AddToWallLibrary(bpy.types.Operator):
         #add_mesh('libraries\\walls\\' + asset, context )
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
+
+def get_name(filepath):
+    name = 0
+    for f in listdir(filepath):
+        if int(f.split('.')[0]) > 0:
+            name = int(f.split('.')[0])
+    name += 1
+    return name
 
 def focus_camera():
     if not bpy.data.objects.get("Camera Asset"):
