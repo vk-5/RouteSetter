@@ -164,15 +164,8 @@ class AddToWallLibrary(bpy.types.Operator):
 
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
 
-        if not bpy.data.objects.get("Camera Asset"):
-            camera_data = bpy.data.cameras.new(name='Camera Asset')
-            cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
-            bpy.context.view_layer.active_layer_collection.collection.objects.link(cam_obj)
-        else:
-            cam_obj = bpy.data.objects.get("Camera Asset")
-        
-        bpy.context.scene.camera = cam_obj
-        bpy.ops.view3d.camera_to_view_selected()
+        focus_camera()
+        focus_light()
 
         bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
         bpy.ops.render.render(write_still = True)
@@ -184,6 +177,28 @@ class AddToWallLibrary(bpy.types.Operator):
         #add_mesh('libraries\\walls\\' + asset, context )
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
+
+def focus_camera():
+    if not bpy.data.objects.get("Camera Asset"):
+        camera_data = bpy.data.cameras.new(name='Camera Asset')
+        cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
+        bpy.context.view_layer.active_layer_collection.collection.objects.link(cam_obj)
+    else:
+        cam_obj = bpy.data.objects.get("Camera Asset")
+
+    bpy.context.scene.camera = cam_obj
+    cam_obj.rotation_euler = (math.radians(54),0,math.radians(45))
+    bpy.ops.view3d.camera_to_view_selected()
+
+def focus_light():
+    if not bpy.data.objects.get("Light Asset"):
+        light_data = bpy.data.lights.new(name='Light Asset', type='SUN')
+        light_obj = bpy.data.objects.new("Light Asset", light_data)
+        bpy.context.view_layer.active_layer_collection.collection.objects.link(light_obj)
+    else:
+        light_obj = bpy.data.objects.get("Light Asset")
+
+    light_obj.rotation_euler = (math.radians(45),math.radians(45),0)
 
 class AddStructuresFromCollection(bpy.types.Operator):
     """Add Operator"""
