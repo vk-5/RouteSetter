@@ -164,14 +164,19 @@ class AddToWallLibrary(bpy.types.Operator):
 
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
 
-        camera_data = bpy.data.cameras.new(name='Camera')
-        cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
+        if not bpy.data.objects.get("Camera Asset"):
+            camera_data = bpy.data.cameras.new(name='Camera Asset')
+            cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
+            bpy.context.view_layer.active_layer_collection.collection.objects.link(cam_obj)
+        else:
+            cam_obj = bpy.data.objects.get("Camera Asset")
+        
         bpy.context.scene.camera = cam_obj
         bpy.ops.view3d.camera_to_view_selected()
 
         bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
         bpy.ops.render.render(write_still = True)
-        bpy.ops.script.reload()
+        #bpy.ops.script.reload()
 
         #bpy.ops.wm.save_as_mainfile(filepath="path/to/myfilename")
         #icon = bpy.data.window_managers["WinMan"].walls_previews
