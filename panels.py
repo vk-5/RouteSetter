@@ -37,15 +37,10 @@ def enum_previews_from_directory_walls(self, context):
     directory = wm.walls_previews_dir
 
     pcoll = preview_collections["walls"]
-
-    if directory == pcoll.walls_previews_dir:
-        return pcoll.walls_previews
-
     enum_previews_from_directory(directory, pcoll, enum_items)
-
     pcoll.walls_previews = enum_items
     pcoll.walls_previews_dir = directory
-    return enum_items
+    return pcoll.walls_previews
 
 def enum_previews_from_directory_structures(self, context):
     """EnumProperty callback"""
@@ -58,12 +53,7 @@ def enum_previews_from_directory_structures(self, context):
     directory = wm.structures_previews_dir
 
     pcoll = preview_collections["structures"]
-
-    if directory == pcoll.structures_previews_dir:
-        return pcoll.structures_previews
-
     enum_previews_from_directory(directory, pcoll, enum_items)
-
     pcoll.structures_previews = enum_items
     pcoll.structures_previews_dir = directory
     return pcoll.structures_previews
@@ -80,12 +70,7 @@ def enum_previews_from_directory_holds(self, context):
     directory = wm.holds_previews_dir
 
     pcoll = preview_collections["holds"]
-
-    if directory == pcoll.holds_previews_dir:
-        return pcoll.holds_previews
-
     enum_previews_from_directory(directory, pcoll, enum_items)
-
     pcoll.holds_previews = enum_items
     pcoll.holds_previews_dir = directory
     return pcoll.holds_previews
@@ -110,6 +95,14 @@ def enum_previews_from_directory(directory, pcoll, enum_items):
 
 def update_walls_collection(self, context):
     enum_previews_from_directory_walls(self, context)
+    return None
+
+def update_structures_collection(self, context):
+    enum_previews_from_directory_structures(self, context)
+    return None
+
+def update_holds_collection(self, context):
+    enum_previews_from_directory_holds(self, context)
     return None
 
 class WallPreviewsPanel(bpy.types.Panel):
@@ -149,6 +142,9 @@ class StructuresPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.structure")
 
+        row = layout.row()
+        row.operator("object.structure_library")
+
 
 class HoldsPreviewPanel(bpy.types.Panel):
     bl_label = "Holds"
@@ -166,6 +162,9 @@ class HoldsPreviewPanel(bpy.types.Panel):
 
         row = layout.row()
         row.operator("object.hold")
+
+        row = layout.row()
+        row.operator("object.hold_library")
 
 
 preview_collections = {}
@@ -225,6 +224,7 @@ def register():
     WindowManager.structures_previews = EnumProperty(
         items=enum_previews_from_directory_structures,
         default=None,
+        update=update_structures_collection,
     )
 
     WindowManager.holds_previews_dir = StringProperty(
@@ -237,6 +237,7 @@ def register():
     WindowManager.holds_previews = EnumProperty(
         items=enum_previews_from_directory_holds,
         default=None,
+        update=update_holds_collection,
     )
 
     pcoll_walls = bpy.utils.previews.new()

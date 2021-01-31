@@ -19,8 +19,9 @@ Installation:
 
 
 TODO:
--menus for walls, sctructures, holds (add to collection, remove from collection, reload)
--render button for props
+-menus for walls, sctructures, holds (remove from collection)
+-edit naming to fill holes when adding a prop
+
 
 -make poll func of operators properly
 -add warnings to operators

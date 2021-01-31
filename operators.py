@@ -151,15 +151,56 @@ class AddToWallLibrary(bpy.types.Operator):
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
         focus_camera()
         focus_light()
+        set_output_dimensions(512,512,100)
         bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
         bpy.ops.render.render(write_still = True)
-        #bpy.ops.script.reload()
-
         #bpy.ops.wm.save_as_mainfile(filepath="path/to/myfilename")
         #icon = bpy.data.window_managers["WinMan"].walls_previews
         #asset = icon.split('.')[0] + ".blend"
         #add_mesh('libraries\\walls\\' + asset, context )
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class AddToStructureLibrary(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.structure_library"
+    bl_label = "Add to library"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects
+
+    def execute(self, context):
+        ob = set(bpy.context.selected_objects)
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")
+        name = get_name(filepath)
+        bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
+        focus_camera()
+        focus_light()
+        set_output_dimensions(512,512,100)
+        bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
+        bpy.ops.render.render(write_still = True)
+        return {'FINISHED'}
+
+class AddToHoldLibrary(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.hold_library"
+    bl_label = "Add to library"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects
+
+    def execute(self, context):
+        ob = set(bpy.context.selected_objects)
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")
+        name = get_name(filepath)
+        bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
+        focus_camera()
+        focus_light()
+        set_output_dimensions(512,512,100)
+        bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
+        bpy.ops.render.render(write_still = True)
         return {'FINISHED'}
 
 def get_name(filepath):
@@ -181,6 +222,12 @@ def focus_camera():
     bpy.context.scene.camera = cam_obj
     cam_obj.rotation_euler = (math.radians(54),0,math.radians(45))
     bpy.ops.view3d.camera_to_view_selected()
+
+def set_output_dimensions(dimension_x, dimension_y, percentage):
+    scene = bpy.data.scenes["Scene"]
+    scene.render.resolution_x = dimension_x
+    scene.render.resolution_y = dimension_y
+    scene.render.resolution_percentage = percentage
 
 def focus_light():
     if not bpy.data.objects.get("Light Asset"):
@@ -250,6 +297,8 @@ classes = (
     AddStructuresFromCollection,
     AddHoldsFromCollection,
     AddToWallLibrary,
+    AddToStructureLibrary,
+    AddToHoldLibrary,
     AddObject,
     AddRiggedHumanOperator
 )
