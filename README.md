@@ -21,6 +21,8 @@ Installation:
 TODO:
 -menus for walls, sctructures, holds (remove from collection)
 -edit naming to fill holes when adding a prop
+-adding to collections hierarchy
+-materials by collections
 
 
 -make poll func of operators properly

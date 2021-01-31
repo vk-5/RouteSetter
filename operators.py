@@ -149,6 +149,7 @@ class AddToWallLibrary(bpy.types.Operator):
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
         name = get_name(filepath)
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
+        assign_material("Structures",(1,0,0,0))
         focus_camera()
         focus_light()
         set_output_dimensions(512,512,100)
@@ -175,6 +176,7 @@ class AddToStructureLibrary(bpy.types.Operator):
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")
         name = get_name(filepath)
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
+        assign_material("Structures",(0,1,0,0))
         focus_camera()
         focus_light()
         set_output_dimensions(512,512,100)
@@ -196,6 +198,7 @@ class AddToHoldLibrary(bpy.types.Operator):
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")
         name = get_name(filepath)
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
+        assign_material("Holds",(0,0,1,0))
         focus_camera()
         focus_light()
         set_output_dimensions(512,512,100)
@@ -220,7 +223,8 @@ def focus_camera():
         cam_obj = bpy.data.objects.get("Camera Asset")
 
     bpy.context.scene.camera = cam_obj
-    cam_obj.rotation_euler = (math.radians(54),0,math.radians(45))
+    cam_obj.rotation_euler = (math.radians(60),0,math.radians(30))
+    bpy.ops.view3d.camera_to_view_selected()
     bpy.ops.view3d.camera_to_view_selected()
 
 def set_output_dimensions(dimension_x, dimension_y, percentage):
@@ -238,6 +242,20 @@ def focus_light():
         light_obj = bpy.data.objects.get("Light Asset")
 
     light_obj.rotation_euler = (math.radians(45),math.radians(45),0)
+
+def assign_material(name,color):
+    material = bpy.data.materials.get(name)
+
+    if not material:
+        material = bpy.data.materials.new(name=name)
+
+    material.diffuse_color = color
+
+    for obj in bpy.context.selected_objects:
+        if obj.data.materials:
+            obj.data.materials[0] = material
+        else:
+            obj.data.materials.append(material)
 
 class AddWallFromCollection(bpy.types.Operator):
     """Add Operator"""
