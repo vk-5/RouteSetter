@@ -149,9 +149,9 @@ class AddToWallLibrary(bpy.types.Operator):
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
         name = get_name(filepath)
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
-        assign_material("Structures",(1,0,0,0))
-        focus_camera()
-        focus_light()
+        assign_material("Walls",(0.9,0.9,0.9,0))
+        focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(20)))
+        focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(512,512,100)
         bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
         bpy.ops.render.render(write_still = True)
@@ -176,9 +176,9 @@ class AddToStructureLibrary(bpy.types.Operator):
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")
         name = get_name(filepath)
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
-        assign_material("Structures",(0,1,0,0))
-        focus_camera()
-        focus_light()
+        assign_material("Structures",(0.5,0.5,0.5,0))
+        focus_camera(rotation=(math.radians(10),math.radians(10),math.radians(0)))
+        focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(512,512,100)
         bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
         bpy.ops.render.render(write_still = True)
@@ -198,9 +198,9 @@ class AddToHoldLibrary(bpy.types.Operator):
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")
         name = get_name(filepath)
         bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
-        assign_material("Holds",(0,0,1,0))
-        focus_camera()
-        focus_light()
+        assign_material("Holds",(0.1,0.1,0.1,0))
+        focus_camera(rotation=(math.radians(60),math.radians(0),math.radians(30)))
+        focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(512,512,100)
         bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
         bpy.ops.render.render(write_still = True)
@@ -214,7 +214,7 @@ def get_name(filepath):
     name += 1
     return name
 
-def focus_camera():
+def focus_camera(rotation):
     if not bpy.data.objects.get("Camera Asset"):
         camera_data = bpy.data.cameras.new(name='Camera Asset')
         cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
@@ -223,8 +223,7 @@ def focus_camera():
         cam_obj = bpy.data.objects.get("Camera Asset")
 
     bpy.context.scene.camera = cam_obj
-    cam_obj.rotation_euler = (math.radians(60),0,math.radians(30))
-    bpy.ops.view3d.camera_to_view_selected()
+    cam_obj.rotation_euler = rotation
     bpy.ops.view3d.camera_to_view_selected()
 
 def set_output_dimensions(dimension_x, dimension_y, percentage):
@@ -233,7 +232,7 @@ def set_output_dimensions(dimension_x, dimension_y, percentage):
     scene.render.resolution_y = dimension_y
     scene.render.resolution_percentage = percentage
 
-def focus_light():
+def focus_light(rotation):
     if not bpy.data.objects.get("Light Asset"):
         light_data = bpy.data.lights.new(name='Light Asset', type='SUN')
         light_obj = bpy.data.objects.new("Light Asset", light_data)
@@ -241,7 +240,7 @@ def focus_light():
     else:
         light_obj = bpy.data.objects.get("Light Asset")
 
-    light_obj.rotation_euler = (math.radians(45),math.radians(45),0)
+    light_obj.rotation_euler = rotation
 
 def assign_material(name,color):
     material = bpy.data.materials.get(name)

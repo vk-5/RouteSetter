@@ -105,9 +105,9 @@ def update_holds_collection(self, context):
     enum_previews_from_directory_holds(self, context)
     return None
 
-class WallPreviewsPanel(bpy.types.Panel):
-    bl_label = "Walls"
-    bl_idname = "OBJECT_PT_preview_walls"
+class BoulderPreviewsPanel(bpy.types.Panel):
+    bl_label = "Boulder"
+    bl_idname = "OBJECT_PT_preview_boulder"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = 'RouteSetter'
@@ -117,38 +117,36 @@ class WallPreviewsPanel(bpy.types.Panel):
         wm = context.window_manager
 
         row = layout.row()
+        row.label(text="Walls")
+        row = layout.row()
         row.template_icon_view(wm, "walls_previews")
-
         row = layout.row()
         row.operator("object.wall")
-
         row = layout.row()
         row.operator("object.wall_library")
 
-class StructuresPreviewsPanel(bpy.types.Panel):
-    bl_label = "Structures"
-    bl_idname = "OBJECT_PT_preview_structures"
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = 'RouteSetter'
-
-    def draw(self, context):
-        layout = self.layout
-        wm = context.window_manager
-
+        row = layout.row()
+        row.label(text="Structures")
         row = layout.row()
         row.template_icon_view(wm, "structures_previews")
-
         row = layout.row()
         row.operator("object.structure")
-
         row = layout.row()
         row.operator("object.structure_library")
 
+        row = layout.row()
+        row.label(text="Holds")
+        row = layout.row()
+        row.template_icon_view(wm, "holds_previews")
+        row = layout.row()
+        row.operator("object.hold")
+        row = layout.row()
+        row.operator("object.hold_library")
 
-class HoldsPreviewPanel(bpy.types.Panel):
-    bl_label = "Holds"
-    bl_idname = "OBJECT_PT_preview_holds"
+
+class RockPreviewsPanel(bpy.types.Panel):
+    bl_label = "Rock"
+    bl_idname = "OBJECT_PT_preview_rock"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = 'RouteSetter'
@@ -158,13 +156,22 @@ class HoldsPreviewPanel(bpy.types.Panel):
         wm = context.window_manager
 
         row = layout.row()
-        row.template_icon_view(wm, "holds_previews")
+        row.label(text="Rocks")
+        row = layout.row()
+        row.template_icon_view(wm, "walls_previews")
+        row = layout.row()
+        row.operator("object.wall")
+        row = layout.row()
+        row.operator("object.wall_library")
 
         row = layout.row()
-        row.operator("object.hold")
-
+        row.label(text="Marks")
         row = layout.row()
-        row.operator("object.hold_library")
+        row.template_icon_view(wm, "structures_previews")
+        row = layout.row()
+        row.operator("object.structure")
+        row = layout.row()
+        row.operator("object.structure_library")
 
 
 preview_collections = {}
@@ -187,9 +194,8 @@ class RiggedHumanPanel(bpy.types.Panel):
 
 classes = (
     EditPanel,
-    WallPreviewsPanel,
-    StructuresPreviewsPanel,
-    HoldsPreviewPanel,
+    BoulderPreviewsPanel,
+    RockPreviewsPanel,
     RiggedHumanPanel
 )
 
