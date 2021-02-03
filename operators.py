@@ -261,6 +261,10 @@ class AddWallFromCollection(bpy.types.Operator):
     bl_idname = "object.wall"
     bl_label = "Add wall"
 
+    @classmethod
+    def poll(self,context):
+        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")) ) > 0
+
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].walls_previews
         asset = icon.split('.')[0] + ".blend"
@@ -272,6 +276,10 @@ class AddStructuresFromCollection(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.structure"
     bl_label = "Add structure"
+
+    @classmethod
+    def poll(self,context):
+        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")) ) > 0
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].structures_previews
@@ -285,10 +293,46 @@ class AddHoldsFromCollection(bpy.types.Operator):
     bl_idname = "object.hold"
     bl_label = "Add hold"
 
+    @classmethod
+    def poll(self,context):
+        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")) ) > 0
+
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].holds_previews
         asset = icon.split('.')[0] + ".blend"
         add_mesh('libraries\\holds\\' + asset, context )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class AddRocksFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.rock"
+    bl_label = "Add rock"
+
+    @classmethod
+    def poll(self,context):
+        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")) ) > 0
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].rocks_previews
+        asset = icon.split('.')[0] + ".blend"
+        add_mesh('libraries\\rocks\\' + asset, context )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class AddMarksFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.mark"
+    bl_label = "Add mark"
+
+    @classmethod
+    def poll(self,context):
+        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\marks\\")) ) > 0
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].marks_previews
+        asset = icon.split('.')[0] + ".blend"
+        add_mesh('libraries\\marks\\' + asset, context )
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
@@ -313,6 +357,8 @@ classes = (
     AddWallFromCollection,
     AddStructuresFromCollection,
     AddHoldsFromCollection,
+    AddRocksFromCollection,
+    AddMarksFromCollection,
     AddToWallLibrary,
     AddToStructureLibrary,
     AddToHoldLibrary,

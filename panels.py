@@ -75,6 +75,37 @@ def enum_previews_from_directory_holds(self, context):
     pcoll.holds_previews_dir = directory
     return pcoll.holds_previews
 
+def enum_previews_from_directory_rocks(self, context):
+    """EnumProperty callback"""
+    enum_items = []
+
+    if context is None:
+        return enum_items
+
+    wm = context.window_manager
+    directory = wm.rocks_previews_dir
+
+    pcoll = preview_collections["rocks"]
+    enum_previews_from_directory(directory, pcoll, enum_items)
+    pcoll.rocks_previews = enum_items
+    pcoll.rocks_previews_dir = directory
+    return pcoll.rocks_previews
+
+def enum_previews_from_directory_marks(self, context):
+    """EnumProperty callback"""
+    enum_items = []
+
+    if context is None:
+        return enum_items
+
+    wm = context.window_manager
+    directory = wm.marks_previews_dir
+
+    pcoll = preview_collections["marks"]
+    enum_previews_from_directory(directory, pcoll, enum_items)
+    pcoll.marks_previews = enum_items
+    pcoll.marks_previews_dir = directory
+    return pcoll.marks_previews
 
 def enum_previews_from_directory(directory, pcoll, enum_items):
     if directory and os.path.exists(directory):
@@ -103,6 +134,14 @@ def update_structures_collection(self, context):
 
 def update_holds_collection(self, context):
     enum_previews_from_directory_holds(self, context)
+    return None
+
+def update_rocks_collection(self, context):
+    enum_previews_from_directory_rocks(self, context)
+    return None
+
+def update_marks_collection(self, context):
+    enum_previews_from_directory_marks(self, context)
     return None
 
 class BoulderPreviewsPanel(bpy.types.Panel):
@@ -158,20 +197,16 @@ class RockPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.label(text="Rocks")
         row = layout.row()
-        row.template_icon_view(wm, "walls_previews")
+        row.template_icon_view(wm, "rocks_previews")
         row = layout.row()
-        row.operator("object.wall")
-        row = layout.row()
-        row.operator("object.wall_library")
+        row.operator("object.rock")
 
         row = layout.row()
         row.label(text="Marks")
         row = layout.row()
-        row.template_icon_view(wm, "structures_previews")
+        row.template_icon_view(wm, "marks_previews")
         row = layout.row()
-        row.operator("object.structure")
-        row = layout.row()
-        row.operator("object.structure_library")
+        row.operator("object.mark")
 
 
 preview_collections = {}
@@ -246,19 +281,57 @@ def register():
         update=update_holds_collection,
     )
 
+    WindowManager.rocks_previews_dir = StringProperty(
+        name="Folder Path",
+        subtype='DIR_PATH',
+        default=os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), "libraries\\rocks")
+    )
+
+    WindowManager.rocks_previews = EnumProperty(
+        items=enum_previews_from_directory_rocks,
+        default=None,
+        update=update_rocks_collection,
+    )
+
+    WindowManager.marks_previews_dir = StringProperty(
+        name="Folder Path",
+        subtype='DIR_PATH',
+        default=os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), "libraries\\marks")
+    )
+
+    WindowManager.marks_previews = EnumProperty(
+        items=enum_previews_from_directory_marks,
+        default=None,
+        update=update_marks_collection,
+    )
+
     pcoll_walls = bpy.utils.previews.new()
     pcoll_walls.walls_previews_dir = ""
     pcoll_walls.walls_previews = ()
+
     pcoll_structures = bpy.utils.previews.new()
     pcoll_structures.structures_previews_dir = ""
     pcoll_structures.structures_previews = ()
+
     pcoll_holds = bpy.utils.previews.new()
     pcoll_holds.holds_previews_dir = ""
     pcoll_holds.holds_previews = ()
 
+    pcoll_rocks = bpy.utils.previews.new()
+    pcoll_rocks.rocks_previews_dir = ""
+    pcoll_rocks.rocks_previews = ()
+
+    pcoll_marks = bpy.utils.previews.new()
+    pcoll_marks.marks_previews_dir = ""
+    pcoll_marks.marks_previews = ()
+
     preview_collections["walls"] = pcoll_walls
     preview_collections["structures"] = pcoll_structures
     preview_collections["holds"] = pcoll_holds
+    preview_collections["rocks"] = pcoll_rocks
+    preview_collections["marks"] = pcoll_marks
 
     for cls in classes:
         bpy.utils.register_class(cls)
@@ -270,6 +343,8 @@ def unregister():
     del WindowManager.walls_previews
     del WindowManager.structures_previews_dir
     del WindowManager.holds_previews_dir
+    del WindowManager.rocks_previews_dir
+    del WindowManager.marks_previews_dir
 
 
     for pcoll in preview_collections.values():
