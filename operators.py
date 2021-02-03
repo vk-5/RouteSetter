@@ -148,12 +148,12 @@ class AddToWallLibrary(bpy.types.Operator):
         ob = set(bpy.context.selected_objects)
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
         name = get_name(filepath)
-        bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
+        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user = True)
         assign_material("Walls",(0.9,0.9,0.9,0))
         focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(20)))
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(512,512,100)
-        bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
+        bpy.context.scene.render.filepath = os.path.join(filepath, name + ".png")
         bpy.ops.render.render(write_still = True)
         #bpy.ops.wm.save_as_mainfile(filepath="path/to/myfilename")
         #icon = bpy.data.window_managers["WinMan"].walls_previews
@@ -175,12 +175,12 @@ class AddToStructureLibrary(bpy.types.Operator):
         ob = set(bpy.context.selected_objects)
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")
         name = get_name(filepath)
-        bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
+        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user = True)
         assign_material("Structures",(0.5,0.5,0.5,0))
         focus_camera(rotation=(math.radians(10),math.radians(10),math.radians(0)))
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(512,512,100)
-        bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
+        bpy.context.scene.render.filepath = os.path.join(filepath, name + ".png")
         bpy.ops.render.render(write_still = True)
         return {'FINISHED'}
 
@@ -197,22 +197,25 @@ class AddToHoldLibrary(bpy.types.Operator):
         ob = set(bpy.context.selected_objects)
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")
         name = get_name(filepath)
-        bpy.data.libraries.write(os.path.join(filepath, str(name) + ".blend"), ob, fake_user = True)
+        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user = True)
         assign_material("Holds",(0.1,0.1,0.1,0))
         focus_camera(rotation=(math.radians(60),math.radians(0),math.radians(30)))
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(512,512,100)
-        bpy.context.scene.render.filepath = os.path.join(filepath, str(name) + ".png")
+        bpy.context.scene.render.filepath = os.path.join(filepath, name + ".png")
         bpy.ops.render.render(write_still = True)
         return {'FINISHED'}
 
+def filenames_to_ints(file_name):
+    return int(file_name.split('.')[0])
+
 def get_name(filepath):
+    file_names = list(map(filenames_to_ints,listdir(filepath)))
+    file_names.sort()
     name = 0
-    for f in listdir(filepath):
-        if int(f.split('.')[0]) > 0:
-            name = int(f.split('.')[0])
-    name += 1
-    return name
+    while name in file_names:
+        name += 1
+    return str(name)
 
 def focus_camera(rotation):
     if not bpy.data.objects.get("Camera Asset"):
