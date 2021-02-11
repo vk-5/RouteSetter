@@ -206,6 +206,28 @@ class AddToHoldLibrary(bpy.types.Operator):
         bpy.ops.render.render(write_still = True)
         return {'FINISHED'}
 
+class AddToRockLibrary(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.rock_library"
+    bl_label = "Add to library"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects
+
+    def execute(self, context):
+        ob = set(bpy.context.selected_objects)
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")
+        name = get_name(filepath)
+        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user = True)
+        assign_material("Rocks",(0.1,0.1,0.1,0))
+        focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(20)))
+        focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
+        set_output_dimensions(512,512,100)
+        bpy.context.scene.render.filepath = os.path.join(filepath, name + ".png")
+        bpy.ops.render.render(write_still = True)
+        return {'FINISHED'}
+
 def filenames_to_ints(file_name):
     return int(file_name.split('.')[0])
 
@@ -323,22 +345,52 @@ class AddRocksFromCollection(bpy.types.Operator):
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
-class AddMarksFromCollection(bpy.types.Operator):
+class DrawPath(bpy.types.Operator):
     """Add Operator"""
-    bl_idname = "object.mark"
-    bl_label = "Add mark"
+    bl_idname = "object.draw"
+    bl_label = "Draw route"
 
     @classmethod
     def poll(self,context):
-        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\marks\\")) ) > 0
+        return bpy.context.selected_objects and bpy.context.active_object.mode == 'OBJECT'
 
     def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].marks_previews
-        asset = icon.split('.')[0] + ".blend"
-        add_mesh('libraries\\marks\\' + asset, context )
+        bpy.ops.object.gpencil_add(align='WORLD', location=(0, 0, 0), scale=(1, 1, 1), type='EMPTY')
+        bpy.ops.gpencil.paintmode_toggle()
+        bpy.context.scene.tool_settings.gpencil_stroke_placement_view3d = 'SURFACE'
+        bpy.context.object.data.zdepth_offset = 0
+        bpy.context.scene.tool_settings.gpencil_sculpt.lock_axis = 'VIEW'
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
+class DrawDone(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.done"
+    bl_label = "Done"
+
+    @classmethod
+    def poll(self,context):
+        return bpy.context.selected_objects and bpy.context.active_object.mode == 'PAINT_GPENCIL'
+
+    def execute(self, context):
+        bpy.ops.gpencil.paintmode_toggle()
+        bpy.ops.gpencil.convert(type='POLY', use_timing_data=False)
+        add_mesh('libraries\\circle.blend', context )
+        bpy.data.objects.remove(bpy.data.objects["GPencil"], do_unlink=True)
+        bpy.context.view_layer.objects.active = bpy.data.objects['Path']
+        bpy.ops.object.modifier_add(type='ARRAY')
+        bpy.context.object.modifiers["Array"].fit_type = 'FIT_CURVE'
+        bpy.context.object.modifiers["Array"].curve = bpy.data.objects["GP_Layer"]
+        bpy.context.object.modifiers["Array"].relative_offset_displace[0] = 0
+        bpy.context.object.modifiers["Array"].relative_offset_displace[1] = 0
+        bpy.context.object.modifiers["Array"].relative_offset_displace[2] = 1
+        bpy.ops.object.modifier_add(type='CURVE')
+        bpy.context.object.modifiers["Curve"].object = bpy.data.objects["GP_Layer"]
+        bpy.context.object.modifiers["Curve"].deform_axis = 'POS_Z'
+        bpy.ops.object.apply_all_modifiers()
+        bpy.data.objects.remove(bpy.data.objects["GP_Layer"], do_unlink=True)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
 
 class AddRiggedHumanOperator(bpy.types.Operator):
     """Create an Operator"""
@@ -361,10 +413,12 @@ classes = (
     AddStructuresFromCollection,
     AddHoldsFromCollection,
     AddRocksFromCollection,
-    AddMarksFromCollection,
+    DrawPath,
+    DrawDone,
     AddToWallLibrary,
     AddToStructureLibrary,
     AddToHoldLibrary,
+    AddToRockLibrary,
     AddObject,
     AddRiggedHumanOperator
 )
