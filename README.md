@@ -19,12 +19,9 @@ Installation:
 
 
 TODO:
--menus for walls, sctructures, holds (remove from collection)
--edit naming to fill holes when adding a prop
 -adding to collections hierarchy
 -materials by collections
-
-
+-renderer
 -make poll func of operators properly
 -add warnings to operators
 -add shortcuts to operators

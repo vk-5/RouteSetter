@@ -307,7 +307,6 @@ def unregister():
     del WindowManager.structures_previews_dir
     del WindowManager.holds_previews_dir
     del WindowManager.rocks_previews_dir
-    del WindowManager.marks_previews_dir
 
 
     for pcoll in preview_collections.values():

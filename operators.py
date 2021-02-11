@@ -116,13 +116,33 @@ class DeleteObject(bpy.types.Operator):
         return {'FINISHED'} 
 
 
-def add_mesh(file_name, context):
+def add_mesh(file_name, context, parent_collection=None, collection_name=None):
     filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
     with bpy.data.libraries.load(filepath, link=False) as (data_from, data_to):
         data_to.objects = [name for name in data_from.objects]
 
-    for obj in data_to.objects:
-        bpy.context.collection.objects.link(obj)
+    if collection_name is not None:
+        collection_name = create_collection(context, collection_name, parent_collection)
+        for obj in data_to.objects:
+            bpy.data.collections[collection_name].objects.link(obj)
+    else:
+        for obj in data_to.objects:
+            bpy.context.collection.objects.link(obj)
+
+def create_collection(context, name, parent_collection):
+    collection_number = 1
+    collection_name = name + str(collection_number)
+    while collection_name in bpy.data.collections.keys():
+        collection_number += 1
+        collection_name = name + str(collection_number)
+
+    collection = bpy.data.collections.new(collection_name)
+    collection = bpy.data.collections[collection_name]
+    if parent_collection is None:
+        bpy.context.scene.collection.children.link(collection)
+    else:
+        bpy.data.collections[parent_collection].children.link(collection)
+    return collection_name
 
 
 class AddObject(bpy.types.Operator):
@@ -293,7 +313,7 @@ class AddWallFromCollection(bpy.types.Operator):
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].walls_previews
         asset = icon.split('.')[0] + ".blend"
-        add_mesh('libraries\\walls\\' + asset, context )
+        add_mesh('libraries\\walls\\' + asset, context, None, 'wall' )
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
