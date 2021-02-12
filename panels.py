@@ -141,7 +141,6 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "walls_previews")
         row = layout.row()
         row.operator("object.wall")
-        row = layout.row()
         row.operator("object.wall_library")
 
         row = layout.row()
@@ -150,7 +149,6 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "structures_previews")
         row = layout.row()
         row.operator("object.structure")
-        row = layout.row()
         row.operator("object.structure_library")
 
         row = layout.row()
@@ -159,7 +157,6 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "holds_previews")
         row = layout.row()
         row.operator("object.hold")
-        row = layout.row()
         row.operator("object.hold_library")
 
 
@@ -180,7 +177,6 @@ class RockPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "rocks_previews")
         row = layout.row()
         row.operator("object.rock")
-        row = layout.row()
         row.operator("object.rock_library")
 
         row = layout.row()

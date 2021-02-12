@@ -20,6 +20,12 @@ def rotation_set_up(context, boolSettings, snap_elements):
     bpy.context.scene.tool_settings.use_snap_project = boolSettings[3]
     bpy.context.scene.tool_settings.use_snap_align_rotation = boolSettings[4]
 
+def move_with_snapping(self, context, obj):
+    x,y,z = obj.location.x, obj.location.y, obj.location.z
+    loc = bpy_extras.view3d_utils.location_3d_to_region_2d(bpy.context.region, bpy.context.space_data.region_3d, (x, y, z), (0, 0))
+    context.window.cursor_warp(loc.x, loc.y)
+    rotation_set_up(context, [True] * 5, {'FACE'})
+    bpy.ops.transform.translate('INVOKE_DEFAULT')
 
 class MoveObjectWithSnapping(bpy.types.Operator):
     """Move selected object"""
@@ -33,16 +39,10 @@ class MoveObjectWithSnapping(bpy.types.Operator):
         
     
     def execute(self, context):
-        obj = bpy.context.object
-        x,y,z = obj.location.x, obj.location.y, obj.location.z
-        loc = bpy_extras.view3d_utils.location_3d_to_region_2d(bpy.context.region, bpy.context.space_data.region_3d, (x, y, z), (0, 0))
-        context.window.cursor_warp(loc.x, loc.y)
-
-        rotation_set_up(context, [True] * 5, {'FACE'})
-        bpy.ops.transform.translate('INVOKE_DEFAULT')
+        move_with_snapping(self, context, bpy.context.selected_objects[0])
         return {'FINISHED'}
     
-    
+
 class RotateModal(bpy.types.Operator):
     """Rotate selected object"""
     bl_idname = "object.rotate_modal"
@@ -128,20 +128,36 @@ def add_mesh(file_name, context, parent_collection=None, collection_name=None):
     else:
         for obj in data_to.objects:
             bpy.context.collection.objects.link(obj)
+    bpy.context.view_layer.objects.active = data_to.objects[0]
+
 
 def create_collection(context, name, parent_collection):
+    collection_name = get_collection_name(name)
+    if parent_collection is not None:
+        collection = bpy.data.collections[parent_collection]
+        child_collection = collection_name
+        for key in collection.children.keys():
+            if key.split('_')[0] == collection_name.split('_')[0]:
+                child_collection = key
+                break
+        if child_collection == collection_name:
+            collection = bpy.data.collections.new(collection_name)
+            collection = bpy.data.collections[collection_name]
+            bpy.data.collections[parent_collection].children.link(collection)
+        else:
+            collection_name = child_collection
+    else:
+        collection = bpy.data.collections.new(collection_name)
+        collection = bpy.data.collections[collection_name]
+        bpy.context.scene.collection.children.link(collection)
+    return collection_name
+
+def get_collection_name(name):
     collection_number = 1
     collection_name = name + str(collection_number)
     while collection_name in bpy.data.collections.keys():
         collection_number += 1
         collection_name = name + str(collection_number)
-
-    collection = bpy.data.collections.new(collection_name)
-    collection = bpy.data.collections[collection_name]
-    if parent_collection is None:
-        bpy.context.scene.collection.children.link(collection)
-    else:
-        bpy.data.collections[parent_collection].children.link(collection)
     return collection_name
 
 
@@ -175,10 +191,6 @@ class AddToWallLibrary(bpy.types.Operator):
         set_output_dimensions(512,512,100)
         bpy.context.scene.render.filepath = os.path.join(filepath, name + ".png")
         bpy.ops.render.render(write_still = True)
-        #bpy.ops.wm.save_as_mainfile(filepath="path/to/myfilename")
-        #icon = bpy.data.window_managers["WinMan"].walls_previews
-        #asset = icon.split('.')[0] + ".blend"
-        #add_mesh('libraries\\walls\\' + asset, context )
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
@@ -313,9 +325,20 @@ class AddWallFromCollection(bpy.types.Operator):
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].walls_previews
         asset = icon.split('.')[0] + ".blend"
-        add_mesh('libraries\\walls\\' + asset, context, None, 'wall' )
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh('libraries\\walls\\' + asset, context, None, 'wall_' )
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
+
+
+def find_obj_collection(self, context):
+    parent_collection = None
+    for collection_name in bpy.data.collections.keys():
+        if context.active_object.name in bpy.data.collections[collection_name].objects:
+            parent_collection = collection_name
+            break
+    return parent_collection
+
 
 class AddStructuresFromCollection(bpy.types.Operator):
     """Add Operator"""
@@ -324,14 +347,18 @@ class AddStructuresFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self,context):
-        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")) ) > 0
+        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")) ) > 0
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].structures_previews
         asset = icon.split('.')[0] + ".blend"
-        add_mesh('libraries\\structures\\' + asset, context )
+        parent_collection = find_obj_collection(self, context)
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh('libraries\\structures\\' + asset, context, parent_collection, 'structure_' )
+        move_with_snapping(self, context, context.active_object)
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
+
 
 class AddHoldsFromCollection(bpy.types.Operator):
     """Add Operator"""
@@ -340,12 +367,15 @@ class AddHoldsFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self,context):
-        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")) ) > 0
+        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")) ) > 0
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].holds_previews
         asset = icon.split('.')[0] + ".blend"
-        add_mesh('libraries\\holds\\' + asset, context )
+        parent_collection = find_obj_collection(self, context)
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh('libraries\\holds\\' + asset, context, parent_collection, 'hold_' )
+        move_with_snapping(self, context, context.active_object)
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
@@ -361,7 +391,8 @@ class AddRocksFromCollection(bpy.types.Operator):
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].rocks_previews
         asset = icon.split('.')[0] + ".blend"
-        add_mesh('libraries\\rocks\\' + asset, context )
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh('libraries\\rocks\\' + asset, context, None, None)
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
@@ -372,7 +403,7 @@ class DrawPath(bpy.types.Operator):
 
     @classmethod
     def poll(self,context):
-        return bpy.context.selected_objects and bpy.context.active_object.mode == 'OBJECT'
+        return True #context.selected_objects and len(bpy.context.selected_objects) > 0 and context.active_object.type == 'MESH' and context.active_object.mode == 'OBJECT'
 
     def execute(self, context):
         bpy.ops.object.gpencil_add(align='WORLD', location=(0, 0, 0), scale=(1, 1, 1), type='EMPTY')
@@ -390,14 +421,15 @@ class DrawDone(bpy.types.Operator):
 
     @classmethod
     def poll(self,context):
-        return bpy.context.selected_objects and bpy.context.active_object.mode == 'PAINT_GPENCIL'
+        return True # context.selected_objects and len(bpy.context.selected_objects) > 0 and context.active_object.type == 'GPENCIL' and context.active_object.mode == 'PAINT_GPENCIL'
 
     def execute(self, context):
-        bpy.ops.gpencil.paintmode_toggle()
+        bpy.ops.gpencil.paintmode_toggle(back=True)
         bpy.ops.gpencil.convert(type='POLY', use_timing_data=False)
         add_mesh('libraries\\circle.blend', context )
         bpy.data.objects.remove(bpy.data.objects["GPencil"], do_unlink=True)
-        bpy.context.view_layer.objects.active = bpy.data.objects['Path']
+        new_name = bpy.context.active_object.name
+        bpy.context.view_layer.objects.active = bpy.data.objects[new_name]
         bpy.ops.object.modifier_add(type='ARRAY')
         bpy.context.object.modifiers["Array"].fit_type = 'FIT_CURVE'
         bpy.context.object.modifiers["Array"].curve = bpy.data.objects["GP_Layer"]
