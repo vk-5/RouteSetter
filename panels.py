@@ -91,6 +91,19 @@ def enum_previews_from_directory_rocks(self, context):
     pcoll.rocks_previews_dir = directory
     return pcoll.rocks_previews
 
+def enum_previews_collections(self, context):
+    """EnumProperty callback"""
+    enum_items = []
+
+    if context is None:
+        return enum_items
+    
+    pcoll = preview_collections["collections"]
+    for key in  bpy.context.scene.collection.children.keys():
+        enum_items.append((key, key, ""))
+    pcoll.collections_previews = enum_items
+    return pcoll.collections_previews
+
 def enum_previews_from_directory(directory, pcoll, enum_items):
     if directory and os.path.exists(directory):
         VALID_EXTENSIONS = ('.png', '.jpg', '.jpeg')
@@ -122,6 +135,10 @@ def update_holds_collection(self, context):
 
 def update_rocks_collection(self, context):
     enum_previews_from_directory_rocks(self, context)
+    return None
+
+def update_collections_collection(self, context):
+    enum_previews_collections(self, context)
     return None
 
 class BoulderPreviewsPanel(bpy.types.Panel):
@@ -188,6 +205,21 @@ class RockPreviewsPanel(bpy.types.Panel):
 
 preview_collections = {}
 
+class RenderPanel(bpy.types.Panel):
+    """Creates a Panel in the Object properties window"""
+    bl_label = "Render path"
+    bl_idname = "OBJECT_PT_collection_preview"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = 'RouteSetter'
+
+    def draw(self, context):
+        layout = self.layout
+        wm = context.window_manager
+
+        row = layout.row()
+        row.prop(wm, "collections_previews")
+
 
 class RiggedHumanPanel(bpy.types.Panel):
     """Creates a Panel in the Object properties window"""
@@ -208,6 +240,7 @@ classes = (
     EditPanel,
     BoulderPreviewsPanel,
     RockPreviewsPanel,
+    RenderPanel,
     RiggedHumanPanel
 )
 
@@ -271,6 +304,12 @@ def register():
         update=update_rocks_collection,
     )
 
+    WindowManager.collections_previews = EnumProperty(
+        items=enum_previews_collections,
+        default=None,
+        update=update_collections_collection,
+    )
+
     pcoll_walls = bpy.utils.previews.new()
     pcoll_walls.walls_previews_dir = ""
     pcoll_walls.walls_previews = ()
@@ -287,10 +326,14 @@ def register():
     pcoll_rocks.rocks_previews_dir = ""
     pcoll_rocks.rocks_previews = ()
 
+    pcoll_collections = bpy.utils.previews.new()
+    pcoll_collections.collections_previews = ()
+
     preview_collections["walls"] = pcoll_walls
     preview_collections["structures"] = pcoll_structures
     preview_collections["holds"] = pcoll_holds
     preview_collections["rocks"] = pcoll_rocks
+    preview_collections["collections"] = pcoll_collections
 
     for cls in classes:
         bpy.utils.register_class(cls)
@@ -300,6 +343,11 @@ def unregister():
     from bpy.types import WindowManager
 
     del WindowManager.walls_previews
+    del WindowManager.structures_previews
+    del WindowManager.holds_previews
+    del WindowManager.rocks_previews
+    del WindowManager.collections_previews
+    del WindowManager.walls_previews_dir
     del WindowManager.structures_previews_dir
     del WindowManager.holds_previews_dir
     del WindowManager.rocks_previews_dir
