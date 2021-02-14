@@ -189,8 +189,6 @@ class RockPreviewsPanel(bpy.types.Panel):
         wm = context.window_manager
 
         row = layout.row()
-        row.label(text="Rocks")
-        row = layout.row()
         row.template_icon_view(wm, "rocks_previews")
         row = layout.row()
         row.operator("object.rock")
@@ -218,7 +216,9 @@ class RenderPanel(bpy.types.Panel):
         wm = context.window_manager
 
         row = layout.row()
-        row.prop(wm, "collections_previews")
+        row.label(text="Choose collection to render")
+        row = layout.row()
+        row.prop(wm, "collections_previews", text="")
 
 
 class RiggedHumanPanel(bpy.types.Panel):

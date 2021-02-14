@@ -444,6 +444,27 @@ class DrawDone(bpy.types.Operator):
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
+
+class RenderOperator(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.render"
+    bl_label = "Add to library"
+
+    @classmethod
+    def poll(self, context):
+        return True
+
+    def execute(self, context):
+        ob = set(bpy.context.selected_objects)
+        assign_material("Holds",(0.1,0.1,0.1,0))
+        focus_camera(rotation=(math.radians(60),math.radians(0),math.radians(30)))
+        focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
+        set_output_dimensions(512,512,100)
+        bpy.context.scene.render.filepath = os.path.join(filepath, name + ".png")
+        bpy.ops.render.render(write_still = True)
+        return {'FINISHED'}
+
+
 class AddRiggedHumanOperator(bpy.types.Operator):
     """Create an Operator"""
     bl_idname = "object.human"
