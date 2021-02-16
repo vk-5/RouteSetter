@@ -219,6 +219,8 @@ class RenderPanel(bpy.types.Panel):
         row.label(text="Choose collection to render")
         row = layout.row()
         row.prop(wm, "collections_previews", text="")
+        row = layout.row()
+        row.operator("object.render")
 
 
 class RiggedHumanPanel(bpy.types.Panel):

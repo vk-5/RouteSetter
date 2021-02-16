@@ -448,19 +448,23 @@ class DrawDone(bpy.types.Operator):
 class RenderOperator(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.render"
-    bl_label = "Add to library"
+    bl_label = "Render"
 
     @classmethod
     def poll(self, context):
         return True
 
     def execute(self, context):
-        ob = set(bpy.context.selected_objects)
-        assign_material("Holds",(0.1,0.1,0.1,0))
+        bpy.ops.object.select_all(action='DESELECT')
+        collection = bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews]
+        objs = collection.all_objects
+        for ob in objs:
+            ob.select_set(True)
+        #assign_material("Holds",(0.1,0.1,0.1,0))
         focus_camera(rotation=(math.radians(60),math.radians(0),math.radians(30)))
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(512,512,100)
-        bpy.context.scene.render.filepath = os.path.join(filepath, name + ".png")
+        bpy.context.scene.render.filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\render.png")
         bpy.ops.render.render(write_still = True)
         return {'FINISHED'}
 
@@ -493,6 +497,7 @@ classes = (
     AddToHoldLibrary,
     AddToRockLibrary,
     AddObject,
+    RenderOperator,
     AddRiggedHumanOperator
 )
 
