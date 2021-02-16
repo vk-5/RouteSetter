@@ -403,7 +403,7 @@ class DrawPath(bpy.types.Operator):
 
     @classmethod
     def poll(self,context):
-        return True #context.selected_objects and len(bpy.context.selected_objects) > 0 and context.active_object.type == 'MESH' and context.active_object.mode == 'OBJECT'
+        return context.selected_objects and len(bpy.context.selected_objects) > 0 and context.active_object.type == 'MESH' and context.active_object.mode == 'OBJECT'
 
     def execute(self, context):
         bpy.ops.object.gpencil_add(align='WORLD', location=(0, 0, 0), scale=(1, 1, 1), type='EMPTY')
@@ -421,7 +421,7 @@ class DrawDone(bpy.types.Operator):
 
     @classmethod
     def poll(self,context):
-        return True # context.selected_objects and len(bpy.context.selected_objects) > 0 and context.active_object.type == 'GPENCIL' and context.active_object.mode == 'PAINT_GPENCIL'
+        return context.selected_objects and len(bpy.context.selected_objects) > 0 and context.active_object.type == 'GPENCIL' and context.active_object.mode == 'PAINT_GPENCIL'
 
     def execute(self, context):
         bpy.ops.gpencil.paintmode_toggle(back=True)
@@ -463,7 +463,7 @@ class RenderOperator(bpy.types.Operator):
         #assign_material("Holds",(0.1,0.1,0.1,0))
         focus_camera(rotation=(math.radians(60),math.radians(0),math.radians(30)))
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
-        set_output_dimensions(512,512,100)
+        set_output_dimensions(1920,1080,100)
         bpy.context.scene.render.filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\render.png")
         bpy.ops.render.render(write_still = True)
         return {'FINISHED'}

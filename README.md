@@ -1,7 +1,11 @@
 # RouteSetter
 
 Installation:
-- Download 'RouteSetter.zip' from gitHub
+- --- Cant upload so big file (rocks, holds etc..) so instead of Download 'RouteSetter.zip' from gitHub do:
+- --- Download whole repo as zip, unzip the dir. Now you should have directory RouteSetter-master with addon files (.py files and more dictionaries)
+- --- If you have for example RouteSetter-master/RouteSetter-master/ addon files remove one dir from the path, it is caused by unzip.
+- --- Cosmetic thing rename RouteSetter-master to 
+- --- Now zip the whole RouteSetter directory again and continue
 - Open Blender
 - Go to Edit -> Preferences -> Add-ons
 - Click on 'Install...'
@@ -19,9 +23,7 @@ Installation:
 
 
 TODO:
--adding to collections hierarchy
 -materials by collections
--renderer
 -make poll func of operators properly
 -add warnings to operators
 -add shortcuts to operators
