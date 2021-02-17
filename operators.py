@@ -122,9 +122,9 @@ def add_mesh(file_name, context, collection_name=None, parent_collection=None):
         data_to.objects = [name for name in data_from.objects]
 
     if collection_name is not None:
-        collection_name = create_collection(context, collection_name, parent_collection)
+        collection = create_collection(context, collection_name, parent_collection)
         for obj in data_to.objects:
-            bpy.data.collections[collection_name].objects.link(obj)
+            collection.objects.link(obj)
     else:
         for obj in data_to.objects:
             bpy.context.collection.objects.link(obj)
@@ -132,33 +132,23 @@ def add_mesh(file_name, context, collection_name=None, parent_collection=None):
 
 
 def create_collection(context, name, parent_collection):
-    collection_name = get_collection_name(name)
-    if parent_collection is not None:
-        collection = bpy.data.collections[parent_collection]
-        child_collection = collection_name
-        for key in collection.children.keys():
-            if key.split('_')[0] == collection_name.split('_')[0]:
-                child_collection = key
-                break
-        if child_collection == collection_name:
-            collection = bpy.data.collections.new(collection_name)
-            collection = bpy.data.collections[collection_name]
-            bpy.data.collections[parent_collection].children.link(collection)
-        else:
-            collection_name = child_collection
-    else:
-        collection = bpy.data.collections.new(collection_name)
-        collection = bpy.data.collections[collection_name]
+    collection = None
+    if name == "wall":
+        collection = bpy.data.collections.new(name)
         bpy.context.scene.collection.children.link(collection)
-    return collection_name
-
-def get_collection_name(name):
-    collection_number = 1
-    collection_name = name + "_" + str(collection_number)
-    while collection_name in bpy.data.collections.keys():
-        collection_number += 1
-        collection_name = name + "_" + str(collection_number)
-    return collection_name
+    elif parent_collection is not None:
+        if parent_collection.split(".")[0] == "wall":
+            for col in bpy.data.collections[parent_collection].children:
+                if col.name.split(".")[0] == name:
+                    collection = col
+                    break
+            if collection == None:
+                collection = bpy.data.collections.new(name)
+                bpy.data.collections[parent_collection].children.link(collection)
+    else:
+        collection = bpy.data.collections.new(name)
+        bpy.context.scene.collection.children.link(collection)
+    return collection
 
 
 class AddObject(bpy.types.Operator):
@@ -205,7 +195,7 @@ class AddStructuresFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self,context):
-        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")) ) > 0
+        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")) ) > 0 and bpy.context.object.users_collection[0].name.split(".")[0] == 'wall'
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].structures_previews
@@ -225,7 +215,7 @@ class AddHoldsFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self,context):
-        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")) ) > 0
+        return bpy.context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")) ) > 0 and bpy.context.object.users_collection[0].name.split(".")[0] == 'wall'
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].holds_previews
