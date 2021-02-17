@@ -116,7 +116,7 @@ class DeleteObject(bpy.types.Operator):
         return {'FINISHED'} 
 
 
-def add_mesh(file_name, context, parent_collection=None, collection_name=None):
+def add_mesh(file_name, context, collection_name=None, parent_collection=None):
     filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
     with bpy.data.libraries.load(filepath, link=False) as (data_from, data_to):
         data_to.objects = [name for name in data_from.objects]
@@ -154,10 +154,10 @@ def create_collection(context, name, parent_collection):
 
 def get_collection_name(name):
     collection_number = 1
-    collection_name = name + str(collection_number)
+    collection_name = name + "_" + str(collection_number)
     while collection_name in bpy.data.collections.keys():
         collection_number += 1
-        collection_name = name + str(collection_number)
+        collection_name = name + "_" + str(collection_number)
     return collection_name
 
 
@@ -171,6 +171,89 @@ class AddObject(bpy.types.Operator):
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
+class AddWallFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.wall"
+    bl_label = "Add wall"
+
+    @classmethod
+    def poll(self,context):
+        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")) ) > 0
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].walls_previews
+        asset = icon.split('.')[0] + ".blend"
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh('libraries\\walls\\' + asset, context, 'wall' )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+
+def find_obj_collection(self, context):
+    parent_collection = None
+    for collection_name in bpy.data.collections.keys():
+        if context.active_object.name in bpy.data.collections[collection_name].objects:
+            parent_collection = collection_name
+            break
+    return parent_collection
+
+
+class AddStructuresFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.structure"
+    bl_label = "Add structure"
+
+    @classmethod
+    def poll(self,context):
+        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")) ) > 0
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].structures_previews
+        asset = icon.split('.')[0] + ".blend"
+        parent_collection = find_obj_collection(self, context)
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh('libraries\\structures\\' + asset, context, 'structure', parent_collection )
+        move_with_snapping(self, context, context.active_object)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+
+class AddHoldsFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.hold"
+    bl_label = "Add hold"
+
+    @classmethod
+    def poll(self,context):
+        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")) ) > 0
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].holds_previews
+        asset = icon.split('.')[0] + ".blend"
+        parent_collection = find_obj_collection(self, context)
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh('libraries\\holds\\' + asset, context, 'hold', parent_collection )
+        move_with_snapping(self, context, context.active_object)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class AddRocksFromCollection(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.rock"
+    bl_label = "Add rock"
+
+    @classmethod
+    def poll(self,context):
+        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")) ) > 0
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].rocks_previews
+        asset = icon.split('.')[0] + ".blend"
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh('libraries\\rocks\\' + asset, context)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
 class AddToWallLibrary(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.wall_library"
@@ -181,9 +264,12 @@ class AddToWallLibrary(bpy.types.Operator):
         return bpy.context.selected_objects
 
     def execute(self, context):
+        bpy.ops.object.join()
         ob = set(bpy.context.selected_objects)
+        for obj in bpy.context.selected_objects:
+            obj.name = "wall.001"
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
-        name = get_name(filepath)
+        name = get_file_name(filepath, "wall")
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user = True)
         assign_material("Walls",(0.9,0.9,0.9,0))
         focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(20)))
@@ -204,9 +290,12 @@ class AddToStructureLibrary(bpy.types.Operator):
         return bpy.context.selected_objects
 
     def execute(self, context):
+        bpy.ops.object.join()
         ob = set(bpy.context.selected_objects)
+        for obj in bpy.context.selected_objects:
+            obj.name = "structure.001"
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")
-        name = get_name(filepath)
+        name = get_file_name(filepath, "structure")
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user = True)
         assign_material("Structures",(0.5,0.5,0.5,0))
         focus_camera(rotation=(math.radians(10),math.radians(10),math.radians(0)))
@@ -226,9 +315,12 @@ class AddToHoldLibrary(bpy.types.Operator):
         return bpy.context.selected_objects
 
     def execute(self, context):
+        bpy.ops.object.join()
         ob = set(bpy.context.selected_objects)
+        for obj in bpy.context.selected_objects:
+            obj.name = "hold.001"
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")
-        name = get_name(filepath)
+        name = get_file_name(filepath, "hold")
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user = True)
         assign_material("Holds",(0.1,0.1,0.1,0))
         focus_camera(rotation=(math.radians(60),math.radians(0),math.radians(30)))
@@ -248,9 +340,12 @@ class AddToRockLibrary(bpy.types.Operator):
         return bpy.context.selected_objects
 
     def execute(self, context):
+        bpy.ops.object.join()
         ob = set(bpy.context.selected_objects)
+        for obj in bpy.context.selected_objects:
+            obj.name = "rock.001"
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")
-        name = get_name(filepath)
+        name = get_file_name(filepath, "rock")
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user = True)
         assign_material("Rocks",(0.1,0.1,0.1,0))
         focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(20)))
@@ -261,15 +356,15 @@ class AddToRockLibrary(bpy.types.Operator):
         return {'FINISHED'}
 
 def filenames_to_ints(file_name):
-    return int(file_name.split('.')[0])
+    return int(file_name.split("_")[1].split('.')[0])
 
-def get_name(filepath):
-    file_names = list(map(filenames_to_ints,listdir(filepath)))
-    file_names.sort()
-    name = 0
-    while name in file_names:
-        name += 1
-    return str(name)
+def get_file_name(filepath, name):
+    file_numbers = list(map(filenames_to_ints,listdir(filepath)))
+    file_numbers.sort()
+    number = 0
+    while number in file_numbers:
+        number += 1
+    return name + '_' + str(number)
 
 def focus_camera(rotation):
     if not bpy.data.objects.get("Camera Asset"):
@@ -299,7 +394,7 @@ def focus_light(rotation):
 
     light_obj.rotation_euler = rotation
 
-def assign_material(name,color):
+def assign_material(name, color, collection=None):
     material = bpy.data.materials.get(name)
 
     if not material:
@@ -308,93 +403,11 @@ def assign_material(name,color):
     material.diffuse_color = color
 
     for obj in bpy.context.selected_objects:
-        if obj.data.materials:
-            obj.data.materials[0] = material
-        else:
-            obj.data.materials.append(material)
-
-class AddWallFromCollection(bpy.types.Operator):
-    """Add Operator"""
-    bl_idname = "object.wall"
-    bl_label = "Add wall"
-
-    @classmethod
-    def poll(self,context):
-        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")) ) > 0
-
-    def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].walls_previews
-        asset = icon.split('.')[0] + ".blend"
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh('libraries\\walls\\' + asset, context, None, 'wall_' )
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
-
-
-def find_obj_collection(self, context):
-    parent_collection = None
-    for collection_name in bpy.data.collections.keys():
-        if context.active_object.name in bpy.data.collections[collection_name].objects:
-            parent_collection = collection_name
-            break
-    return parent_collection
-
-
-class AddStructuresFromCollection(bpy.types.Operator):
-    """Add Operator"""
-    bl_idname = "object.structure"
-    bl_label = "Add structure"
-
-    @classmethod
-    def poll(self,context):
-        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")) ) > 0
-
-    def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].structures_previews
-        asset = icon.split('.')[0] + ".blend"
-        parent_collection = find_obj_collection(self, context)
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh('libraries\\structures\\' + asset, context, parent_collection, 'structure_' )
-        move_with_snapping(self, context, context.active_object)
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
-
-
-class AddHoldsFromCollection(bpy.types.Operator):
-    """Add Operator"""
-    bl_idname = "object.hold"
-    bl_label = "Add hold"
-
-    @classmethod
-    def poll(self,context):
-        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")) ) > 0
-
-    def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].holds_previews
-        asset = icon.split('.')[0] + ".blend"
-        parent_collection = find_obj_collection(self, context)
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh('libraries\\holds\\' + asset, context, parent_collection, 'hold_' )
-        move_with_snapping(self, context, context.active_object)
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
-
-class AddRocksFromCollection(bpy.types.Operator):
-    """Add Operator"""
-    bl_idname = "object.rock"
-    bl_label = "Add rock"
-
-    @classmethod
-    def poll(self,context):
-        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")) ) > 0
-
-    def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].rocks_previews
-        asset = icon.split('.')[0] + ".blend"
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh('libraries\\rocks\\' + asset, context, None, None)
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
+        if collection is None or obj.users_collection.split[0] == collection:
+            if obj.data.materials:
+                obj.data.materials[0] = material
+            else:
+                obj.data.materials.append(material)
 
 class DrawPath(bpy.types.Operator):
     """Add Operator"""
@@ -460,7 +473,10 @@ class RenderOperator(bpy.types.Operator):
         objs = collection.all_objects
         for ob in objs:
             ob.select_set(True)
-        #assign_material("Holds",(0.1,0.1,0.1,0))
+        assign_material("Walls",(0.1,0.1,0.1,0), "wall")
+        assign_material("Walls",(0.1,0.1,0.1,0), "structures")
+        assign_material("Walls",(0.1,0.1,0.1,0), "holds")
+        assign_material("Walls",(0.1,0.1,0.1,0), "wall")
         focus_camera(rotation=(math.radians(60),math.radians(0),math.radians(30)))
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(1920,1080,100)
