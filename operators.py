@@ -1,4 +1,4 @@
-import bpy, math, mathutils, bpy_extras
+import bpy, math, mathutils, bpy_extras, random
 from bpy_extras.view3d_utils import region_2d_to_location_3d
 import os 
 from os import listdir
@@ -382,7 +382,9 @@ def focus_light(rotation):
     else:
         light_obj = bpy.data.objects.get("Light Asset")
 
+    bpy.context.scene.render.engine = 'BLENDER_EEVEE'
     light_obj.rotation_euler = rotation
+    light_obj.data.energy = 2
 
 def assign_material(name, color, collection=None):
     material = bpy.data.materials.get(name)
@@ -393,7 +395,7 @@ def assign_material(name, color, collection=None):
     material.diffuse_color = color
 
     for obj in bpy.context.selected_objects:
-        if collection is None or obj.users_collection.split[0] == collection:
+        if collection is None or obj.users_collection[0].name.split('.')[0] == collection:
             if obj.data.materials:
                 obj.data.materials[0] = material
             else:
@@ -455,7 +457,7 @@ class RenderOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return True
+        return bpy.data.collections
 
     def execute(self, context):
         bpy.ops.object.select_all(action='DESELECT')
@@ -463,16 +465,26 @@ class RenderOperator(bpy.types.Operator):
         objs = collection.all_objects
         for ob in objs:
             ob.select_set(True)
-        assign_material("Walls",(0.1,0.1,0.1,0), "wall")
-        assign_material("Walls",(0.1,0.1,0.1,0), "structures")
-        assign_material("Walls",(0.1,0.1,0.1,0), "holds")
-        assign_material("Walls",(0.1,0.1,0.1,0), "wall")
-        focus_camera(rotation=(math.radians(60),math.radians(0),math.radians(30)))
+        assign_material("Walls",(0.7,0.7,0.7,0), "wall")
+        assign_material("Rocks",(0.7,0.7,0.7,0), "rock")
+        assign_material("Structures",(0.1,0.1,0.1,0), "structure")
+
+        color = get_random_color()
+        assign_material("Holds",color, "hold")
+        color = get_random_color()
+        assign_material("Paths",color, "Path")
+
+        focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(20)))
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(1920,1080,100)
         bpy.context.scene.render.filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\render.png")
         bpy.ops.render.render(write_still = True)
         return {'FINISHED'}
+
+def get_random_color():
+    index = random.randint(0,5)
+    colors = [(0.5,0,0,0),(0.5,0.5,0,0),(0.5,0,0.5,0),(0,0.5,0,0),(0,0.5,0.5,0),(0,0,0.5,0)]
+    return colors[index]
 
 
 class AddRiggedHumanOperator(bpy.types.Operator):
