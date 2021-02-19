@@ -28,7 +28,7 @@ def move_with_snapping(self, context, obj):
     bpy.ops.transform.translate('INVOKE_DEFAULT')
 
 class MoveObjectWithSnapping(bpy.types.Operator):
-    """Move selected object"""
+    """Move selected objects."""
     bl_idname = "object.move_object_with_snapping"
     bl_label = "Move"
 
@@ -44,7 +44,7 @@ class MoveObjectWithSnapping(bpy.types.Operator):
     
 
 class RotateModal(bpy.types.Operator):
-    """Rotate selected object"""
+    """Rotate selected objects."""
     bl_idname = "object.rotate_modal"
     bl_label = "Rotate"
     x = 0
@@ -82,7 +82,7 @@ class RotateModal(bpy.types.Operator):
     
 
 class ScaleObject(bpy.types.Operator):
-    """Scale selected object"""
+    """Scale selected objects."""
     bl_idname = "object.scale"
     bl_label = "Scale"
 
@@ -98,7 +98,7 @@ class ScaleObject(bpy.types.Operator):
 
 
 class DeleteObject(bpy.types.Operator):
-    """Delete selected objects"""
+    """Delete selected objects."""
     bl_idname = "object.delete"
     bl_label = "Delete"
 
@@ -151,7 +151,7 @@ def create_collection(context, name, parent_collection):
     return collection
 
 class AddWallFromCollection(bpy.types.Operator):
-    """Add Operator"""
+    """Add Wall asset from collection."""
     bl_idname = "object.wall"
     bl_label = "Add"
 
@@ -178,7 +178,7 @@ def find_obj_collection(self, context):
 
 
 class AddStructuresFromCollection(bpy.types.Operator):
-    """Add Operator"""
+    """Add Structure asset from collection."""
     bl_idname = "object.structure"
     bl_label = "Add"
 
@@ -198,7 +198,7 @@ class AddStructuresFromCollection(bpy.types.Operator):
 
 
 class AddHoldsFromCollection(bpy.types.Operator):
-    """Add Operator"""
+    """Add Hold asset from collection."""
     bl_idname = "object.hold"
     bl_label = "Add"
 
@@ -217,7 +217,7 @@ class AddHoldsFromCollection(bpy.types.Operator):
         return {'FINISHED'}
 
 class AddRocksFromCollection(bpy.types.Operator):
-    """Add Operator"""
+    """Add Rock asset from collection."""
     bl_idname = "object.rock"
     bl_label = "Add"
 
@@ -234,7 +234,7 @@ class AddRocksFromCollection(bpy.types.Operator):
         return {'FINISHED'}
 
 class AddToWallLibrary(bpy.types.Operator):
-    """Add Operator"""
+    """Export selected to Wall library."""
     bl_idname = "object.wall_library"
     bl_label = "Export"
 
@@ -260,7 +260,7 @@ class AddToWallLibrary(bpy.types.Operator):
         return {'FINISHED'}
 
 class AddToStructureLibrary(bpy.types.Operator):
-    """Add Operator"""
+    """Export selected to Structure library."""
     bl_idname = "object.structure_library"
     bl_label = "Export"
 
@@ -285,7 +285,7 @@ class AddToStructureLibrary(bpy.types.Operator):
         return {'FINISHED'}
 
 class AddToHoldLibrary(bpy.types.Operator):
-    """Add Operator"""
+    """Export selected to Hold library."""
     bl_idname = "object.hold_library"
     bl_label = "Export"
 
@@ -310,7 +310,7 @@ class AddToHoldLibrary(bpy.types.Operator):
         return {'FINISHED'}
 
 class AddToRockLibrary(bpy.types.Operator):
-    """Add Operator"""
+    """Export selected to Rock library."""
     bl_idname = "object.rock_library"
     bl_label = "Export"
 
@@ -335,7 +335,7 @@ class AddToRockLibrary(bpy.types.Operator):
         return {'FINISHED'}
 
 class RemoveFromWallLibrary(bpy.types.Operator):
-    """Add Operator"""
+    """Remove asset from Wall library."""
     bl_idname = "object.wall_library_remove"
     bl_label = "Remove from asset library"
 
@@ -358,7 +358,7 @@ class RemoveFromWallLibrary(bpy.types.Operator):
         return context.window_manager.invoke_confirm(self, event)
 
 class RemoveFromStructureLibrary(bpy.types.Operator):
-    """Add Operator"""
+    """Remove asset from Structure library."""
     bl_idname = "object.structure_library_remove"
     bl_label = "Remove from asset library"
 
@@ -381,7 +381,7 @@ class RemoveFromStructureLibrary(bpy.types.Operator):
         return context.window_manager.invoke_confirm(self, event)
 
 class RemoveFromHoldLibrary(bpy.types.Operator):
-    """Add Operator"""
+    """Remove asset from Hold library."""
     bl_idname = "object.hold_library_remove"
     bl_label = "Remove from asset library"
 
@@ -404,7 +404,7 @@ class RemoveFromHoldLibrary(bpy.types.Operator):
         return context.window_manager.invoke_confirm(self, event)
 
 class RemoveFromRockLibrary(bpy.types.Operator):
-    """Add Operator"""
+    """Remove asset from Rock library."""
     bl_idname = "object.rock_library_remove"
     bl_label = "Remove from asset library"
 
@@ -483,7 +483,7 @@ def assign_material(name, color, collection=None, object_name=None):
                 obj.data.materials.append(material)
 
 class DrawPath(bpy.types.Operator):
-    """Add Operator"""
+    """Draw route on rock."""
     bl_idname = "object.draw"
     bl_label = "Draw route"
 
@@ -501,7 +501,7 @@ class DrawPath(bpy.types.Operator):
         return {'FINISHED'}
 
 class DrawDone(bpy.types.Operator):
-    """Add Operator"""
+    """Finish route."""
     bl_idname = "object.done"
     bl_label = "Done"
 
@@ -532,7 +532,7 @@ class DrawDone(bpy.types.Operator):
 
 
 class RenderOperator(bpy.types.Operator):
-    """Add Operator"""
+    """Render selected collection hierachy"""
     bl_idname = "object.render"
     bl_label = "Render"
 
@@ -568,7 +568,7 @@ def get_random_color():
 
 
 class AddRiggedHumanOperator(bpy.types.Operator):
-    """Create an Operator"""
+    """Add real size character"""
     bl_idname = "object.human"
     bl_label = "Add human reference"
 

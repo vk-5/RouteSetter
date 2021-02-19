@@ -23,7 +23,6 @@ Installation:
 
 
 TODO:
--materials by collections
 -make poll func of operators properly
 -add warnings to operators
 -add shortcuts to operators

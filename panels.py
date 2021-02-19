@@ -8,7 +8,7 @@ from bpy.props import (
 
 
 class EditPanel(bpy.types.Panel):
-    """Creates Edit Panel in the Object properties window"""
+    """Creates Edit panel."""
     bl_label = "Edit"
     bl_idname = "OBJECT_PT_edit"
     bl_space_type = 'VIEW_3D'
@@ -142,6 +142,7 @@ def update_collections_collection(self, context):
     return None
 
 class BoulderPreviewsPanel(bpy.types.Panel):
+    """Creates Boulder panel."""
     bl_label = "Boulder"
     bl_idname = "OBJECT_PT_preview_boulder"
     bl_space_type = 'VIEW_3D'
@@ -184,6 +185,7 @@ class BoulderPreviewsPanel(bpy.types.Panel):
 
 
 class RockPreviewsPanel(bpy.types.Panel):
+    """Creates Rock panel."""
     bl_label = "Rock"
     bl_idname = "OBJECT_PT_preview_rock"
     bl_space_type = 'VIEW_3D'
@@ -212,7 +214,7 @@ class RockPreviewsPanel(bpy.types.Panel):
 preview_collections = {}
 
 class RenderPanel(bpy.types.Panel):
-    """Creates a Panel in the Object properties window"""
+    """Creates a Render panel."""
     bl_label = "Render path"
     bl_idname = "OBJECT_PT_collection_preview"
     bl_space_type = 'VIEW_3D'
@@ -235,7 +237,7 @@ class RenderPanel(bpy.types.Panel):
 
 
 class RiggedHumanPanel(bpy.types.Panel):
-    """Creates a Panel in the Object properties window"""
+    """Creates a Human panel."""
     bl_label = "Add human"
     bl_idname = "OBJECT_PT_human"
     bl_space_type = 'VIEW_3D'
