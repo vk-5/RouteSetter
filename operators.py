@@ -150,21 +150,10 @@ def create_collection(context, name, parent_collection):
         bpy.context.scene.collection.children.link(collection)
     return collection
 
-
-class AddObject(bpy.types.Operator):
-    """Add Operator"""
-    bl_idname = "object.obj"
-    bl_label = "Add"
-
-    def execute(self, context):
-        add_mesh('libraries\\walls\\wall_1.blend', context )
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
-
 class AddWallFromCollection(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.wall"
-    bl_label = "Add wall"
+    bl_label = "Add"
 
     @classmethod
     def poll(self,context):
@@ -191,7 +180,7 @@ def find_obj_collection(self, context):
 class AddStructuresFromCollection(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.structure"
-    bl_label = "Add structure"
+    bl_label = "Add"
 
     @classmethod
     def poll(self,context):
@@ -211,7 +200,7 @@ class AddStructuresFromCollection(bpy.types.Operator):
 class AddHoldsFromCollection(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.hold"
-    bl_label = "Add hold"
+    bl_label = "Add"
 
     @classmethod
     def poll(self,context):
@@ -230,7 +219,7 @@ class AddHoldsFromCollection(bpy.types.Operator):
 class AddRocksFromCollection(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.rock"
-    bl_label = "Add rock"
+    bl_label = "Add"
 
     @classmethod
     def poll(self,context):
@@ -247,7 +236,7 @@ class AddRocksFromCollection(bpy.types.Operator):
 class AddToWallLibrary(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.wall_library"
-    bl_label = "Add to library"
+    bl_label = "Export"
 
     @classmethod
     def poll(self, context):
@@ -273,7 +262,7 @@ class AddToWallLibrary(bpy.types.Operator):
 class AddToStructureLibrary(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.structure_library"
-    bl_label = "Add to library"
+    bl_label = "Export"
 
     @classmethod
     def poll(self, context):
@@ -298,7 +287,7 @@ class AddToStructureLibrary(bpy.types.Operator):
 class AddToHoldLibrary(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.hold_library"
-    bl_label = "Add to library"
+    bl_label = "Export"
 
     @classmethod
     def poll(self, context):
@@ -323,7 +312,7 @@ class AddToHoldLibrary(bpy.types.Operator):
 class AddToRockLibrary(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.rock_library"
-    bl_label = "Add to library"
+    bl_label = "Export"
 
     @classmethod
     def poll(self, context):
@@ -343,6 +332,86 @@ class AddToRockLibrary(bpy.types.Operator):
         set_output_dimensions(512,512,100)
         bpy.context.scene.render.filepath = os.path.join(filepath, name + ".png")
         bpy.ops.render.render(write_still = True)
+        return {'FINISHED'}
+
+class RemoveFromWallLibrary(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.wall_library_remove"
+    bl_label = "Remove from asset library"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].walls_previews
+        asset = icon.split('.')[0] + ".blend"
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
+        icon = os.path.join(filepath, icon)
+        asset = os.path.join(filepath, asset)
+        os.remove(icon)
+        os.remove(asset)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class RemoveFromStructureLibrary(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.structure_library_remove"
+    bl_label = "Remove from asset library"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].structures_previews
+        asset = icon.split('.')[0] + ".blend"
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")
+        icon = os.path.join(filepath, icon)
+        asset = os.path.join(filepath, asset)
+        os.remove(icon)
+        os.remove(asset)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class RemoveFromHoldLibrary(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.hold_library_remove"
+    bl_label = "Remove from asset library"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].holds_previews
+        asset = icon.split('.')[0] + ".blend"
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")
+        icon = os.path.join(filepath, icon)
+        asset = os.path.join(filepath, asset)
+        os.remove(icon)
+        os.remove(asset)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class RemoveFromRockLibrary(bpy.types.Operator):
+    """Add Operator"""
+    bl_idname = "object.rock_library_remove"
+    bl_label = "Remove from asset library"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].rocks_previews
+        asset = icon.split('.')[0] + ".blend"
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")
+        icon = os.path.join(filepath, icon)
+        asset = os.path.join(filepath, asset)
+        os.remove(icon)
+        os.remove(asset)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
 def filenames_to_ints(file_name):
@@ -512,7 +581,10 @@ classes = (
     AddToStructureLibrary,
     AddToHoldLibrary,
     AddToRockLibrary,
-    AddObject,
+    RemoveFromWallLibrary,
+    RemoveFromStructureLibrary,
+    RemoveFromHoldLibrary,
+    RemoveFromRockLibrary,
     RenderOperator,
     AddRiggedHumanOperator
 )

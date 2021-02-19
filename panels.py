@@ -159,6 +159,8 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.wall")
         row.operator("object.wall_library")
+        row = layout.row()
+        row.operator("object.wall_library_remove")
 
         row = layout.row()
         row.label(text="Structures")
@@ -167,6 +169,8 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.structure")
         row.operator("object.structure_library")
+        row = layout.row()
+        row.operator("object.structure_library_remove")
 
         row = layout.row()
         row.label(text="Holds")
@@ -175,6 +179,8 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.hold")
         row.operator("object.hold_library")
+        row = layout.row()
+        row.operator("object.hold_library_remove")
 
 
 class RockPreviewsPanel(bpy.types.Panel):
@@ -193,6 +199,8 @@ class RockPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.rock")
         row.operator("object.rock_library")
+        row = layout.row()
+        row.operator("object.rock_library_remove")
 
         row = layout.row()
         row.label(text="Routes")
