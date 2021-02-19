@@ -474,7 +474,7 @@ class RenderOperator(bpy.types.Operator):
         color = get_random_color()
         assign_material("Paths",color, "Path")
 
-        focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(20)))
+        focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(bpy.data.window_managers["WinMan"].rotation_prop)))
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
         set_output_dimensions(1920,1080,100)
         bpy.context.scene.render.filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\render.png")

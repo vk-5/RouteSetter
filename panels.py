@@ -220,7 +220,10 @@ class RenderPanel(bpy.types.Panel):
         row = layout.row()
         row.prop(wm, "collections_previews", text="")
         row = layout.row()
+        row.prop(wm, 'rotation_prop', slider=True, text="Rotation")
+        row = layout.row()
         row.operator("object.render")
+        
 
 
 class RiggedHumanPanel(bpy.types.Panel):
@@ -252,6 +255,7 @@ def register():
     from bpy.props import (
         StringProperty,
         EnumProperty,
+        IntProperty,
     )
 
     WindowManager.walls_previews_dir = StringProperty(
@@ -311,6 +315,8 @@ def register():
         default=None,
         update=update_collections_collection,
     )
+
+    WindowManager.rotation_prop = IntProperty(default=0,soft_min=-180, soft_max=180)
 
     pcoll_walls = bpy.utils.previews.new()
     pcoll_walls.walls_previews_dir = ""
