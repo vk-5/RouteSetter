@@ -353,6 +353,9 @@ class RemoveFromWallLibrary(bpy.types.Operator):
         os.remove(asset)
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
+    
+    def invoke(self, context, event):
+        return context.window_manager.invoke_confirm(self, event)
 
 class RemoveFromStructureLibrary(bpy.types.Operator):
     """Add Operator"""
@@ -373,6 +376,9 @@ class RemoveFromStructureLibrary(bpy.types.Operator):
         os.remove(asset)
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
+    
+    def invoke(self, context, event):
+        return context.window_manager.invoke_confirm(self, event)
 
 class RemoveFromHoldLibrary(bpy.types.Operator):
     """Add Operator"""
@@ -394,6 +400,9 @@ class RemoveFromHoldLibrary(bpy.types.Operator):
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
 
+    def invoke(self, context, event):
+        return context.window_manager.invoke_confirm(self, event)
+
 class RemoveFromRockLibrary(bpy.types.Operator):
     """Add Operator"""
     bl_idname = "object.rock_library_remove"
@@ -413,6 +422,9 @@ class RemoveFromRockLibrary(bpy.types.Operator):
         os.remove(asset)
         #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
         return {'FINISHED'}
+    
+    def invoke(self, context, event):
+        return context.window_manager.invoke_confirm(self, event)
 
 def filenames_to_ints(file_name):
     return int(file_name.split("_")[1].split('.')[0])
@@ -546,7 +558,6 @@ class RenderOperator(bpy.types.Operator):
         focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(bpy.data.window_managers["WinMan"].rotation_prop)))
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(bpy.data.window_managers["WinMan"].rotation_prop + 45)))
         set_output_dimensions(1920,1080,100)
-        bpy.context.scene.render.filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\render.png")
         bpy.ops.render.render('INVOKE_DEFAULT')
         return {'FINISHED'}
 
