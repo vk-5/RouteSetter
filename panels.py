@@ -236,9 +236,12 @@ class RiggedHumanPanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
+        wm = context.window_manager
 
         row = layout.row()
-        row.operator("object.obj")
+        row.prop(wm, 'scale_prop', slider=True, text="Scale")
+        row = layout.row()
+        row.operator("object.human")
 
 
 classes = (
@@ -317,6 +320,7 @@ def register():
     )
 
     WindowManager.rotation_prop = IntProperty(default=0,soft_min=-180, soft_max=180)
+    WindowManager.scale_prop = IntProperty(default=180,soft_min=100, soft_max=230)
 
     pcoll_walls = bpy.utils.previews.new()
     pcoll_walls.walls_previews_dir = ""
@@ -359,6 +363,8 @@ def unregister():
     del WindowManager.structures_previews_dir
     del WindowManager.holds_previews_dir
     del WindowManager.rocks_previews_dir
+    del WindowManager.rotation_prop
+    del WindowManager.scale_prop
 
 
     for pcoll in preview_collections.values():

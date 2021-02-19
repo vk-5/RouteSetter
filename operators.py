@@ -490,13 +490,11 @@ def get_random_color():
 class AddRiggedHumanOperator(bpy.types.Operator):
     """Create an Operator"""
     bl_idname = "object.human"
-    bl_label = "Human"
+    bl_label = "Add human reference"
 
     def execute(self, context):
-        if add_mesh("props.blend", context):
-            return {'FINISHED'}
-        self.report({'WARNING'}, "{} not found in {}".format("Human", "props.blend"))
-        return {'CANCELLED'}
+        add_mesh('libraries\\human.blend', context )
+        return {'FINISHED'}
 
 
 classes = (
