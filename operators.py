@@ -563,6 +563,9 @@ class AddRiggedHumanOperator(bpy.types.Operator):
 
     def execute(self, context):
         add_mesh('libraries\\human.blend', context )
+        scale = bpy.data.window_managers["WinMan"].scale_prop / 100
+        bpy.ops.transform.resize(value=(scale, scale, scale))
+        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         return {'FINISHED'}
 
 
