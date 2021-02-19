@@ -455,7 +455,7 @@ def focus_light(rotation):
     light_obj.rotation_euler = rotation
     light_obj.data.energy = 2
 
-def assign_material(name, color, collection=None):
+def assign_material(name, color, collection=None, object_name=None):
     material = bpy.data.materials.get(name)
 
     if not material:
@@ -464,7 +464,7 @@ def assign_material(name, color, collection=None):
     material.diffuse_color = color
 
     for obj in bpy.context.selected_objects:
-        if collection is None or obj.users_collection[0].name.split('.')[0] == collection:
+        if ( collection is None and object_name is None ) or obj.users_collection[0].name.split('.')[0] == collection or obj.name.split('.')[0] == object_name:
             if obj.data.materials:
                 obj.data.materials[0] = material
             else:
@@ -534,17 +534,17 @@ class RenderOperator(bpy.types.Operator):
         objs = collection.all_objects
         for ob in objs:
             ob.select_set(True)
-        assign_material("Walls",(0.7,0.7,0.7,0), "wall")
-        assign_material("Rocks",(0.7,0.7,0.7,0), "rock")
-        assign_material("Structures",(0.1,0.1,0.1,0), "structure")
+        assign_material("Walls",(0.7,0.7,0.7,0), collection="wall")
+        assign_material("Rocks",(0.7,0.7,0.7,0), collection="rock")
+        assign_material("Structures",(0.1,0.1,0.1,0), collection="structure")
 
         color = get_random_color()
-        assign_material("Holds",color, "hold")
+        assign_material("Holds",color, object_name="hold")
         color = get_random_color()
-        assign_material("Paths",color, "Path")
+        assign_material("Paths",color, object_name="Path")
 
         focus_camera(rotation=(math.radians(85),math.radians(0),math.radians(bpy.data.window_managers["WinMan"].rotation_prop)))
-        focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(0)))
+        focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(bpy.data.window_managers["WinMan"].rotation_prop + 45)))
         set_output_dimensions(1920,1080,100)
         bpy.context.scene.render.filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\render.png")
         bpy.ops.render.render(write_still = True)
