@@ -547,7 +547,7 @@ class RenderOperator(bpy.types.Operator):
         focus_light(rotation=(math.radians(45),math.radians(-45),math.radians(bpy.data.window_managers["WinMan"].rotation_prop + 45)))
         set_output_dimensions(1920,1080,100)
         bpy.context.scene.render.filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\render.png")
-        bpy.ops.render.render(write_still = True)
+        bpy.ops.render.render('INVOKE_DEFAULT')
         return {'FINISHED'}
 
 def get_random_color():
