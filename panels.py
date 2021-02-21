@@ -42,6 +42,7 @@ def enum_previews_from_directory_walls(self, context):
     pcoll.walls_previews_dir = directory
     return pcoll.walls_previews
 
+
 def enum_previews_from_directory_structures(self, context):
     """EnumProperty callback"""
     enum_items = []
@@ -75,6 +76,7 @@ def enum_previews_from_directory_holds(self, context):
     pcoll.holds_previews_dir = directory
     return pcoll.holds_previews
 
+
 def enum_previews_from_directory_rocks(self, context):
     """EnumProperty callback"""
     enum_items = []
@@ -91,18 +93,20 @@ def enum_previews_from_directory_rocks(self, context):
     pcoll.rocks_previews_dir = directory
     return pcoll.rocks_previews
 
+
 def enum_previews_collections(self, context):
     """EnumProperty callback"""
     enum_items = []
 
     if context is None:
         return enum_items
-    
+
     pcoll = preview_collections["collections"]
-    for key in  bpy.context.scene.collection.children.keys():
+    for key in bpy.context.scene.collection.children.keys():
         enum_items.append((key, key, ""))
     pcoll.collections_previews = enum_items
     return pcoll.collections_previews
+
 
 def enum_previews_from_directory(directory, pcoll, enum_items):
     if directory and os.path.exists(directory):
@@ -121,25 +125,31 @@ def enum_previews_from_directory(directory, pcoll, enum_items):
                 thumb = pcoll[name]
             enum_items.append((name, name, "", thumb.icon_id, i))
 
+
 def update_walls_collection(self, context):
     enum_previews_from_directory_walls(self, context)
     return None
+
 
 def update_structures_collection(self, context):
     enum_previews_from_directory_structures(self, context)
     return None
 
+
 def update_holds_collection(self, context):
     enum_previews_from_directory_holds(self, context)
     return None
+
 
 def update_rocks_collection(self, context):
     enum_previews_from_directory_rocks(self, context)
     return None
 
+
 def update_collections_collection(self, context):
     enum_previews_collections(self, context)
     return None
+
 
 class BoulderPreviewsPanel(bpy.types.Panel):
     """Creates Boulder panel."""
@@ -213,6 +223,7 @@ class RockPreviewsPanel(bpy.types.Panel):
 
 preview_collections = {}
 
+
 class RenderPanel(bpy.types.Panel):
     """Creates a Render panel."""
     bl_label = "Render path"
@@ -230,10 +241,9 @@ class RenderPanel(bpy.types.Panel):
         row = layout.row()
         row.prop(wm, "collections_previews", text="")
         row = layout.row()
-        row.prop(wm, 'rotation_prop', slider=True, text="Rotation")
+        row.prop(wm, "rotation_prop", slider=True, text="Rotation")
         row = layout.row()
         row.operator("object.render")
-        
 
 
 class RiggedHumanPanel(bpy.types.Panel):
@@ -249,7 +259,7 @@ class RiggedHumanPanel(bpy.types.Panel):
         wm = context.window_manager
 
         row = layout.row()
-        row.prop(wm, 'scale_prop', slider=True, text="Scale")
+        row.prop(wm, "scale_prop", slider=True, text="Scale")
         row = layout.row()
         row.operator("object.human")
 
@@ -329,8 +339,8 @@ def register():
         update=update_collections_collection,
     )
 
-    WindowManager.rotation_prop = IntProperty(default=0,soft_min=-180, soft_max=180)
-    WindowManager.scale_prop = IntProperty(default=180,soft_min=100, soft_max=230)
+    WindowManager.rotation_prop = IntProperty(default=0, soft_min=-180, soft_max=180)
+    WindowManager.scale_prop = IntProperty(default=180, soft_min=100, soft_max=230)
 
     pcoll_walls = bpy.utils.previews.new()
     pcoll_walls.walls_previews_dir = ""
@@ -375,7 +385,6 @@ def unregister():
     del WindowManager.rocks_previews_dir
     del WindowManager.rotation_prop
     del WindowManager.scale_prop
-
 
     for pcoll in preview_collections.values():
         bpy.utils.previews.remove(pcoll)
