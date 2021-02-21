@@ -47,6 +47,7 @@ class RotateModal(bpy.types.Operator):
     """Rotate selected objects."""
     bl_idname = "object.rotate_modal"
     bl_label = "Rotate"
+    bl_options = {'REGISTER', 'UNDO'}
     x = 0
     init_rotation = [0,0,0]
 
@@ -85,6 +86,7 @@ class ScaleObject(bpy.types.Operator):
     """Scale selected objects."""
     bl_idname = "object.scale"
     bl_label = "Scale"
+    bl_options = {'REGISTER', 'UNDO'}
 
 
     @classmethod
@@ -93,14 +95,15 @@ class ScaleObject(bpy.types.Operator):
 
 
     def execute(self, context):
-        bpy.ops.transform.resize('INVOKE_DEFAULT') 
-        return {'FINISHED'} 
+        bpy.ops.transform.resize('INVOKE_DEFAULT')
+        return{'FINISHED'}
 
 
 class DeleteObject(bpy.types.Operator):
     """Delete selected objects."""
     bl_idname = "object.delete"
     bl_label = "Delete"
+    bl_options = {'REGISTER', 'UNDO'}
 
 
     @classmethod
@@ -154,6 +157,7 @@ class AddWallFromCollection(bpy.types.Operator):
     """Add Wall asset from collection."""
     bl_idname = "object.wall"
     bl_label = "Add"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self,context):
@@ -220,6 +224,7 @@ class AddRocksFromCollection(bpy.types.Operator):
     """Add Rock asset from collection."""
     bl_idname = "object.rock"
     bl_label = "Add"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self,context):
@@ -504,6 +509,7 @@ class DrawDone(bpy.types.Operator):
     """Finish route."""
     bl_idname = "object.done"
     bl_label = "Done"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self,context):
@@ -571,6 +577,7 @@ class AddRiggedHumanOperator(bpy.types.Operator):
     """Add real size character"""
     bl_idname = "object.human"
     bl_label = "Add human reference"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         add_mesh('libraries\\human.blend', context )
