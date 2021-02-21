@@ -3,30 +3,6 @@ from bpy_extras.view3d_utils import region_2d_to_location_3d
 import os 
 from os import listdir
 
-def rotation_store(context, boolSettings):
-    boolSettings[0] = bpy.context.scene.tool_settings.use_snap
-    boolSettings[1] = bpy.context.scene.tool_settings.use_snap_rotate
-    boolSettings[2] = bpy.context.scene.tool_settings.use_snap_translate
-    boolSettings[3] = bpy.context.scene.tool_settings.use_snap_project
-    boolSettings[4] = bpy.context.scene.tool_settings.use_snap_align_rotation
-    return bpy.context.scene.tool_settings.snap_elements
-
-
-def rotation_set_up(context, boolSettings, snap_elements):
-    bpy.context.scene.tool_settings.snap_elements = snap_elements
-    bpy.context.scene.tool_settings.use_snap = boolSettings[0]
-    bpy.context.scene.tool_settings.use_snap_rotate = boolSettings[1]
-    bpy.context.scene.tool_settings.use_snap_translate = boolSettings[2]
-    bpy.context.scene.tool_settings.use_snap_project = boolSettings[3]
-    bpy.context.scene.tool_settings.use_snap_align_rotation = boolSettings[4]
-
-def move_with_snapping(self, context, obj):
-    x,y,z = obj.location.x, obj.location.y, obj.location.z
-    loc = bpy_extras.view3d_utils.location_3d_to_region_2d(bpy.context.region, bpy.context.space_data.region_3d, (x, y, z), (0, 0))
-    context.window.cursor_warp(loc.x, loc.y)
-    rotation_set_up(context, [True] * 5, {'FACE'})
-    bpy.ops.transform.translate('INVOKE_DEFAULT')
-
 class MoveObjectWithSnapping(bpy.types.Operator):
     """Move selected objects."""
     bl_idname = "object.move_object_with_snapping"
@@ -41,7 +17,21 @@ class MoveObjectWithSnapping(bpy.types.Operator):
     def execute(self, context):
         move_with_snapping(self, context, bpy.context.selected_objects[0])
         return {'FINISHED'}
-    
+
+def move_with_snapping(self, context, obj):
+    x,y,z = obj.location.x, obj.location.y, obj.location.z
+    loc = bpy_extras.view3d_utils.location_3d_to_region_2d(bpy.context.region, bpy.context.space_data.region_3d, (x, y, z), (0, 0))
+    context.window.cursor_warp(loc.x, loc.y)
+    rotation_set_up(context, [True] * 5, {'FACE'})
+    bpy.ops.transform.translate('INVOKE_DEFAULT')
+
+def rotation_set_up(context, boolSettings, snap_elements):
+    bpy.context.scene.tool_settings.snap_elements = snap_elements
+    bpy.context.scene.tool_settings.use_snap = boolSettings[0]
+    bpy.context.scene.tool_settings.use_snap_rotate = boolSettings[1]
+    bpy.context.scene.tool_settings.use_snap_translate = boolSettings[2]
+    bpy.context.scene.tool_settings.use_snap_project = boolSettings[3]
+    bpy.context.scene.tool_settings.use_snap_align_rotation = boolSettings[4]
 
 class RotateModal(bpy.types.Operator):
     """Rotate selected objects."""
@@ -108,17 +98,90 @@ class DeleteObject(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects #and bpy.context.active_object.mode == 'OBJECT'
+        return bpy.context.selected_objects and bpy.context.active_object.mode == 'OBJECT'
 
 
     def execute(self, context):
-        '''if bpy.context.selected_objects == []:
-            self.report({'WARNING'}, "No object selected".format())'''
         for obj in bpy.context.selected_objects:
             bpy.data.objects.remove(obj, do_unlink=True)
         return {'FINISHED'} 
 
+class AddWallFromCollection(bpy.types.Operator):
+    """Add Wall asset from collection."""
+    bl_idname = "object.wall"
+    bl_label = "Add"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    @classmethod
+    def poll(self,context):
+        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")) ) > 0
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].walls_previews
+        asset = icon.split('.')[0] + ".blend"
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh("libraries\\walls\\" + asset, context, "wall" )
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+
+class AddStructuresFromCollection(bpy.types.Operator):
+    """Add Structure asset from collection."""
+    bl_idname = "object.structure"
+    bl_label = "Add"
+
+    @classmethod
+    def poll(self,context):
+        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")) ) > 0 and bpy.context.object.users_collection[0].name.split(".")[0] == "wall"
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].structures_previews
+        asset = icon.split(".")[0] + ".blend"
+        parent_collection = find_obj_collection(self, context)
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh("libraries\\structures\\" + asset, context, "structure", parent_collection )
+        move_with_snapping(self, context, context.active_object)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+
+class AddHoldsFromCollection(bpy.types.Operator):
+    """Add Hold asset from collection."""
+    bl_idname = "object.hold"
+    bl_label = "Add"
+
+    @classmethod
+    def poll(self,context):
+        return bpy.context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")) ) > 0 and bpy.context.object.users_collection[0].name.split(".")[0] == "wall"
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].holds_previews
+        asset = icon.split('.')[0] + ".blend"
+        parent_collection = find_obj_collection(self, context)
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh("libraries\\holds\\" + asset, context, "hold", parent_collection )
+        move_with_snapping(self, context, context.active_object)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+
+class AddRocksFromCollection(bpy.types.Operator):
+    """Add Rock asset from collection."""
+    bl_idname = "object.rock"
+    bl_label = "Add"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(self,context):
+        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")) ) > 0
+
+    def execute(self, context):
+        icon = bpy.data.window_managers["WinMan"].rocks_previews
+        asset = icon.split('.')[0] + ".blend"
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh("libraries\\rocks\\" + asset, context)
+        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
+        return {'FINISHED'}
+        
 def add_mesh(file_name, context, collection_name=None, parent_collection=None):
     filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
     with bpy.data.libraries.load(filepath, link=False) as (data_from, data_to):
@@ -153,24 +216,6 @@ def create_collection(context, name, parent_collection):
         bpy.context.scene.collection.children.link(collection)
     return collection
 
-class AddWallFromCollection(bpy.types.Operator):
-    """Add Wall asset from collection."""
-    bl_idname = "object.wall"
-    bl_label = "Add"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    @classmethod
-    def poll(self,context):
-        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")) ) > 0
-
-    def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].walls_previews
-        asset = icon.split('.')[0] + ".blend"
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh('libraries\\walls\\' + asset, context, 'wall' )
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
-
 
 def find_obj_collection(self, context):
     parent_collection = None
@@ -179,64 +224,6 @@ def find_obj_collection(self, context):
             parent_collection = collection_name
             break
     return parent_collection
-
-
-class AddStructuresFromCollection(bpy.types.Operator):
-    """Add Structure asset from collection."""
-    bl_idname = "object.structure"
-    bl_label = "Add"
-
-    @classmethod
-    def poll(self,context):
-        return context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\structures\\")) ) > 0 and bpy.context.object.users_collection[0].name.split(".")[0] == 'wall'
-
-    def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].structures_previews
-        asset = icon.split('.')[0] + ".blend"
-        parent_collection = find_obj_collection(self, context)
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh('libraries\\structures\\' + asset, context, 'structure', parent_collection )
-        move_with_snapping(self, context, context.active_object)
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
-
-
-class AddHoldsFromCollection(bpy.types.Operator):
-    """Add Hold asset from collection."""
-    bl_idname = "object.hold"
-    bl_label = "Add"
-
-    @classmethod
-    def poll(self,context):
-        return bpy.context.active_object and len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")) ) > 0 and bpy.context.object.users_collection[0].name.split(".")[0] == 'wall'
-
-    def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].holds_previews
-        asset = icon.split('.')[0] + ".blend"
-        parent_collection = find_obj_collection(self, context)
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh('libraries\\holds\\' + asset, context, 'hold', parent_collection )
-        move_with_snapping(self, context, context.active_object)
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
-
-class AddRocksFromCollection(bpy.types.Operator):
-    """Add Rock asset from collection."""
-    bl_idname = "object.rock"
-    bl_label = "Add"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    @classmethod
-    def poll(self,context):
-        return len(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")) ) > 0
-
-    def execute(self, context):
-        icon = bpy.data.window_managers["WinMan"].rocks_previews
-        asset = icon.split('.')[0] + ".blend"
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh('libraries\\rocks\\' + asset, context)
-        #self.report({'WARNING'}, "{} not found in {}".format("FlatWall", "props.blend"))
-        return {'FINISHED'}
 
 class AddToWallLibrary(bpy.types.Operator):
     """Export selected to Wall library."""
@@ -339,6 +326,62 @@ class AddToRockLibrary(bpy.types.Operator):
         bpy.ops.render.render(write_still = True)
         return {'FINISHED'}
 
+def get_file_name(filepath, name):
+    file_numbers = list(map(filenames_to_ints,listdir(filepath)))
+    file_numbers.sort()
+    number = 0
+    while number in file_numbers:
+        number += 1
+    return name + "_" + str(number)
+
+def filenames_to_ints(file_name):
+    return int(file_name.split("_")[1].split(".")[0])
+
+def focus_camera(rotation):
+    if not bpy.data.objects.get("Camera Asset"):
+        camera_data = bpy.data.cameras.new(name="Camera Asset")
+        cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
+        bpy.context.view_layer.active_layer_collection.collection.objects.link(cam_obj)
+    else:
+        cam_obj = bpy.data.objects.get("Camera Asset")
+
+    bpy.context.scene.camera = cam_obj
+    cam_obj.rotation_euler = rotation
+    bpy.ops.view3d.camera_to_view_selected()
+
+def set_output_dimensions(dimension_x, dimension_y, percentage):
+    scene = bpy.data.scenes["Scene"]
+    scene.render.resolution_x = dimension_x
+    scene.render.resolution_y = dimension_y
+    scene.render.resolution_percentage = percentage
+
+def focus_light(rotation):
+    if not bpy.data.objects.get("Light Asset"):
+        light_data = bpy.data.lights.new(name="Light Asset", type='SUN')
+        light_obj = bpy.data.objects.new("Light Asset", light_data)
+        bpy.context.view_layer.active_layer_collection.collection.objects.link(light_obj)
+    else:
+        light_obj = bpy.data.objects.get("Light Asset")
+
+    bpy.context.scene.render.engine = 'BLENDER_EEVEE'
+    light_obj.rotation_euler = rotation
+    light_obj.data.energy = 2
+
+def assign_material(name, color, collection=None, object_name=None):
+    material = bpy.data.materials.get(name)
+
+    if not material:
+        material = bpy.data.materials.new(name=name)
+
+    material.diffuse_color = color
+
+    for obj in bpy.context.selected_objects:
+        if ( collection is None and object_name is None ) or obj.users_collection[0].name.split('.')[0] == collection or obj.name.split('.')[0] == object_name:
+            if obj.data.materials:
+                obj.data.materials[0] = material
+            else:
+                obj.data.materials.append(material)
+
 class RemoveFromWallLibrary(bpy.types.Operator):
     """Remove asset from Wall library."""
     bl_idname = "object.wall_library_remove"
@@ -431,62 +474,6 @@ class RemoveFromRockLibrary(bpy.types.Operator):
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
 
-def filenames_to_ints(file_name):
-    return int(file_name.split("_")[1].split('.')[0])
-
-def get_file_name(filepath, name):
-    file_numbers = list(map(filenames_to_ints,listdir(filepath)))
-    file_numbers.sort()
-    number = 0
-    while number in file_numbers:
-        number += 1
-    return name + '_' + str(number)
-
-def focus_camera(rotation):
-    if not bpy.data.objects.get("Camera Asset"):
-        camera_data = bpy.data.cameras.new(name='Camera Asset')
-        cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
-        bpy.context.view_layer.active_layer_collection.collection.objects.link(cam_obj)
-    else:
-        cam_obj = bpy.data.objects.get("Camera Asset")
-
-    bpy.context.scene.camera = cam_obj
-    cam_obj.rotation_euler = rotation
-    bpy.ops.view3d.camera_to_view_selected()
-
-def set_output_dimensions(dimension_x, dimension_y, percentage):
-    scene = bpy.data.scenes["Scene"]
-    scene.render.resolution_x = dimension_x
-    scene.render.resolution_y = dimension_y
-    scene.render.resolution_percentage = percentage
-
-def focus_light(rotation):
-    if not bpy.data.objects.get("Light Asset"):
-        light_data = bpy.data.lights.new(name='Light Asset', type='SUN')
-        light_obj = bpy.data.objects.new("Light Asset", light_data)
-        bpy.context.view_layer.active_layer_collection.collection.objects.link(light_obj)
-    else:
-        light_obj = bpy.data.objects.get("Light Asset")
-
-    bpy.context.scene.render.engine = 'BLENDER_EEVEE'
-    light_obj.rotation_euler = rotation
-    light_obj.data.energy = 2
-
-def assign_material(name, color, collection=None, object_name=None):
-    material = bpy.data.materials.get(name)
-
-    if not material:
-        material = bpy.data.materials.new(name=name)
-
-    material.diffuse_color = color
-
-    for obj in bpy.context.selected_objects:
-        if ( collection is None and object_name is None ) or obj.users_collection[0].name.split('.')[0] == collection or obj.name.split('.')[0] == object_name:
-            if obj.data.materials:
-                obj.data.materials[0] = material
-            else:
-                obj.data.materials.append(material)
-
 class DrawPath(bpy.types.Operator):
     """Draw route on rock."""
     bl_idname = "object.draw"
@@ -518,7 +505,7 @@ class DrawDone(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.gpencil.paintmode_toggle(back=True)
         bpy.ops.gpencil.convert(type='POLY', use_timing_data=False)
-        add_mesh('libraries\\circle.blend', context )
+        add_mesh("libraries\\circle.blend", context )
         bpy.data.objects.remove(bpy.data.objects["GPencil"], do_unlink=True)
         new_name = bpy.context.active_object.name
         bpy.context.view_layer.objects.active = bpy.data.objects[new_name]
@@ -580,7 +567,7 @@ class AddRiggedHumanOperator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        add_mesh('libraries\\human.blend', context )
+        add_mesh("libraries\\human.blend", context )
         scale = bpy.data.window_managers["WinMan"].scale_prop / 100
         bpy.ops.transform.resize(value=(scale, scale, scale))
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
