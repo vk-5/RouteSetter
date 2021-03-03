@@ -3,6 +3,25 @@ from bpy_extras.view3d_utils import region_2d_to_location_3d
 import os
 from os import listdir
 
+class CreateEmptyScene(bpy.types.Operator):
+    """Creates new empty scene."""
+    bl_idname = "object.empty_scene"
+    bl_label = "Create new scene"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.data.objects or bpy.data.collections or bpy.data.materials
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='SELECT')
+        if bpy.context.selected_objects:
+            bpy.ops.object.delete()
+        for c in bpy.data.collections:
+            bpy.data.collections.remove(c)
+        for m in bpy.data.materials:
+            bpy.data.materials.remove(m)
+        return {'FINISHED'}
+
 
 class MoveObjectWithSnapping(bpy.types.Operator):
     """Move selected objects."""
@@ -601,6 +620,7 @@ class AddRiggedHumanOperator(bpy.types.Operator):
 
 
 classes = (
+    CreateEmptyScene,
     MoveObjectWithSnapping,
     RotateModal,
     ScaleObject,

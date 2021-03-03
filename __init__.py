@@ -4,7 +4,7 @@ from . import panels, operators
 
 bl_info = {
     "name": "Route setter Add-on",
-    "blender": (2, 91, 0),
+    "blender": (2, 92, 0),
     "category": "Object",
     "author": "Vojtech Kovarik"
 }
