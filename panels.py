@@ -103,8 +103,11 @@ def enum_previews_collections(self, context):
         return enum_items
 
     pcoll = preview_collections["collections"]
-    for key in bpy.context.scene.collection.children.keys():
+    for key in bpy.data.collections.keys():
         enum_items.append((key, key, ""))
+    for obj in bpy.data.objects.keys():
+        if bpy.data.objects[obj].name.split(".")[0] == "Path":
+            enum_items.append((obj, obj, ""))
     pcoll.collections_previews = enum_items
     return pcoll.collections_previews
 
@@ -187,8 +190,10 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "walls_previews")
         row = layout.row()
         row.operator("object.wall")
-        row.operator("object.wall_library")
         row = layout.row()
+        row.label(text="Manage library")
+        row = layout.row()
+        row.operator("object.wall_library")
         row.operator("object.wall_library_remove")
 
         row = layout.row()
@@ -197,8 +202,10 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "structures_previews")
         row = layout.row()
         row.operator("object.structure")
-        row.operator("object.structure_library")
         row = layout.row()
+        row.label(text="Manage library")
+        row = layout.row()
+        row.operator("object.structure_library")
         row.operator("object.structure_library_remove")
 
         row = layout.row()
@@ -210,8 +217,10 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "holds_previews")
         row = layout.row()
         row.operator("object.hold")
-        row.operator("object.hold_library")
         row = layout.row()
+        row.label(text="Manage library")
+        row = layout.row()
+        row.operator("object.hold_library")
         row.operator("object.hold_library_remove")
 
 
@@ -231,8 +240,10 @@ class RockPreviewsPanel(bpy.types.Panel):
         row.template_icon_view(wm, "rocks_previews")
         row = layout.row()
         row.operator("object.rock")
-        row.operator("object.rock_library")
         row = layout.row()
+        row.label(text="Manage library")
+        row = layout.row()
+        row.operator("object.rock_library")
         row.operator("object.rock_library_remove")
 
         row = layout.row()
@@ -247,7 +258,7 @@ preview_collections = {}
 
 class RenderPanel(bpy.types.Panel):
     """Creates a Render panel."""
-    bl_label = "Render path"
+    bl_label = "Render"
     bl_idname = "OBJECT_PT_collection_preview"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'

@@ -24,6 +24,12 @@ class CreateEmptyScene(bpy.types.Operator):
         wall_collection.children.link(path_collection)
         rock_collection = bpy.data.collections.new("rocks")
         bpy.context.scene.collection.children.link(rock_collection)
+        ref_collection = bpy.data.collections.new("reference")
+        bpy.context.scene.collection.children.link(ref_collection)
+        human_collection = bpy.data.collections.new("human")
+        ref_collection.children.link(human_collection)
+        rope_collection = bpy.data.collections.new("rope")
+        ref_collection.children.link(rope_collection)
         return {'FINISHED'}
 
 
@@ -251,9 +257,9 @@ def find_obj_collection(self, context):
 
 
 class AddToWallLibrary(bpy.types.Operator):
-    """Export selected to Wall library."""
+    """Save selected to Wall library."""
     bl_idname = "object.wall_library"
-    bl_label = "Export"
+    bl_label = "Save"
 
     @classmethod
     def poll(self, context):
@@ -277,9 +283,9 @@ class AddToWallLibrary(bpy.types.Operator):
 
 
 class AddToStructureLibrary(bpy.types.Operator):
-    """Export selected to Structure library."""
+    """Save selected to Structure library."""
     bl_idname = "object.structure_library"
-    bl_label = "Export"
+    bl_label = "Save"
 
     @classmethod
     def poll(self, context):
@@ -304,9 +310,9 @@ class AddToStructureLibrary(bpy.types.Operator):
 
 
 class AddToHoldLibrary(bpy.types.Operator):
-    """Export selected to Hold library."""
+    """Save selected to Hold library."""
     bl_idname = "object.hold_library"
-    bl_label = "Export"
+    bl_label = "Save"
 
     @classmethod
     def poll(self, context):
@@ -330,9 +336,9 @@ class AddToHoldLibrary(bpy.types.Operator):
 
 
 class AddToRockLibrary(bpy.types.Operator):
-    """Export selected to Rock library."""
+    """Save selected to Rock library."""
     bl_idname = "object.rock_library"
-    bl_label = "Export"
+    bl_label = "Save"
 
     @classmethod
     def poll(self, context):
@@ -421,7 +427,7 @@ def assign_material(name, color, collection=None, object_name=None):
 class RemoveFromWallLibrary(bpy.types.Operator):
     """Remove asset from Wall library."""
     bl_idname = "object.wall_library_remove"
-    bl_label = "Remove from asset library"
+    bl_label = "Remove"
 
     @classmethod
     def poll(self, context):
@@ -444,7 +450,7 @@ class RemoveFromWallLibrary(bpy.types.Operator):
 class RemoveFromStructureLibrary(bpy.types.Operator):
     """Remove asset from Structure library."""
     bl_idname = "object.structure_library_remove"
-    bl_label = "Remove from asset library"
+    bl_label = "Remove"
 
     @classmethod
     def poll(self, context):
@@ -468,7 +474,7 @@ class RemoveFromStructureLibrary(bpy.types.Operator):
 class RemoveFromHoldLibrary(bpy.types.Operator):
     """Remove asset from Hold library."""
     bl_idname = "object.hold_library_remove"
-    bl_label = "Remove from asset library"
+    bl_label = "Remove"
 
     @classmethod
     def poll(self, context):
@@ -491,7 +497,7 @@ class RemoveFromHoldLibrary(bpy.types.Operator):
 class RemoveFromRockLibrary(bpy.types.Operator):
     """Remove asset from Rock library."""
     bl_idname = "object.rock_library_remove"
-    bl_label = "Remove from asset library"
+    bl_label = "Remove"
 
     @classmethod
     def poll(self, context):
@@ -611,7 +617,8 @@ class AddRiggedHumanOperator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        add_mesh("libraries\\human.blend", context)
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh("libraries\\human.blend", context, "human")
         scale = bpy.data.window_managers["WinMan"].scale_prop / 100
         bpy.ops.transform.resize(value=(scale, scale, scale))
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
