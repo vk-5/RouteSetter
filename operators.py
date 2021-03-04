@@ -27,6 +27,18 @@ class CreateEmptyScene(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class AddRouteCollection(bpy.types.Operator):
+    """Adds new route collection."""
+    bl_idname = "object.add_route_collection"
+    bl_label = "Add new route"
+
+    def execute(self, context):
+        wall_collection = bpy.data.collections["walls"]
+        path_collection = bpy.data.collections.new("route")
+        wall_collection.children.link(path_collection)
+        return {'FINISHED'}
+
+
 class MoveObjectWithSnapping(bpy.types.Operator):
     """Move selected objects."""
     bl_idname = "object.move_object_with_snapping"
@@ -156,7 +168,7 @@ class AddStructuresFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return context.active_object and len(os.listdir(
+        return len(os.listdir(
             os.path.join(os.path.dirname(os.path.abspath(__file__)),
                          "libraries\\structures\\"))) > 0
 
@@ -176,14 +188,14 @@ class AddHoldsFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.context.active_object and len(os.listdir(
+        return len(os.listdir(
             os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\"))) > 0
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].holds_previews
         asset = icon.split('.')[0] + ".blend"
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\holds\\" + asset, context, "route")
+        add_mesh("libraries\\holds\\" + asset, context, bpy.data.window_managers["WinMan"].route_collection)
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -220,25 +232,6 @@ def add_mesh(file_name, context, collection_name=None):
         for obj in data_to.objects:
             bpy.context.collection.objects.link(obj)
     bpy.context.view_layer.objects.active = data_to.objects[0]
-
-"""def create_collection(context, name, parent_collection):
-    collection = None
-    if name == "wall":
-        collection = bpy.data.collections.new(name)
-        bpy.context.scene.collection.children.link(collection)
-    elif parent_collection is not None:
-        if parent_collection.split(".")[0] == "wall":
-            for col in bpy.data.collections[parent_collection].children:
-                if col.name.split(".")[0] == name:
-                    collection = col
-                    break
-            if collection is None:
-                collection = bpy.data.collections.new(name)
-                bpy.data.collections[parent_collection].children.link(collection)
-    else:
-        collection = bpy.data.collections.new(name)
-        bpy.context.scene.collection.children.link(collection)
-    return collection"""
 
 
 def find_obj_collection(self, context):
@@ -518,7 +511,7 @@ class DrawPath(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return context.selected_objects and len(
+        return len(
             bpy.context.selected_objects) > 0 and context.active_object.type == 'MESH' and \
                context.active_object.mode == 'OBJECT'
 
@@ -620,6 +613,7 @@ class AddRiggedHumanOperator(bpy.types.Operator):
 
 classes = (
     CreateEmptyScene,
+    AddRouteCollection,
     MoveObjectWithSnapping,
     RotateModal,
     ScaleObject,

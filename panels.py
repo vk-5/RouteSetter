@@ -108,6 +108,20 @@ def enum_previews_collections(self, context):
     pcoll.collections_previews = enum_items
     return pcoll.collections_previews
 
+def enum_route_previews_collections(self, context):
+    """EnumProperty callback"""
+    enum_items = []
+
+    if context is None:
+        return enum_items
+
+    pcoll = preview_collections["route_collections"]
+    for key in bpy.data.collections.keys():
+        if key.split(".")[0] == "route":
+            enum_items.append((key, key, ""))
+    pcoll.route_collection = enum_items
+    return pcoll.route_collection
+
 
 def enum_previews_from_directory(directory, pcoll, enum_items):
     if directory and os.path.exists(directory):
@@ -151,6 +165,9 @@ def update_collections_collection(self, context):
     enum_previews_collections(self, context)
     return None
 
+def update_route_collections(self, context):
+    enum_route_previews_collections(self, context)
+    return None
 
 class BoulderPreviewsPanel(bpy.types.Panel):
     """Creates Boulder panel."""
@@ -186,6 +203,9 @@ class BoulderPreviewsPanel(bpy.types.Panel):
 
         row = layout.row()
         row.label(text="Holds")
+        row = layout.row()
+        row.operator("object.add_route_collection")
+        row.prop(wm, "route_collection", text="")
         row = layout.row()
         row.template_icon_view(wm, "holds_previews")
         row = layout.row()
@@ -340,6 +360,12 @@ def register():
         update=update_collections_collection,
     )
 
+    WindowManager.route_collection = EnumProperty(
+        items=enum_route_previews_collections,
+        default=None,
+        update=update_route_collections,
+    )
+
     WindowManager.rotation_prop = IntProperty(default=0, soft_min=-180, soft_max=180)
     WindowManager.scale_prop = IntProperty(default=180, soft_min=100, soft_max=230)
 
@@ -362,11 +388,15 @@ def register():
     pcoll_collections = bpy.utils.previews.new()
     pcoll_collections.collections_previews = ()
 
+    pcoll_route_collections = bpy.utils.previews.new()
+    pcoll_route_collections.route_collection = ()
+
     preview_collections["walls"] = pcoll_walls
     preview_collections["structures"] = pcoll_structures
     preview_collections["holds"] = pcoll_holds
     preview_collections["rocks"] = pcoll_rocks
     preview_collections["collections"] = pcoll_collections
+    preview_collections["route_collections"] = pcoll_route_collections
 
     for cls in classes:
         bpy.utils.register_class(cls)
