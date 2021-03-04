@@ -20,7 +20,7 @@ class CreateEmptyScene(bpy.types.Operator):
         bpy.context.scene.collection.children.link(wall_collection)
         structure_collection = bpy.data.collections.new("structures")
         wall_collection.children.link(structure_collection)
-        path_collection = bpy.data.collections.new("path")
+        path_collection = bpy.data.collections.new("route")
         wall_collection.children.link(path_collection)
         rock_collection = bpy.data.collections.new("rocks")
         bpy.context.scene.collection.children.link(rock_collection)
@@ -145,7 +145,7 @@ class AddWallFromCollection(bpy.types.Operator):
         icon = bpy.data.window_managers["WinMan"].walls_previews
         asset = icon.split('.')[0] + ".blend"
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\walls\\" + asset, context, "wall")
+        add_mesh("libraries\\walls\\" + asset, context, "walls")
         return {'FINISHED'}
 
 
@@ -158,15 +158,13 @@ class AddStructuresFromCollection(bpy.types.Operator):
     def poll(self, context):
         return context.active_object and len(os.listdir(
             os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                         "libraries\\structures\\"))) > 0 and \
-               bpy.context.object.users_collection[0].name.split(".")[0] == "wall"
+                         "libraries\\structures\\"))) > 0
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].structures_previews
         asset = icon.split(".")[0] + ".blend"
-        parent_collection = find_obj_collection(self, context)
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\structures\\" + asset, context, "structure", parent_collection)
+        add_mesh("libraries\\structures\\" + asset, context, "structures")
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -179,15 +177,13 @@ class AddHoldsFromCollection(bpy.types.Operator):
     @classmethod
     def poll(self, context):
         return bpy.context.active_object and len(os.listdir(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\"))) > 0 and \
-               bpy.context.object.users_collection[0].name.split(".")[0] == "wall"
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\"))) > 0
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].holds_previews
         asset = icon.split('.')[0] + ".blend"
-        parent_collection = find_obj_collection(self, context)
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\holds\\" + asset, context, "hold", parent_collection)
+        add_mesh("libraries\\holds\\" + asset, context, "route")
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -207,17 +203,17 @@ class AddRocksFromCollection(bpy.types.Operator):
         icon = bpy.data.window_managers["WinMan"].rocks_previews
         asset = icon.split('.')[0] + ".blend"
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\rocks\\" + asset, context)
+        add_mesh("libraries\\rocks\\" + asset, context, "rocks")
         return {'FINISHED'}
 
 
-def add_mesh(file_name, context, collection_name=None, parent_collection=None):
+def add_mesh(file_name, context, collection_name=None):
     filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
     with bpy.data.libraries.load(filepath, link=False) as (data_from, data_to):
         data_to.objects = [name for name in data_from.objects]
 
     if collection_name is not None:
-        collection = create_collection(context, collection_name, parent_collection)
+        collection = bpy.data.collections[collection_name]
         for obj in data_to.objects:
             collection.objects.link(obj)
     else:
@@ -225,8 +221,7 @@ def add_mesh(file_name, context, collection_name=None, parent_collection=None):
             bpy.context.collection.objects.link(obj)
     bpy.context.view_layer.objects.active = data_to.objects[0]
 
-
-def create_collection(context, name, parent_collection):
+"""def create_collection(context, name, parent_collection):
     collection = None
     if name == "wall":
         collection = bpy.data.collections.new(name)
@@ -243,7 +238,7 @@ def create_collection(context, name, parent_collection):
     else:
         collection = bpy.data.collections.new(name)
         bpy.context.scene.collection.children.link(collection)
-    return collection
+    return collection"""
 
 
 def find_obj_collection(self, context):
@@ -551,7 +546,7 @@ class DrawDone(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.gpencil.paintmode_toggle(back=True)
         bpy.ops.gpencil.convert(type='POLY', use_timing_data=False)
-        add_mesh("libraries\\circle.blend", context)
+        add_mesh("libraries\\circle.blend", context, "rocks")
         bpy.data.objects.remove(bpy.data.objects["GPencil"], do_unlink=True)
         new_name = bpy.context.active_object.name
         bpy.context.view_layer.objects.active = bpy.data.objects[new_name]
