@@ -192,6 +192,13 @@ class AddHoldsFromCollection(bpy.types.Operator):
             os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\"))) > 0
 
     def execute(self, context):
+        number_of_routes = 0
+        for key in bpy.data.collections.keys():
+            if key.split(".")[0] == "route":
+                number_of_routes += 1
+        if number_of_routes == 0:
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
         icon = bpy.data.window_managers["WinMan"].holds_previews
         asset = icon.split('.')[0] + ".blend"
         bpy.ops.object.select_all(action='DESELECT')
