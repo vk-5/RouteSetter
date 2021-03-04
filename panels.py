@@ -6,7 +6,6 @@ from bpy.props import (
     EnumProperty,
 )
 
-
 class EditPanel(bpy.types.Panel):
     """Creates Edit panel."""
     bl_label = "Edit"

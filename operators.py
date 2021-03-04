@@ -6,11 +6,7 @@ from os import listdir
 class CreateEmptyScene(bpy.types.Operator):
     """Creates new empty scene."""
     bl_idname = "object.empty_scene"
-    bl_label = "Create new scene"
-
-    @classmethod
-    def poll(self, context):
-        return bpy.data.objects or bpy.data.collections or bpy.data.materials
+    bl_label = "Prepare new scene"
 
     def execute(self, context):
         bpy.ops.object.select_all(action='SELECT')
@@ -20,6 +16,14 @@ class CreateEmptyScene(bpy.types.Operator):
             bpy.data.collections.remove(c)
         for m in bpy.data.materials:
             bpy.data.materials.remove(m)
+        wall_collection = bpy.data.collections.new("walls")
+        bpy.context.scene.collection.children.link(wall_collection)
+        structure_collection = bpy.data.collections.new("structures")
+        wall_collection.children.link(structure_collection)
+        path_collection = bpy.data.collections.new("path")
+        wall_collection.children.link(path_collection)
+        rock_collection = bpy.data.collections.new("rocks")
+        bpy.context.scene.collection.children.link(rock_collection)
         return {'FINISHED'}
 
 
