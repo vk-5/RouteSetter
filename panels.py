@@ -429,6 +429,7 @@ def unregister():
     del WindowManager.holds_previews
     del WindowManager.rocks_previews
     del WindowManager.collections_previews
+    del WindowManager.route_collection
     del WindowManager.walls_previews_dir
     del WindowManager.structures_previews_dir
     del WindowManager.holds_previews_dir

@@ -39,6 +39,9 @@ class AddRouteCollection(bpy.types.Operator):
     bl_label = "Add new route"
 
     def execute(self, context):
+        if "walls" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
         wall_collection = bpy.data.collections["walls"]
         path_collection = bpy.data.collections.new("route")
         wall_collection.children.link(path_collection)
@@ -159,6 +162,9 @@ class AddWallFromCollection(bpy.types.Operator):
         return bpy.data.window_managers["WinMan"].walls_previews
 
     def execute(self, context):
+        if "walls" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
         icon = bpy.data.window_managers["WinMan"].walls_previews
         asset = icon.split('.')[0] + ".blend"
         bpy.ops.object.select_all(action='DESELECT')
@@ -176,6 +182,9 @@ class AddStructuresFromCollection(bpy.types.Operator):
         return bpy.data.window_managers["WinMan"].structures_previews
 
     def execute(self, context):
+        if "structures" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
         icon = bpy.data.window_managers["WinMan"].structures_previews
         asset = icon.split(".")[0] + ".blend"
         bpy.ops.object.select_all(action='DESELECT')
@@ -220,6 +229,9 @@ class AddRocksFromCollection(bpy.types.Operator):
         return bpy.data.window_managers["WinMan"].rocks_previews
 
     def execute(self, context):
+        if "rocks" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
         icon = bpy.data.window_managers["WinMan"].rocks_previews
         asset = icon.split('.')[0] + ".blend"
         bpy.ops.object.select_all(action='DESELECT')
@@ -527,6 +539,9 @@ class DrawPath(bpy.types.Operator):
                context.active_object.mode == 'OBJECT'
 
     def execute(self, context):
+        if "rocks" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
         bpy.ops.object.gpencil_add(align='WORLD', location=(0, 0, 0), scale=(1, 1, 1), type='EMPTY')
         bpy.ops.gpencil.paintmode_toggle()
         bpy.context.scene.tool_settings.gpencil_stroke_placement_view3d = 'SURFACE'
