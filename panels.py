@@ -20,6 +20,8 @@ class EditPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.empty_scene")
         row = layout.row()
+        row.operator("wm.url_open", text="Documentation").url = "https://github.com/vk-5/RouteSetter"
+        row = layout.row()
         row.operator("object.move_object_with_snapping")
         row.operator("object.rotate_modal")
         row = layout.row()
