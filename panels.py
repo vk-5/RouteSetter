@@ -106,7 +106,7 @@ def enum_previews_collections(self, context):
     for key in bpy.data.collections.keys():
         enum_items.append((key, key, ""))
     for obj in bpy.data.objects.keys():
-        if bpy.data.objects[obj].name.split(".")[0] == "Path":
+        if bpy.data.objects[obj].name.split(".")[0] == "path":
             enum_items.append((obj, obj, ""))
     pcoll.collections_previews = enum_items
     return pcoll.collections_previews
@@ -278,9 +278,9 @@ class RenderPanel(bpy.types.Panel):
         row.operator("object.render")
 
 
-class RiggedHumanPanel(bpy.types.Panel):
-    """Creates a Human panel."""
-    bl_label = "Add human"
+class ReferencePanel(bpy.types.Panel):
+    """Creates a reference panel."""
+    bl_label = "References"
     bl_idname = "OBJECT_PT_human"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -291,17 +291,23 @@ class RiggedHumanPanel(bpy.types.Panel):
         wm = context.window_manager
 
         row = layout.row()
-        row.prop(wm, "scale_prop", slider=True, text="Scale")
+        row.label(text="Add real size human reference")
+        row = layout.row()
+        row.prop(wm, "scale_prop", slider=True, text="Centimeters")
         row = layout.row()
         row.operator("object.human")
+        row = layout.row()
+        row.label(text="Rope stretching check")
+        row = layout.row()
+        row.operator("object.carabiner")
 
 
 classes = (
     EditPanel,
     BoulderPreviewsPanel,
     RockPreviewsPanel,
-    RenderPanel,
-    RiggedHumanPanel
+    ReferencePanel,
+    RenderPanel
 )
 
 

@@ -28,7 +28,7 @@ class CreateEmptyScene(bpy.types.Operator):
         bpy.context.scene.collection.children.link(ref_collection)
         human_collection = bpy.data.collections.new("human")
         ref_collection.children.link(human_collection)
-        rope_collection = bpy.data.collections.new("rope")
+        rope_collection = bpy.data.collections.new("carabiners")
         ref_collection.children.link(rope_collection)
         return {'FINISHED'}
 
@@ -375,16 +375,18 @@ def filenames_to_ints(file_name):
 
 
 def focus_camera(rotation):
-    if not bpy.data.objects.get("Camera Asset"):
+    if bpy.data.objects.get("Camera Asset") is None:
         camera_data = bpy.data.cameras.new(name="Camera Asset")
         cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
         bpy.context.view_layer.active_layer_collection.collection.objects.link(cam_obj)
     else:
         cam_obj = bpy.data.objects.get("Camera Asset")
 
+    bpy.data.cameras["Camera Asset"].lens = 50
     bpy.context.scene.camera = cam_obj
     cam_obj.rotation_euler = rotation
     bpy.ops.view3d.camera_to_view_selected()
+    bpy.data.cameras["Camera Asset"].lens = 30
 
 
 def set_output_dimensions(dimension_x, dimension_y, percentage):
@@ -581,18 +583,26 @@ class RenderOperator(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.object.select_all(action='DESELECT')
-        collection = bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews]
-        objs = collection.all_objects
-        for ob in objs:
+        if bpy.data.window_managers["WinMan"].collections_previews.split(".")[0] == "path":
+            ob = bpy.data.objects[bpy.data.window_managers["WinMan"].collections_previews]
             ob.select_set(True)
-        assign_material("Walls", (0.7, 0.7, 0.7, 0), collection="wall")
-        assign_material("Rocks", (0.7, 0.7, 0.7, 0), collection="rock")
-        assign_material("Structures", (0.1, 0.1, 0.1, 0), collection="structure")
+        else:
+            collection = bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews]
+            objs = collection.all_objects
+            for ob in objs:
+                ob.select_set(True)
+        
+        walls_color = (0.7, 0.7, 0.7, 0)
+        rocks_color = (0.7, 0.7, 0.7, 0)
+        structures_color = (0.1, 0.1, 0.1, 0)
+        route_color = get_random_color()
+        path_color = get_random_color()
 
-        color = get_random_color()
-        assign_material("Holds", color, object_name="hold")
-        color = get_random_color()
-        assign_material("Paths", color, object_name="Path")
+        assign_material("Walls", walls_color, collection="wall")
+        assign_material("Rocks", rocks_color, collection="rock")
+        assign_material("Structures", structures_color, collection="structure")
+        assign_material("Holds", route_color, object_name="hold")
+        assign_material("Paths", path_color, object_name="path")
 
         focus_camera(rotation=(math.radians(85), math.radians(0),
                                math.radians(bpy.data.window_managers["WinMan"].rotation_prop)))
@@ -613,7 +623,7 @@ def get_random_color():
 class AddRiggedHumanOperator(bpy.types.Operator):
     """Add real size character"""
     bl_idname = "object.human"
-    bl_label = "Add human reference"
+    bl_label = "Add human"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -622,6 +632,18 @@ class AddRiggedHumanOperator(bpy.types.Operator):
         scale = bpy.data.window_managers["WinMan"].scale_prop / 100
         bpy.ops.transform.resize(value=(scale, scale, scale))
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        return {'FINISHED'}
+    
+class AddCarabinerOperator(bpy.types.Operator):
+    """Add real size character"""
+    bl_idname = "object.carabiner"
+    bl_label = "Add carabiner"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh("libraries\\carabiner.blend", context, "carabiners")
+        move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
 
@@ -647,7 +669,8 @@ classes = (
     RemoveFromHoldLibrary,
     RemoveFromRockLibrary,
     RenderOperator,
-    AddRiggedHumanOperator
+    AddRiggedHumanOperator,
+    AddCarabinerOperator
 )
 
 
