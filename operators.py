@@ -7,6 +7,7 @@ class CreateEmptyScene(bpy.types.Operator):
     """Delete all objects and create new empty scene."""
     bl_idname = "object.empty_scene"
     bl_label = "Prepare new scene"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         bpy.ops.object.select_all(action='SELECT')
@@ -16,6 +17,7 @@ class CreateEmptyScene(bpy.types.Operator):
             bpy.data.collections.remove(c)
         for m in bpy.data.materials:
             bpy.data.materials.remove(m)
+
         wall_collection = bpy.data.collections.new("walls")
         bpy.context.scene.collection.children.link(wall_collection)
         structure_collection = bpy.data.collections.new("structures")
@@ -37,11 +39,13 @@ class AddRouteCollection(bpy.types.Operator):
     """Adds new route collection."""
     bl_idname = "object.add_route_collection"
     bl_label = "Add new route"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         if "walls" not in bpy.data.collections.keys():
             self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
             return {'CANCELLED'}
+
         wall_collection = bpy.data.collections["walls"]
         path_collection = bpy.data.collections.new("route")
         wall_collection.children.link(path_collection)
@@ -68,6 +72,7 @@ def move_with_snapping(self, context, obj):
     loc = bpy_extras.view3d_utils.location_3d_to_region_2d(bpy.context.region,
                                                            bpy.context.space_data.region_3d,
                                                            (x, y, z), (0, 0))
+
     context.window.cursor_warp(loc.x, loc.y)
     rotation_set_up(context, [True] * 5, {'FACE'})
     bpy.ops.transform.translate('INVOKE_DEFAULT')
@@ -165,8 +170,10 @@ class AddWallFromCollection(bpy.types.Operator):
         if "walls" not in bpy.data.collections.keys():
             self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
             return {'CANCELLED'}
+
         icon = bpy.data.window_managers["WinMan"].walls_previews
         asset = icon.split('.')[0] + ".blend"
+
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh("libraries\\walls\\" + asset, context, "walls")
         return {'FINISHED'}
@@ -176,6 +183,7 @@ class AddStructuresFromCollection(bpy.types.Operator):
     """Add Structure asset from collection. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.structure"
     bl_label = "Add"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self, context):
@@ -185,8 +193,10 @@ class AddStructuresFromCollection(bpy.types.Operator):
         if "structures" not in bpy.data.collections.keys():
             self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
             return {'CANCELLED'}
+
         icon = bpy.data.window_managers["WinMan"].structures_previews
         asset = icon.split(".")[0] + ".blend"
+
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh("libraries\\structures\\" + asset, context, "structures")
         move_with_snapping(self, context, context.active_object)
@@ -197,6 +207,7 @@ class AddHoldsFromCollection(bpy.types.Operator):
     """Add Hold asset from collection. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.hold"
     bl_label = "Add"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self, context):
@@ -210,8 +221,10 @@ class AddHoldsFromCollection(bpy.types.Operator):
         if number_of_routes == 0:
             self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
             return {'CANCELLED'}
+
         icon = bpy.data.window_managers["WinMan"].holds_previews
         asset = icon.split('.')[0] + ".blend"
+
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh("libraries\\holds\\" + asset, context, bpy.data.window_managers["WinMan"].route_collection)
         move_with_snapping(self, context, context.active_object)
@@ -232,8 +245,10 @@ class AddRocksFromCollection(bpy.types.Operator):
         if "rocks" not in bpy.data.collections.keys():
             self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
             return {'CANCELLED'}
+
         icon = bpy.data.window_managers["WinMan"].rocks_previews
         asset = icon.split('.')[0] + ".blend"
+
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh("libraries\\rocks\\" + asset, context, "rocks")
         return {'FINISHED'}
@@ -256,6 +271,7 @@ def add_mesh(file_name, context, collection_name=None):
 
 def find_obj_collection(self, context):
     parent_collection = None
+
     for collection_name in bpy.data.collections.keys():
         if context.active_object.name in bpy.data.collections[collection_name].objects:
             parent_collection = collection_name
@@ -279,6 +295,7 @@ class AddToWallLibrary(bpy.types.Operator):
             obj.name = "wall.001"
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
         name = get_file_name(filepath, "wall")
+
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
         assign_material("Walls", (0.9, 0.9, 0.9, 0))
         focus_camera(rotation=(math.radians(85), math.radians(0), math.radians(20)))
@@ -306,6 +323,7 @@ class AddToStructureLibrary(bpy.types.Operator):
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 "libraries\\structures\\")
         name = get_file_name(filepath, "structure")
+
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
         assign_material("Structures", (0.5, 0.5, 0.5, 0))
         focus_camera(rotation=(math.radians(10), math.radians(10), math.radians(0)))
@@ -332,6 +350,7 @@ class AddToHoldLibrary(bpy.types.Operator):
             obj.name = "hold.001"
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")
         name = get_file_name(filepath, "hold")
+
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
         assign_material("Holds", (0.1, 0.1, 0.1, 0))
         focus_camera(rotation=(math.radians(60), math.radians(0), math.radians(30)))
@@ -358,6 +377,7 @@ class AddToRockLibrary(bpy.types.Operator):
             obj.name = "rock.001"
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")
         name = get_file_name(filepath, "rock")
+
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
         assign_material("Rocks", (0.1, 0.1, 0.1, 0))
         focus_camera(rotation=(math.radians(85), math.radians(0), math.radians(20)))
@@ -372,6 +392,7 @@ def get_file_name(filepath, name):
     file_numbers = list(map(filenames_to_ints, listdir(filepath)))
     file_numbers.sort()
     number = 0
+
     while number in file_numbers:
         number += 1
     return name + "_" + str(number)
@@ -433,6 +454,15 @@ def assign_material(name, color, collection=None, object_name=None):
                 obj.data.materials.append(material)
 
 
+def delete_asset_from_library(icon, directory):
+    asset = icon.split('.')[0] + ".blend"
+    filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),directory)
+    icon = os.path.join(filepath, icon)
+    asset = os.path.join(filepath, asset)
+    os.remove(icon)
+    os.remove(asset)
+
+
 class RemoveFromWallLibrary(bpy.types.Operator):
     """Remove asset from Wall library. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.wall_library_remove"
@@ -444,12 +474,7 @@ class RemoveFromWallLibrary(bpy.types.Operator):
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].walls_previews
-        asset = icon.split('.')[0] + ".blend"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
-        icon = os.path.join(filepath, icon)
-        asset = os.path.join(filepath, asset)
-        os.remove(icon)
-        os.remove(asset)
+        delete_asset_from_library(icon, "libraries\\walls\\")
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -467,13 +492,7 @@ class RemoveFromStructureLibrary(bpy.types.Operator):
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].structures_previews
-        asset = icon.split('.')[0] + ".blend"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                "libraries\\structures\\")
-        icon = os.path.join(filepath, icon)
-        asset = os.path.join(filepath, asset)
-        os.remove(icon)
-        os.remove(asset)
+        delete_asset_from_library(icon, "libraries\\structures\\")
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -489,15 +508,9 @@ class RemoveFromHoldLibrary(bpy.types.Operator):
     def poll(self,context):
         return bpy.data.window_managers["WinMan"].holds_previews
 
-
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].holds_previews
-        asset = icon.split('.')[0] + ".blend"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")
-        icon = os.path.join(filepath, icon)
-        asset = os.path.join(filepath, asset)
-        os.remove(icon)
-        os.remove(asset)
+        delete_asset_from_library(icon, "libraries\\holds\\")
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -515,12 +528,7 @@ class RemoveFromRockLibrary(bpy.types.Operator):
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].rocks_previews
-        asset = icon.split('.')[0] + ".blend"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")
-        icon = os.path.join(filepath, icon)
-        asset = os.path.join(filepath, asset)
-        os.remove(icon)
-        os.remove(asset)
+        delete_asset_from_library(icon, "libraries\\rocks\\")
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -542,6 +550,7 @@ class DrawPath(bpy.types.Operator):
         if "rocks" not in bpy.data.collections.keys():
             self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
             return {'CANCELLED'}
+
         bpy.ops.object.gpencil_add(align='WORLD', location=(0, 0, 0), scale=(1, 1, 1), type='EMPTY')
         bpy.ops.gpencil.paintmode_toggle()
         bpy.context.scene.tool_settings.gpencil_stroke_placement_view3d = 'SURFACE'
@@ -565,19 +574,23 @@ class DrawDone(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.gpencil.paintmode_toggle(back=True)
         bpy.ops.gpencil.convert(type='POLY', use_timing_data=False)
+
         add_mesh("libraries\\circle.blend", context, "rocks")
         bpy.data.objects.remove(bpy.data.objects["GPencil"], do_unlink=True)
         new_name = bpy.context.active_object.name
         bpy.context.view_layer.objects.active = bpy.data.objects[new_name]
+
         bpy.ops.object.modifier_add(type='ARRAY')
         bpy.context.object.modifiers["Array"].fit_type = 'FIT_CURVE'
         bpy.context.object.modifiers["Array"].curve = bpy.data.objects["GP_Layer"]
         bpy.context.object.modifiers["Array"].relative_offset_displace[0] = 0
         bpy.context.object.modifiers["Array"].relative_offset_displace[1] = 0
         bpy.context.object.modifiers["Array"].relative_offset_displace[2] = 1
+
         bpy.ops.object.modifier_add(type='CURVE')
         bpy.context.object.modifiers["Curve"].object = bpy.data.objects["GP_Layer"]
         bpy.context.object.modifiers["Curve"].deform_axis = 'POS_Z'
+
         bpy.ops.object.apply_all_modifiers()
         bpy.data.objects.remove(bpy.data.objects["GP_Layer"], do_unlink=True)
         return {'FINISHED'}
@@ -593,6 +606,12 @@ class RenderOperator(bpy.types.Operator):
         return bpy.data.collections
 
     def execute(self, context):
+        walls_color = (0.7, 0.7, 0.7, 0)
+        rocks_color = (0.7, 0.7, 0.7, 0)
+        structures_color = (0.1, 0.1, 0.1, 0)
+        route_color = get_random_color()
+        path_color = get_random_color()
+
         bpy.ops.object.select_all(action='DESELECT')
         if bpy.data.window_managers["WinMan"].collections_previews.split(".")[0] == "path":
             ob = bpy.data.objects[bpy.data.window_managers["WinMan"].collections_previews]
@@ -602,12 +621,6 @@ class RenderOperator(bpy.types.Operator):
             objs = collection.all_objects
             for ob in objs:
                 ob.select_set(True)
-        
-        walls_color = (0.7, 0.7, 0.7, 0)
-        rocks_color = (0.7, 0.7, 0.7, 0)
-        structures_color = (0.1, 0.1, 0.1, 0)
-        route_color = get_random_color()
-        path_color = get_random_color()
 
         assign_material("Walls", walls_color, collection="wall")
         assign_material("Rocks", rocks_color, collection="rock")
