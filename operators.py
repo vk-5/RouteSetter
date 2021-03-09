@@ -4,7 +4,7 @@ import os
 from os import listdir
 
 class CreateEmptyScene(bpy.types.Operator):
-    """Creates new empty scene."""
+    """Delete all objects and create new empty scene."""
     bl_idname = "object.empty_scene"
     bl_label = "Prepare new scene"
 
@@ -46,7 +46,7 @@ class AddRouteCollection(bpy.types.Operator):
 
 
 class MoveObjectWithSnapping(bpy.types.Operator):
-    """Move selected objects."""
+    """Move selected objects. If this button is disabled, select any object to active it."""
     bl_idname = "object.move_object_with_snapping"
     bl_label = "Move"
 
@@ -80,7 +80,7 @@ def rotation_set_up(context, boolSettings, snap_elements):
 
 
 class RotateModal(bpy.types.Operator):
-    """Rotate selected objects."""
+    """Rotate selected objects. If this button is disabled, select any object to active it."""
     bl_idname = "object.rotate_modal"
     bl_label = "Rotate"
     bl_options = {'REGISTER', 'UNDO'}
@@ -117,7 +117,7 @@ class RotateModal(bpy.types.Operator):
 
 
 class ScaleObject(bpy.types.Operator):
-    """Scale selected objects."""
+    """Scale selected objects. If this button is disabled, select any object to active it."""
     bl_idname = "object.scale"
     bl_label = "Scale"
     bl_options = {'REGISTER', 'UNDO'}
@@ -133,7 +133,7 @@ class ScaleObject(bpy.types.Operator):
 
 
 class DeleteObject(bpy.types.Operator):
-    """Delete selected objects."""
+    """Delete selected objects. If this button is disabled, select any object to active it."""
     bl_idname = "object.delete"
     bl_label = "Delete"
     bl_options = {'REGISTER', 'UNDO'}
@@ -149,15 +149,14 @@ class DeleteObject(bpy.types.Operator):
 
 
 class AddWallFromCollection(bpy.types.Operator):
-    """Add Wall asset from collection."""
+    """Add Wall asset from collection. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.wall"
     bl_label = "Add"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self, context):
-        return len(os.listdir(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\"))) > 0
+        return bpy.data.window_managers["WinMan"].walls_previews
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].walls_previews
@@ -168,15 +167,13 @@ class AddWallFromCollection(bpy.types.Operator):
 
 
 class AddStructuresFromCollection(bpy.types.Operator):
-    """Add Structure asset from collection."""
+    """Add Structure asset from collection. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.structure"
     bl_label = "Add"
 
     @classmethod
     def poll(self, context):
-        return len(os.listdir(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                         "libraries\\structures\\"))) > 0
+        return bpy.data.window_managers["WinMan"].structures_previews
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].structures_previews
@@ -188,14 +185,13 @@ class AddStructuresFromCollection(bpy.types.Operator):
 
 
 class AddHoldsFromCollection(bpy.types.Operator):
-    """Add Hold asset from collection."""
+    """Add Hold asset from collection. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.hold"
     bl_label = "Add"
 
     @classmethod
     def poll(self, context):
-        return len(os.listdir(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\"))) > 0
+        return bpy.data.window_managers["WinMan"].holds_previews
 
     def execute(self, context):
         number_of_routes = 0
@@ -214,15 +210,14 @@ class AddHoldsFromCollection(bpy.types.Operator):
 
 
 class AddRocksFromCollection(bpy.types.Operator):
-    """Add Rock asset from collection."""
+    """Add Rock asset from collection. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.rock"
     bl_label = "Add"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self, context):
-        return len(os.listdir(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\"))) > 0
+        return bpy.data.window_managers["WinMan"].rocks_previews
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].rocks_previews
@@ -257,7 +252,7 @@ def find_obj_collection(self, context):
 
 
 class AddToWallLibrary(bpy.types.Operator):
-    """Save selected to Wall library."""
+    """Save selected to Wall library. If this button is disabled, select any object to active it."""
     bl_idname = "object.wall_library"
     bl_label = "Save"
 
@@ -283,7 +278,7 @@ class AddToWallLibrary(bpy.types.Operator):
 
 
 class AddToStructureLibrary(bpy.types.Operator):
-    """Save selected to Structure library."""
+    """Save selected to Structure library. If this button is disabled, select any object to active it."""
     bl_idname = "object.structure_library"
     bl_label = "Save"
 
@@ -310,7 +305,7 @@ class AddToStructureLibrary(bpy.types.Operator):
 
 
 class AddToHoldLibrary(bpy.types.Operator):
-    """Save selected to Hold library."""
+    """Save selected to Hold library. If this button is disabled, select any object to active it."""
     bl_idname = "object.hold_library"
     bl_label = "Save"
 
@@ -336,7 +331,7 @@ class AddToHoldLibrary(bpy.types.Operator):
 
 
 class AddToRockLibrary(bpy.types.Operator):
-    """Save selected to Rock library."""
+    """Save selected to Rock library. If this button is disabled, select any object to active it."""
     bl_idname = "object.rock_library"
     bl_label = "Save"
 
@@ -427,13 +422,13 @@ def assign_material(name, color, collection=None, object_name=None):
 
 
 class RemoveFromWallLibrary(bpy.types.Operator):
-    """Remove asset from Wall library."""
+    """Remove asset from Wall library. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.wall_library_remove"
     bl_label = "Remove"
 
     @classmethod
-    def poll(self, context):
-        return bpy.context.selected_objects
+    def poll(self,context):
+        return bpy.data.window_managers["WinMan"].walls_previews
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].walls_previews
@@ -450,13 +445,13 @@ class RemoveFromWallLibrary(bpy.types.Operator):
 
 
 class RemoveFromStructureLibrary(bpy.types.Operator):
-    """Remove asset from Structure library."""
+    """Remove asset from Structure library. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.structure_library_remove"
     bl_label = "Remove"
 
     @classmethod
-    def poll(self, context):
-        return bpy.context.selected_objects
+    def poll(self,context):
+        return bpy.data.window_managers["WinMan"].structures_previews
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].structures_previews
@@ -474,13 +469,14 @@ class RemoveFromStructureLibrary(bpy.types.Operator):
 
 
 class RemoveFromHoldLibrary(bpy.types.Operator):
-    """Remove asset from Hold library."""
+    """Remove asset from Hold library. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.hold_library_remove"
     bl_label = "Remove"
 
     @classmethod
-    def poll(self, context):
-        return bpy.context.selected_objects
+    def poll(self,context):
+        return bpy.data.window_managers["WinMan"].holds_previews
+
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].holds_previews
@@ -497,13 +493,13 @@ class RemoveFromHoldLibrary(bpy.types.Operator):
 
 
 class RemoveFromRockLibrary(bpy.types.Operator):
-    """Remove asset from Rock library."""
+    """Remove asset from Rock library. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.rock_library_remove"
     bl_label = "Remove"
 
     @classmethod
-    def poll(self, context):
-        return bpy.context.selected_objects
+    def poll(self,context):
+        return bpy.data.window_managers["WinMan"].rocks_previews
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].rocks_previews
@@ -520,7 +516,7 @@ class RemoveFromRockLibrary(bpy.types.Operator):
 
 
 class DrawPath(bpy.types.Operator):
-    """Draw route on rock."""
+    """Draw route on rock. If this button is disabled, select any object and switch to object mode to active it."""
     bl_idname = "object.draw"
     bl_label = "Draw route"
 
@@ -540,7 +536,7 @@ class DrawPath(bpy.types.Operator):
 
 
 class DrawDone(bpy.types.Operator):
-    """Finish route."""
+    """Finish route. If this button is disabled, select object named GPencil and switch to draw mode to active it."""
     bl_idname = "object.done"
     bl_label = "Done"
     bl_options = {'REGISTER', 'UNDO'}
