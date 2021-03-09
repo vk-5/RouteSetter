@@ -188,42 +188,35 @@ class BoulderPreviewsPanel(bpy.types.Panel):
 
         row = layout.row()
         row.label(text="Walls")
-        row = layout.row()
-        row.template_icon_view(wm, "walls_previews")
-        row = layout.row()
-        row.operator("object.wall")
-        row = layout.row()
-        row.label(text="Manage library")
-        row = layout.row()
-        row.operator("object.wall_library")
-        row.operator("object.wall_library_remove")
+        add_preview_with_add_button(layout, wm, "walls_previews", "wall")
+        add_manage_library_buttons(layout, "wall_library", "wall_library_remove")
 
         row = layout.row()
         row.label(text="Structures")
-        row = layout.row()
-        row.template_icon_view(wm, "structures_previews")
-        row = layout.row()
-        row.operator("object.structure")
-        row = layout.row()
-        row.label(text="Manage library")
-        row = layout.row()
-        row.operator("object.structure_library")
-        row.operator("object.structure_library_remove")
+        add_preview_with_add_button(layout, wm, "structures_previews", "structure")
+        add_manage_library_buttons(layout, "structure_library", "structure_library_remove")
 
         row = layout.row()
         row.label(text="Holds")
         row = layout.row()
         row.operator("object.add_route_collection")
         row.prop(wm, "route_collection", text="")
-        row = layout.row()
-        row.template_icon_view(wm, "holds_previews")
-        row = layout.row()
-        row.operator("object.hold")
-        row = layout.row()
-        row.label(text="Manage library")
-        row = layout.row()
-        row.operator("object.hold_library")
-        row.operator("object.hold_library_remove")
+        add_preview_with_add_button(layout, wm, "holds_previews", "hold")
+        add_manage_library_buttons(layout, "hold_library", "hold_library_remove")
+
+
+def add_preview_with_add_button(layout, wm, preview_name, operator_name):
+    row = layout.row()
+    row.template_icon_view(wm, preview_name)
+    row = layout.row()
+    row.operator("object." + operator_name)
+
+def add_manage_library_buttons(layout, add_operator_name, remove_operator_name):
+    row = layout.row()
+    row.label(text="Manage library")
+    row = layout.row()
+    row.operator("object." + add_operator_name)
+    row.operator("object." + remove_operator_name)
 
 
 class RockPreviewsPanel(bpy.types.Panel):
@@ -238,15 +231,8 @@ class RockPreviewsPanel(bpy.types.Panel):
         layout = self.layout
         wm = context.window_manager
 
-        row = layout.row()
-        row.template_icon_view(wm, "rocks_previews")
-        row = layout.row()
-        row.operator("object.rock")
-        row = layout.row()
-        row.label(text="Manage library")
-        row = layout.row()
-        row.operator("object.rock_library")
-        row.operator("object.rock_library_remove")
+        add_preview_with_add_button(layout, wm, "rocks_previews", "rock")
+        add_manage_library_buttons(layout, "rock_library", "rock_library_remove")
 
         row = layout.row()
         row.label(text="Routes")

@@ -544,7 +544,7 @@ class DrawPath(bpy.types.Operator):
     def poll(self, context):
         return len(
             bpy.context.selected_objects) > 0 and context.active_object.type == 'MESH' and \
-               context.active_object.mode == 'OBJECT'
+               bpy.context.active_object.mode == 'OBJECT'
 
     def execute(self, context):
         if "rocks" not in bpy.data.collections.keys():
@@ -569,7 +569,7 @@ class DrawDone(bpy.types.Operator):
     def poll(self, context):
         return context.selected_objects and len(
             bpy.context.selected_objects) > 0 and context.active_object.type == 'GPENCIL' and \
-               context.active_object.mode == 'PAINT_GPENCIL'
+               bpy.context.active_object.mode == 'PAINT_GPENCIL'
 
     def execute(self, context):
         bpy.ops.gpencil.paintmode_toggle(back=True)
