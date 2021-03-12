@@ -74,7 +74,7 @@ def move_with_snapping(self, context, obj):
                                                            (x, y, z), (0, 0))
 
     context.window.cursor_warp(loc.x, loc.y)
-    rotation_set_up(context, [True] * 5, {'FACE'})
+    rotation_set_up(context, [True,True,True,False,True], {'FACE'})
     bpy.ops.transform.translate('INVOKE_DEFAULT')
 
 
@@ -85,6 +85,7 @@ def rotation_set_up(context, boolSettings, snap_elements):
     bpy.context.scene.tool_settings.use_snap_translate = boolSettings[2]
     bpy.context.scene.tool_settings.use_snap_project = boolSettings[3]
     bpy.context.scene.tool_settings.use_snap_align_rotation = boolSettings[4]
+    bpy.context.scene.tool_settings.snap_target = 'ACTIVE'
 
 
 class RotateModal(bpy.types.Operator):
@@ -667,6 +668,9 @@ class AddCarabinerOperator(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh("libraries\\carabiner.blend", context, "carabiners")
+        for obj in bpy.context.selected_objects:
+            if obj.name.split(".")[0] == "carabiner_1":
+                bpy.context.view_layer.objects.active = obj
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
