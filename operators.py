@@ -671,7 +671,30 @@ class AddCarabinerOperator(bpy.types.Operator):
         for obj in bpy.context.selected_objects:
             if obj.name.split(".")[0] == "carabiner_1":
                 bpy.context.view_layer.objects.active = obj
+        if bpy.context.scene.rigidbody_world is None:
+            bpy.ops.rigidbody.world_add()
+        bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
+        bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
         move_with_snapping(self, context, context.active_object)
+        return {'FINISHED'}
+
+class PlaySimulationOperator(bpy.types.Operator):
+    """Play physics simulation."""
+    bl_idname = "object.play_simulation"
+    bl_label = "Play"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='SELECT')
+        for obj in bpy.context.selected_objects:
+            if obj.name.split("_")[0] != "carabiner":
+                bpy.context.view_layer.objects.active = obj
+                bpy.ops.rigidbody.object_add()
+                bpy.context.object.rigid_body.enabled = False
+
+        bpy.context.scene.frame_end = 31
+        bpy.ops.ptcache.bake_all(bake=True)
+        bpy.context.scene.frame_current = 30
         return {'FINISHED'}
 
 
@@ -698,7 +721,8 @@ classes = (
     RemoveFromRockLibrary,
     RenderOperator,
     AddRiggedHumanOperator,
-    AddCarabinerOperator
+    AddCarabinerOperator,
+    PlaySimulationOperator
 )
 
 
