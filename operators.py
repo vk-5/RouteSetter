@@ -30,8 +30,8 @@ class CreateEmptyScene(bpy.types.Operator):
         bpy.context.scene.collection.children.link(ref_collection)
         human_collection = bpy.data.collections.new("human")
         ref_collection.children.link(human_collection)
-        rope_collection = bpy.data.collections.new("carabiners")
-        ref_collection.children.link(rope_collection)
+        carabiners_collection = bpy.data.collections.new("carabiners")
+        ref_collection.children.link(carabiners_collection)
         return {'FINISHED'}
 
 
@@ -690,12 +690,86 @@ class PlaySimulationOperator(bpy.types.Operator):
             if obj.name.split("_")[0] != "carabiner":
                 bpy.context.view_layer.objects.active = obj
                 bpy.ops.rigidbody.object_add()
-                bpy.context.object.rigid_body.enabled = False
+                bpy.context.object.rigid_body.enabled = False 
+        bpy.ops.object.select_all(action='DESELECT')
 
-        bpy.context.scene.frame_end = 31
-        bpy.ops.ptcache.bake_all(bake=True)
-        bpy.context.scene.frame_current = 30
+        coordinates = [[1,1,1],[2,2,0],[3,6,2],[5,6,2]]
+
+        curve_data = bpy.data.curves.new('curve_chain', 'CURVE')
+        curve_data.dimensions = '3D'
+        spline = curve_data.splines.new(type='POLY')
+        spline.points.add(len(coordinates)-1)
+        for i in range(len(coordinates)):
+            x,y,z = coordinates[i]
+            spline.points[i].co = (x, y, z, 1)
+        curve_obj = bpy.data.objects.new('curve_chain', curve_data)
+        bpy.data.collections["carabiners"].objects.link(curve_obj)
+
+        bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.context.active_object.rotation_euler.rotate_axis("X", math.radians(90))
+        bpy.context.active_object.name = "curve_rotate"
+
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh("libraries\\chain.blend", context, "carabiners")
+
+        bpy.context.view_layer.objects.active = bpy.data.objects["chain_big"]
+        bpy.ops.object.modifier_add(type='ARRAY')
+        bpy.context.object.modifiers["Array"].fit_type = 'FIT_CURVE'
+        bpy.context.object.modifiers["Array"].curve = bpy.data.objects["curve_chain"]
+        bpy.context.object.modifiers["Array"].use_constant_offset = True
+        bpy.context.object.modifiers["Array"].use_relative_offset = False
+        bpy.context.object.modifiers["Array"].constant_offset_displace[0] = 0.07
+        bpy.context.object.modifiers["Array"].use_object_offset = True
+        bpy.context.object.modifiers["Array"].offset_object = bpy.data.objects["curve_rotate"]
+
+        bpy.ops.object.modifier_add(type='CURVE')
+        bpy.context.object.modifiers["Curve"].object = bpy.data.objects["curve_chain"]
+        bpy.context.object.modifiers["Curve"].deform_axis = 'POS_X'
+        bpy.ops.object.make_links_data(type='MODIFIERS')
+        bpy.ops.object.apply_all_modifiers()
+
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.mesh.separate(type='LOOSE')
+        bpy.ops.object.editmode_toggle()
+
+        bpy.context.view_layer.objects.active = bpy.data.objects["chain_small"]
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.mesh.separate(type='LOOSE')
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
+
+        for obj_small in bpy.data.collections["carabiners"].objects:
+            if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
+                for obj_big in bpy.data.collections["carabiners"].objects:
+                    if obj_big.name.split("_")[0] == "chain" and obj_big.name.split("_")[1].split(".")[0] == "big" and len(obj_small.name.split(".")) == len(obj_big.name.split(".")):
+                        if len(obj_small.name.split(".")) == 1 or obj_small.name.split(".")[1] == obj_big.name.split(".")[1]:
+                            obj_small.parent = obj_big
+                            obj_small.matrix_parent_inverse = obj_big.matrix_world.inverted()
+
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj_small in bpy.data.collections["carabiners"].objects:
+            if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
+                obj_small.select_set(True)
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.edge_split(type='VERT')
+        bpy.ops.mesh.separate(type='LOOSE')
+        bpy.ops.object.editmode_toggle()
+
+        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+
+        if bpy.context.scene.rigidbody_world is None:
+            bpy.ops.rigidbody.world_add()
+        bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
+        bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
+        bpy.context.scene.rigidbody_world.substeps_per_frame = 30
+        bpy.context.scene.rigidbody_world.solver_iterations = 30
         return {'FINISHED'}
+
+"""        bpy.context.scene.frame_end = 31
+        bpy.ops.ptcache.bake_all(bake=True)
+        bpy.context.scene.frame_current = 30"""
 
 
 classes = (
