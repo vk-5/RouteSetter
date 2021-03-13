@@ -674,10 +674,10 @@ class AddCarabinerOperator(bpy.types.Operator):
                 bpy.context.view_layer.objects.active = obj
         if bpy.context.scene.rigidbody_world is None:
             bpy.ops.rigidbody.world_add()
-            bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
-            bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
-            bpy.context.scene.rigidbody_world.substeps_per_frame = 30
-            bpy.context.scene.rigidbody_world.solver_iterations = 30
+        bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
+        bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
+        bpy.context.scene.rigidbody_world.substeps_per_frame = 30
+        bpy.context.scene.rigidbody_world.solver_iterations = 30
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -688,6 +688,21 @@ class PlaySimulationOperator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+        if bpy.context.scene.rigidbody_world is None:
+            bpy.ops.rigidbody.world_add()
+        bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
+        bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
+        bpy.context.scene.rigidbody_world.substeps_per_frame = 30
+        bpy.context.scene.rigidbody_world.solver_iterations = 30    
+
+        bpy.ops.object.select_all(action='SELECT')
+        for obj in bpy.context.selected_objects:
+            if obj.name.split("_")[0] != "carabiner":
+                bpy.context.view_layer.objects.active = obj
+                bpy.ops.rigidbody.object_add()
+                bpy.context.object.rigid_body.enabled = False 
+
+        bpy.ops.object.select_all(action='DESELECT')
         for carabiner in bpy.data.collections["carabiners"].objects:
             if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_"))  == 2 and carabiner.name.split("_")[1].split(".")[0] == "1":
                 bpy.ops.object.select_all(action='DESELECT')
@@ -700,22 +715,19 @@ class PlaySimulationOperator(bpy.types.Operator):
                         obj.select_set(False)
                 bpy.ops.object.parent_clear(type='CLEAR')
 
-        bpy.ops.object.select_all(action='SELECT')
-        for obj in bpy.context.selected_objects:
-            if obj.name.split("_")[0] != "carabiner":
-                bpy.context.view_layer.objects.active = obj
-                bpy.ops.rigidbody.object_add()
-                bpy.context.object.rigid_body.enabled = False 
         bpy.ops.object.select_all(action='DESELECT')
-
         coordinates = []
-
-        for carabiner in bpy.data.collections["carabiners"].objects:
-            if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_"))  == 2 and carabiner.name.split("_")[1].split(".")[0] == "4":
-                carabiner.select_set(True)
-                coordinates.append([carabiner.location.x, carabiner.location.y, carabiner.location.z])
-                carabiner.select_set(False)
-
+        edges = []
+        for helper in bpy.data.collections["carabiners"].objects:
+            if helper.name.split("_")[0] == "helper":
+                if len(edges) == 2:
+                    coordinates.append(edges)
+                    edges = [[helper.location.x, helper.location.y, helper.location.z]]
+                else:
+                    edges.append([helper.location.x, helper.location.y, helper.location.z])
+        coordinates.append(edges)
+        
+        coordinates = merge_edges(coordinates)
         curve_data = bpy.data.curves.new('curve_chain', 'CURVE')
         curve_data.dimensions = '3D'
         spline = curve_data.splines.new(type='POLY')
@@ -779,18 +791,46 @@ class PlaySimulationOperator(bpy.types.Operator):
 
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-
-        if bpy.context.scene.rigidbody_world is None:
-            bpy.ops.rigidbody.world_add()
-            bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
-            bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
-            bpy.context.scene.rigidbody_world.substeps_per_frame = 30
-            bpy.context.scene.rigidbody_world.solver_iterations = 30
         return {'FINISHED'}
 
-"""        bpy.context.scene.frame_end = 31
+def merge_edges(coordinates):
+    while len(coordinates) > 1:
+        new_coordinates = merge(coordinates[0], coordinates[1])
+        coordinates.pop(0)
+        coordinates[0] = new_coordinates
+    return coordinates[0]
+
+def merge( coordinates_a, coordinates_b):
+    first_a_first_b = distance(coordinates_a[0],coordinates_b[0])
+    first_a_last_b = distance(coordinates_a[0],coordinates_b[-1])
+    last_a_first_b = distance(coordinates_a[-1],coordinates_b[0])
+    last_a_last_b = distance(coordinates_a[-1],coordinates_b[-1])
+
+    lowest_distance = min(first_a_first_b,first_a_last_b,last_a_first_b,last_a_last_b)
+
+    if lowest_distance == first_a_first_b:
+        coordinates_a.reverse()
+    elif lowest_distance == first_a_last_b:
+        coordinates_a.reverse()
+        coordinates_b.reverse()
+    elif lowest_distance == last_a_last_b:
+        coordinates_b.reverse()
+
+    return coordinates_a + coordinates_b
+
+def distance( vertex_a, vertex_b):
+    return math.sqrt((vertex_b[0] - vertex_a[0])**2 + (vertex_b[1] - vertex_a[1])**2 + (vertex_a[2] - vertex_b[2])**2) 
+
+
+
+        
+"""                            helper.select_set(True)
+                    coordinates.append([helper.location.x, helper.location.y, helper.location.z])
+                    helper.select_set(False)"""
+
+"""                bpy.context.scene.frame_end = 51
         bpy.ops.ptcache.bake_all(bake=True)
-        bpy.context.scene.frame_current = 30"""
+        bpy.context.scene.frame_current = 50"""
 
 
 classes = (
