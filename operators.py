@@ -17,6 +17,8 @@ class CreateEmptyScene(bpy.types.Operator):
             bpy.data.collections.remove(c)
         for m in bpy.data.materials:
             bpy.data.materials.remove(m)
+        for c in bpy.data.curves:
+            bpy.data.curves.remove(c)
 
         wall_collection = bpy.data.collections.new("walls")
         bpy.context.scene.collection.children.link(wall_collection)
@@ -693,7 +695,13 @@ class PlaySimulationOperator(bpy.types.Operator):
                 bpy.context.object.rigid_body.enabled = False 
         bpy.ops.object.select_all(action='DESELECT')
 
-        coordinates = [[1,1,1],[2,2,0],[3,6,2],[5,6,2]]
+        coordinates = []
+
+        for carabiner in bpy.data.collections["carabiners"].objects:
+            if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_"))  == 2 and carabiner.name.split("_")[1].split(".")[0] == "4":
+                carabiner.select_set(True)
+                coordinates.append([carabiner.location.x, carabiner.location.y, carabiner.location.z])
+                carabiner.select_set(False)
 
         curve_data = bpy.data.curves.new('curve_chain', 'CURVE')
         curve_data.dimensions = '3D'
