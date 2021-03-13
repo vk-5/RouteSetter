@@ -700,7 +700,9 @@ class PlaySimulationOperator(bpy.types.Operator):
             if obj.name.split("_")[0] != "carabiner":
                 bpy.context.view_layer.objects.active = obj
                 bpy.ops.rigidbody.object_add()
-                bpy.context.object.rigid_body.enabled = False 
+                bpy.context.object.rigid_body.enabled = False
+                bpy.context.object.rigid_body.collision_shape = 'MESH'
+
 
         bpy.ops.object.select_all(action='DESELECT')
         for carabiner in bpy.data.collections["carabiners"].objects:
