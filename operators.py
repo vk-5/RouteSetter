@@ -105,7 +105,6 @@ class RotateModal(bpy.types.Operator):
 
     def modal(self, context, event):
         obj = bpy.context.object
-
         if event.type == 'MOUSEMOVE':
             change_x = event.mouse_region_x
             obj.rotation_euler.rotate_axis("Z", math.radians(change_x - self.x))
@@ -675,8 +674,10 @@ class AddCarabinerOperator(bpy.types.Operator):
                 bpy.context.view_layer.objects.active = obj
         if bpy.context.scene.rigidbody_world is None:
             bpy.ops.rigidbody.world_add()
-        bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
-        bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
+            bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
+            bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
+            bpy.context.scene.rigidbody_world.substeps_per_frame = 30
+            bpy.context.scene.rigidbody_world.solver_iterations = 30
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -687,6 +688,18 @@ class PlaySimulationOperator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+        for carabiner in bpy.data.collections["carabiners"].objects:
+            if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_"))  == 2 and carabiner.name.split("_")[1].split(".")[0] == "1":
+                bpy.ops.object.select_all(action='DESELECT')
+                carabiner.select_set(True)
+                bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+                for obj in carabiner.children:
+                    if obj.name.split("_")[1] != "1":
+                        obj.select_set(True)
+                    else:
+                        obj.select_set(False)
+                bpy.ops.object.parent_clear(type='CLEAR')
+
         bpy.ops.object.select_all(action='SELECT')
         for obj in bpy.context.selected_objects:
             if obj.name.split("_")[0] != "carabiner":
@@ -769,10 +782,10 @@ class PlaySimulationOperator(bpy.types.Operator):
 
         if bpy.context.scene.rigidbody_world is None:
             bpy.ops.rigidbody.world_add()
-        bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
-        bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
-        bpy.context.scene.rigidbody_world.substeps_per_frame = 30
-        bpy.context.scene.rigidbody_world.solver_iterations = 30
+            bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
+            bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
+            bpy.context.scene.rigidbody_world.substeps_per_frame = 30
+            bpy.context.scene.rigidbody_world.solver_iterations = 30
         return {'FINISHED'}
 
 """        bpy.context.scene.frame_end = 31
