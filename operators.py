@@ -683,51 +683,11 @@ class GenerateChainOperator(bpy.types.Operator):
 
     def execute(self, context):
         prepare_carabiners()
-
-        coordinates = prepare_coordinates()
-        
-        curve_data = bpy.data.curves.new('curve_chain', 'CURVE')
-        curve_data.dimensions = '3D'
-        spline = curve_data.splines.new(type='POLY')
-        spline.points.add(len(coordinates)-1)
-        for i in range(len(coordinates)):
-            x,y,z = coordinates[i]
-            spline.points[i].co = (x, y, z, 1)
-        curve_obj = bpy.data.objects.new('curve_chain', curve_data)
-        bpy.data.collections["carabiners"].objects.link(curve_obj)
-
-        bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
-        bpy.context.active_object.rotation_euler.rotate_axis("X", math.radians(90))
-        bpy.context.active_object.name = "curve_rotate"
-
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\chain.blend", context, "carabiners")
-
-        bpy.context.view_layer.objects.active = bpy.data.objects["chain_big"]
-        bpy.ops.object.modifier_add(type='ARRAY')
-        bpy.context.object.modifiers["Array"].fit_type = 'FIT_CURVE'
-        bpy.context.object.modifiers["Array"].curve = bpy.data.objects["curve_chain"]
-        bpy.context.object.modifiers["Array"].use_constant_offset = True
-        bpy.context.object.modifiers["Array"].use_relative_offset = False
-        bpy.context.object.modifiers["Array"].constant_offset_displace[0] = 0.07
-        bpy.context.object.modifiers["Array"].use_object_offset = True
-        bpy.context.object.modifiers["Array"].offset_object = bpy.data.objects["curve_rotate"]
-
-        bpy.ops.object.modifier_add(type='CURVE')
-        bpy.context.object.modifiers["Curve"].object = bpy.data.objects["curve_chain"]
-        bpy.context.object.modifiers["Curve"].deform_axis = 'POS_X'
-        bpy.ops.object.make_links_data(type='MODIFIERS')
+        coordinates = prepare_coordinates()     
+        prepare_curve_and_empty(coordinates)
+        prepare_modifiers(context)
         bpy.ops.object.apply_all_modifiers()
-
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.mesh.separate(type='LOOSE')
-        bpy.ops.object.editmode_toggle()
-
-        bpy.context.view_layer.objects.active = bpy.data.objects["chain_small"]
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.mesh.separate(type='LOOSE')
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
+        prepare_chain_rigid()
 
         for obj_small in bpy.data.collections["carabiners"].objects:
             if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
@@ -813,6 +773,49 @@ def merge_edges( coordinates_a, coordinates_b):
 
 def vertices_distance( vertex_a, vertex_b):
     return math.sqrt((vertex_b[0] - vertex_a[0])**2 + (vertex_b[1] - vertex_a[1])**2 + (vertex_a[2] - vertex_b[2])**2) 
+
+def prepare_curve_and_empty(coordinates):
+    curve_data = bpy.data.curves.new('curve_chain', 'CURVE')
+    curve_data.dimensions = '3D'
+    spline = curve_data.splines.new(type='POLY')
+    spline.points.add(len(coordinates)-1)
+    for i in range(len(coordinates)):
+        x,y,z = coordinates[i]
+        spline.points[i].co = (x, y, z, 1)
+    curve_obj = bpy.data.objects.new('curve_chain', curve_data)
+    bpy.data.collections["carabiners"].objects.link(curve_obj)
+
+    bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+    bpy.context.active_object.rotation_euler.rotate_axis("X", math.radians(90))
+    bpy.context.active_object.name = "curve_rotate"
+
+def prepare_modifiers(context):
+    bpy.ops.object.select_all(action='DESELECT')
+    add_mesh("libraries\\chain.blend", context, "carabiners")
+    bpy.context.view_layer.objects.active = bpy.data.objects["chain_big"]
+    bpy.ops.object.modifier_add(type='ARRAY')
+    bpy.context.object.modifiers["Array"].fit_type = 'FIT_CURVE'
+    bpy.context.object.modifiers["Array"].curve = bpy.data.objects["curve_chain"]
+    bpy.context.object.modifiers["Array"].use_constant_offset = True
+    bpy.context.object.modifiers["Array"].use_relative_offset = False
+    bpy.context.object.modifiers["Array"].constant_offset_displace[0] = 0.07
+    bpy.context.object.modifiers["Array"].use_object_offset = True
+    bpy.context.object.modifiers["Array"].offset_object = bpy.data.objects["curve_rotate"]
+
+    bpy.ops.object.modifier_add(type='CURVE')
+    bpy.context.object.modifiers["Curve"].object = bpy.data.objects["curve_chain"]
+    bpy.context.object.modifiers["Curve"].deform_axis = 'POS_X'
+    bpy.ops.object.make_links_data(type='MODIFIERS')
+
+def prepare_chain_rigid():
+    bpy.ops.object.editmode_toggle()
+    bpy.ops.mesh.separate(type='LOOSE')
+    bpy.ops.object.editmode_toggle()
+    bpy.context.view_layer.objects.active = bpy.data.objects["chain_small"]
+    bpy.ops.object.editmode_toggle()
+    bpy.ops.mesh.separate(type='LOOSE')
+    bpy.ops.object.editmode_toggle()
+    bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
 
 class PlaySimulationOperator(bpy.types.Operator):
     """Play physics simulation."""
