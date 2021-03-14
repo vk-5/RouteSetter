@@ -672,38 +672,16 @@ class AddCarabinerOperator(bpy.types.Operator):
         for obj in bpy.context.selected_objects:
             if obj.name.split(".")[0] == "carabiner_1":
                 bpy.context.view_layer.objects.active = obj
-        if bpy.context.scene.rigidbody_world is None:
-            bpy.ops.rigidbody.world_add()
-        bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
-        bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
-        bpy.context.scene.rigidbody_world.substeps_per_frame = 30
-        bpy.context.scene.rigidbody_world.solver_iterations = 30
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
-class PlaySimulationOperator(bpy.types.Operator):
-    """Play physics simulation."""
-    bl_idname = "object.play_simulation"
-    bl_label = "Play"
+class GenerateChainOperator(bpy.types.Operator):
+    """Generates chain through all carabiners and points."""
+    bl_idname = "object.chain"
+    bl_label = "Generate chain"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        if bpy.context.scene.rigidbody_world is None:
-            bpy.ops.rigidbody.world_add()
-        bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
-        bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
-        bpy.context.scene.rigidbody_world.substeps_per_frame = 30
-        bpy.context.scene.rigidbody_world.solver_iterations = 30    
-
-        bpy.ops.object.select_all(action='SELECT')
-        for obj in bpy.context.selected_objects:
-            if obj.name.split("_")[0] != "carabiner":
-                bpy.context.view_layer.objects.active = obj
-                bpy.ops.rigidbody.object_add()
-                bpy.context.object.rigid_body.enabled = False
-                bpy.context.object.rigid_body.collision_shape = 'MESH'
-
-
         bpy.ops.object.select_all(action='DESELECT')
         for carabiner in bpy.data.collections["carabiners"].objects:
             if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_"))  == 2 and carabiner.name.split("_")[1].split(".")[0] == "1":
@@ -793,7 +771,40 @@ class PlaySimulationOperator(bpy.types.Operator):
 
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+
+        bpy.ops.object.select_all(action='SELECT')
+        for obj in bpy.context.selected_objects:
+            if obj.name.split("_")[0] == "helper" or obj.name.split("_")[0] == "curve":
+                bpy.data.objects.remove(obj, do_unlink=True)
         return {'FINISHED'}
+
+class PlaySimulationOperator(bpy.types.Operator):
+    """Play physics simulation."""
+    bl_idname = "object.play_simulation"
+    bl_label = "Play"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        prepare_rigid_world()    
+        prepare_collisions()
+        return {'FINISHED'}
+
+def prepare_rigid_world():
+    if bpy.context.scene.rigidbody_world is None:
+        bpy.ops.rigidbody.world_add()
+    bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
+    bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
+    bpy.context.scene.rigidbody_world.substeps_per_frame = 30
+    bpy.context.scene.rigidbody_world.solver_iterations = 30
+
+def prepare_collisions():
+    bpy.ops.object.select_all(action='SELECT')
+    for obj in bpy.context.selected_objects:
+        if obj.name.split("_")[0] != "carabiner" and obj.name.split("_")[0] != "chain":
+            bpy.context.view_layer.objects.active = obj
+            bpy.ops.rigidbody.object_add()
+            bpy.context.object.rigid_body.enabled = False
+            bpy.context.object.rigid_body.collision_shape = 'MESH'
 
 def merge_edges(coordinates):
     while len(coordinates) > 1:
@@ -823,9 +834,7 @@ def merge( coordinates_a, coordinates_b):
 def distance( vertex_a, vertex_b):
     return math.sqrt((vertex_b[0] - vertex_a[0])**2 + (vertex_b[1] - vertex_a[1])**2 + (vertex_a[2] - vertex_b[2])**2) 
 
-
-
-        
+      
 """                            helper.select_set(True)
                     coordinates.append([helper.location.x, helper.location.y, helper.location.z])
                     helper.select_set(False)"""
@@ -859,6 +868,7 @@ classes = (
     RenderOperator,
     AddRiggedHumanOperator,
     AddCarabinerOperator,
+    GenerateChainOperator,
     PlaySimulationOperator
 )
 
