@@ -688,32 +688,9 @@ class GenerateChainOperator(bpy.types.Operator):
         prepare_modifiers(context)
         bpy.ops.object.apply_all_modifiers()
         prepare_chain_rigid()
-
-        for obj_small in bpy.data.collections["carabiners"].objects:
-            if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
-                for obj_big in bpy.data.collections["carabiners"].objects:
-                    if obj_big.name.split("_")[0] == "chain" and obj_big.name.split("_")[1].split(".")[0] == "big" and len(obj_small.name.split(".")) == len(obj_big.name.split(".")):
-                        if len(obj_small.name.split(".")) == 1 or obj_small.name.split(".")[1] == obj_big.name.split(".")[1]:
-                            obj_small.parent = obj_big
-                            obj_small.matrix_parent_inverse = obj_big.matrix_world.inverted()
-
-        bpy.ops.object.select_all(action='DESELECT')
-        for obj_small in bpy.data.collections["carabiners"].objects:
-            if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
-                obj_small.select_set(True)
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.mesh.select_all(action='SELECT')
-        bpy.ops.mesh.edge_split(type='VERT')
-        bpy.ops.mesh.separate(type='LOOSE')
-        bpy.ops.object.editmode_toggle()
-
-        bpy.ops.object.select_all(action='SELECT')
-        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-
-        bpy.ops.object.select_all(action='SELECT')
-        for obj in bpy.context.selected_objects:
-            if obj.name.split("_")[0] == "helper" or obj.name.split("_")[0] == "curve":
-                bpy.data.objects.remove(obj, do_unlink=True)
+        chain_set_parent()
+        prepare_chain_children()
+        chain_clean_up()
         return {'FINISHED'}
 
 def prepare_carabiners():
@@ -816,6 +793,33 @@ def prepare_chain_rigid():
     bpy.ops.mesh.separate(type='LOOSE')
     bpy.ops.object.editmode_toggle()
     bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
+
+def chain_set_parent():
+    for obj_small in bpy.data.collections["carabiners"].objects:
+        if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
+            for obj_big in bpy.data.collections["carabiners"].objects:
+                if obj_big.name.split("_")[0] == "chain" and obj_big.name.split("_")[1].split(".")[0] == "big" and len(obj_small.name.split(".")) == len(obj_big.name.split(".")):
+                    if len(obj_small.name.split(".")) == 1 or obj_small.name.split(".")[1] == obj_big.name.split(".")[1]:
+                        obj_small.parent = obj_big
+                        obj_small.matrix_parent_inverse = obj_big.matrix_world.inverted()
+
+def prepare_chain_children():
+    bpy.ops.object.select_all(action='DESELECT')
+    for obj_small in bpy.data.collections["carabiners"].objects:
+        if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
+            obj_small.select_set(True)
+    bpy.ops.object.editmode_toggle()
+    bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.mesh.edge_split(type='VERT')
+    bpy.ops.mesh.separate(type='LOOSE')
+    bpy.ops.object.editmode_toggle()
+
+def chain_clean_up():
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+    for obj in bpy.context.selected_objects:
+        if obj.name.split("_")[0] == "helper" or obj.name.split("_")[0] == "curve":
+            bpy.data.objects.remove(obj, do_unlink=True)
 
 class PlaySimulationOperator(bpy.types.Operator):
     """Play physics simulation."""
