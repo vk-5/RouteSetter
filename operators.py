@@ -682,32 +682,10 @@ class GenerateChainOperator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        bpy.ops.object.select_all(action='DESELECT')
-        for carabiner in bpy.data.collections["carabiners"].objects:
-            if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_"))  == 2 and carabiner.name.split("_")[1].split(".")[0] == "1":
-                bpy.ops.object.select_all(action='DESELECT')
-                carabiner.select_set(True)
-                bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-                for obj in carabiner.children:
-                    if obj.name.split("_")[1] != "1":
-                        obj.select_set(True)
-                    else:
-                        obj.select_set(False)
-                bpy.ops.object.parent_clear(type='CLEAR')
+        prepare_carabiners()
 
-        bpy.ops.object.select_all(action='DESELECT')
-        coordinates = []
-        edges = []
-        for helper in bpy.data.collections["carabiners"].objects:
-            if helper.name.split("_")[0] == "helper":
-                if len(edges) == 2:
-                    coordinates.append(edges)
-                    edges = [[helper.location.x, helper.location.y, helper.location.z]]
-                else:
-                    edges.append([helper.location.x, helper.location.y, helper.location.z])
-        coordinates.append(edges)
+        coordinates = prepare_coordinates()
         
-        coordinates = merge_edges(coordinates)
         curve_data = bpy.data.curves.new('curve_chain', 'CURVE')
         curve_data.dimensions = '3D'
         spline = curve_data.splines.new(type='POLY')
@@ -778,6 +756,64 @@ class GenerateChainOperator(bpy.types.Operator):
                 bpy.data.objects.remove(obj, do_unlink=True)
         return {'FINISHED'}
 
+def prepare_carabiners():
+    bpy.ops.object.select_all(action='DESELECT')
+    for carabiner in bpy.data.collections["carabiners"].objects:
+        if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_"))  == 2 and carabiner.name.split("_")[1].split(".")[0] == "1":
+            carabiner.select_set(True)
+            bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+            for obj in carabiner.children:
+                if obj.name.split("_")[1] != "1":
+                    obj.select_set(True)
+                else:
+                    obj.select_set(False)
+            bpy.ops.object.parent_clear(type='CLEAR')
+            carabiner.select_set(False)
+
+def prepare_coordinates():
+    coordinates = []
+    edges = []
+    
+    bpy.ops.object.select_all(action='DESELECT')
+    for helper in bpy.data.collections["carabiners"].objects:
+        if helper.name.split("_")[0] == "helper":
+            if len(edges) == 2:
+                coordinates.append(edges)
+                edges = [[helper.location.x, helper.location.y, helper.location.z]]
+            else:
+                edges.append([helper.location.x, helper.location.y, helper.location.z])
+    coordinates.append(edges)      
+    coordinates = merge_coordinates(coordinates)
+    return coordinates
+
+def merge_coordinates(coordinates):
+    while len(coordinates) > 1:
+        new_coordinates = merge_edges(coordinates[0], coordinates[1])
+        coordinates.pop(0)
+        coordinates[0] = new_coordinates
+    return coordinates[0]
+
+def merge_edges( coordinates_a, coordinates_b):
+    first_a_first_b = vertices_distance(coordinates_a[0],coordinates_b[0])
+    first_a_last_b = vertices_distance(coordinates_a[0],coordinates_b[-1])
+    last_a_first_b = vertices_distance(coordinates_a[-1],coordinates_b[0])
+    last_a_last_b = vertices_distance(coordinates_a[-1],coordinates_b[-1])
+
+    lowest_distance = min(first_a_first_b,first_a_last_b,last_a_first_b,last_a_last_b)
+
+    if lowest_distance == first_a_first_b:
+        coordinates_a.reverse()
+    elif lowest_distance == first_a_last_b:
+        coordinates_a.reverse()
+        coordinates_b.reverse()
+    elif lowest_distance == last_a_last_b:
+        coordinates_b.reverse()
+
+    return coordinates_a + coordinates_b
+
+def vertices_distance( vertex_a, vertex_b):
+    return math.sqrt((vertex_b[0] - vertex_a[0])**2 + (vertex_b[1] - vertex_a[1])**2 + (vertex_a[2] - vertex_b[2])**2) 
+
 class PlaySimulationOperator(bpy.types.Operator):
     """Play physics simulation."""
     bl_idname = "object.play_simulation"
@@ -806,43 +842,9 @@ def prepare_collisions():
             bpy.context.object.rigid_body.enabled = False
             bpy.context.object.rigid_body.collision_shape = 'MESH'
 
-def merge_edges(coordinates):
-    while len(coordinates) > 1:
-        new_coordinates = merge(coordinates[0], coordinates[1])
-        coordinates.pop(0)
-        coordinates[0] = new_coordinates
-    return coordinates[0]
-
-def merge( coordinates_a, coordinates_b):
-    first_a_first_b = distance(coordinates_a[0],coordinates_b[0])
-    first_a_last_b = distance(coordinates_a[0],coordinates_b[-1])
-    last_a_first_b = distance(coordinates_a[-1],coordinates_b[0])
-    last_a_last_b = distance(coordinates_a[-1],coordinates_b[-1])
-
-    lowest_distance = min(first_a_first_b,first_a_last_b,last_a_first_b,last_a_last_b)
-
-    if lowest_distance == first_a_first_b:
-        coordinates_a.reverse()
-    elif lowest_distance == first_a_last_b:
-        coordinates_a.reverse()
-        coordinates_b.reverse()
-    elif lowest_distance == last_a_last_b:
-        coordinates_b.reverse()
-
-    return coordinates_a + coordinates_b
-
-def distance( vertex_a, vertex_b):
-    return math.sqrt((vertex_b[0] - vertex_a[0])**2 + (vertex_b[1] - vertex_a[1])**2 + (vertex_a[2] - vertex_b[2])**2) 
-
-      
-"""                            helper.select_set(True)
-                    coordinates.append([helper.location.x, helper.location.y, helper.location.z])
-                    helper.select_set(False)"""
-
 """                bpy.context.scene.frame_end = 51
         bpy.ops.ptcache.bake_all(bake=True)
         bpy.context.scene.frame_current = 50"""
-
 
 classes = (
     CreateEmptyScene,
