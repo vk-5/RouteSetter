@@ -588,12 +588,12 @@ class DrawDone(bpy.types.Operator):
         bpy.context.object.modifiers["Array"].relative_offset_displace[0] = 0
         bpy.context.object.modifiers["Array"].relative_offset_displace[1] = 0
         bpy.context.object.modifiers["Array"].relative_offset_displace[2] = 1
-
         bpy.ops.object.modifier_add(type='CURVE')
         bpy.context.object.modifiers["Curve"].object = bpy.data.objects["GP_Layer"]
         bpy.context.object.modifiers["Curve"].deform_axis = 'POS_Z'
 
         bpy.ops.object.apply_all_modifiers()
+        bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
         bpy.data.objects.remove(bpy.data.objects["GP_Layer"], do_unlink=True)
         return {'FINISHED'}
 
@@ -691,10 +691,14 @@ class AddHelperPointsOperator(bpy.types.Operator):
         return {'FINISHED'}
 
 class GenerateChainOperator(bpy.types.Operator):
-    """Generates chain through all carabiners and points."""
+    """Generates chain through all carabiners and points. If this button is disabled, add carabiner or point to active it."""
     bl_idname = "object.chain"
-    bl_label = "Generate chain"
+    bl_label = "Generate rope"
     bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(self, context):
+        return "carabiner_1" in bpy.data.objects.keys() or "helperParent" in bpy.data.objects.keys()
 
     def execute(self, context):
         prepare_carabiners()
@@ -849,7 +853,7 @@ def chain_clean_up():
             bpy.data.objects.remove(obj, do_unlink=True)
 
 class PlaySimulationOperator(bpy.types.Operator):
-    """Play physics simulation."""
+    """Play physics simulation. If this button is disabled, generate rope to active it."""
     bl_idname = "object.play_simulation"
     bl_label = "Play / Stop Simulation"
     bl_options = {'REGISTER', 'UNDO'}

@@ -20,13 +20,13 @@ class EditPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.empty_scene")
         row = layout.row()
-        row.operator("wm.url_open", text="Documentation").url = "https://github.com/vk-5/RouteSetter"
-        row = layout.row()
         row.operator("object.move_object_with_snapping")
         row.operator("object.rotate_modal")
         row = layout.row()
         row.operator("object.scale")
         row.operator("object.delete")
+        row = layout.row()
+        row.operator("wm.url_open", text="Documentation").url = "https://github.com/vk-5/RouteSetter"
 
 
 def enum_previews_from_directory_walls(self, context):
@@ -279,12 +279,6 @@ class ReferencePanel(bpy.types.Panel):
         wm = context.window_manager
 
         row = layout.row()
-        row.label(text="Add real size human reference")
-        row = layout.row()
-        row.prop(wm, "scale_prop", slider=True, text="Centimeters")
-        row = layout.row()
-        row.operator("object.human")
-        row = layout.row()
         row.label(text="Rope stretching check")
         row = layout.row()
         row.operator("object.carabiner")
@@ -293,6 +287,12 @@ class ReferencePanel(bpy.types.Panel):
         row.operator("object.chain")
         row = layout.row()
         row.operator("object.play_simulation")
+        row = layout.row()
+        row.label(text="Add real size human reference")
+        row = layout.row()
+        row.prop(wm, "scale_prop", slider=True, text="Centimeters")
+        row = layout.row()
+        row.operator("object.human")
 
 
 classes = (
