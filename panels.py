@@ -288,6 +288,8 @@ class ReferencePanel(bpy.types.Panel):
         row.label(text="Rope stretching check")
         row = layout.row()
         row.operator("object.carabiner")
+        row.operator("object.helper_points")
+        row = layout.row()
         row.operator("object.chain")
         row = layout.row()
         row.operator("object.play_simulation")

@@ -661,7 +661,7 @@ class AddRiggedHumanOperator(bpy.types.Operator):
         return {'FINISHED'}
     
 class AddCarabinerOperator(bpy.types.Operator):
-    """Add real size character"""
+    """Add carabiner to the scene."""
     bl_idname = "object.carabiner"
     bl_label = "Add carabiner"
     bl_options = {'REGISTER', 'UNDO'}
@@ -675,6 +675,21 @@ class AddCarabinerOperator(bpy.types.Operator):
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
+class AddHelperPointsOperator(bpy.types.Operator):
+    """Add points so chain will not go through any other object."""
+    bl_idname = "object.helper_points"
+    bl_label = "Add point"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh("libraries\\points.blend", context, "carabiners")
+        for obj in bpy.context.selected_objects:
+            if obj.name.split(".")[0] == "helperParent":
+                bpy.context.view_layer.objects.active = obj
+        move_with_snapping(self, context, context.active_object)
+        return {'FINISHED'}
+
 class GenerateChainOperator(bpy.types.Operator):
     """Generates chain through all carabiners and points."""
     bl_idname = "object.chain"
@@ -683,6 +698,7 @@ class GenerateChainOperator(bpy.types.Operator):
 
     def execute(self, context):
         prepare_carabiners()
+        prepare_points()
         coordinates = prepare_coordinates()     
         prepare_curve_and_empty(coordinates)
         prepare_modifiers(context)
@@ -696,7 +712,7 @@ class GenerateChainOperator(bpy.types.Operator):
 def prepare_carabiners():
     bpy.ops.object.select_all(action='DESELECT')
     for carabiner in bpy.data.collections["carabiners"].objects:
-        if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_"))  == 2 and carabiner.name.split("_")[1].split(".")[0] == "1":
+        if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_")) == 2 and carabiner.name.split("_")[1].split(".")[0] == "1":
             carabiner.select_set(True)
             bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
             for obj in carabiner.children:
@@ -706,6 +722,17 @@ def prepare_carabiners():
                     obj.select_set(False)
             bpy.ops.object.parent_clear(type='CLEAR')
             carabiner.select_set(False)
+
+def prepare_points():
+    bpy.ops.object.select_all(action='DESELECT')
+    for helper_parent in bpy.data.collections["carabiners"].objects:
+        if helper_parent.name.split("_")[0] == "helperParent":
+            helper_parent.select_set(True)
+            bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+            for obj in helper_parent.children:
+                obj.select_set(True)
+            bpy.ops.object.parent_clear(type='CLEAR')
+            helper_parent.select_set(False)
 
 def prepare_coordinates():
     coordinates = []
@@ -818,18 +845,24 @@ def chain_clean_up():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
     for obj in bpy.context.selected_objects:
-        if obj.name.split("_")[0] == "helper" or obj.name.split("_")[0] == "curve":
+        if obj.name.split("_")[0] == "helper" or obj.name.split("_")[0] == "curve" or obj.name.split("_")[0] == "helperParent":
             bpy.data.objects.remove(obj, do_unlink=True)
 
 class PlaySimulationOperator(bpy.types.Operator):
     """Play physics simulation."""
     bl_idname = "object.play_simulation"
-    bl_label = "Play"
+    bl_label = "Play / Stop Simulation"
     bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(self, context):
+        return "chain_big" in bpy.data.objects.keys()
 
     def execute(self, context):
         prepare_rigid_world()    
         prepare_collisions()
+        bpy.context.scene.frame_end = 51
+        bpy.ops.screen.animation_play()
         return {'FINISHED'}
 
 def prepare_rigid_world():
@@ -848,10 +881,6 @@ def prepare_collisions():
             bpy.ops.rigidbody.object_add()
             bpy.context.object.rigid_body.enabled = False
             bpy.context.object.rigid_body.collision_shape = 'MESH'
-
-"""                bpy.context.scene.frame_end = 51
-        bpy.ops.ptcache.bake_all(bake=True)
-        bpy.context.scene.frame_current = 50"""
 
 classes = (
     CreateEmptyScene,
@@ -877,6 +906,7 @@ classes = (
     RenderOperator,
     AddRiggedHumanOperator,
     AddCarabinerOperator,
+    AddHelperPointsOperator,
     GenerateChainOperator,
     PlaySimulationOperator
 )
