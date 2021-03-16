@@ -20,25 +20,25 @@ class CreateEmptyScene(bpy.types.Operator):
         for c in bpy.data.curves:
             bpy.data.curves.remove(c)
 
-        wall_collection = bpy.data.collections.new("walls")
-        bpy.context.scene.collection.children.link(wall_collection)
-        structure_collection = bpy.data.collections.new("structures")
-        wall_collection.children.link(structure_collection)
-        path_collection = bpy.data.collections.new("route")
-        wall_collection.children.link(path_collection)
-        path_collection.color_tag = get_random_color_tag()
-        rock_collection = bpy.data.collections.new("rocks")
-        route_collection = bpy.data.collections.new("path")
-        rock_collection.children.link(route_collection)
-        route_collection.color_tag = get_random_color_tag()
-        bpy.context.scene.collection.children.link(rock_collection)
-        ref_collection = bpy.data.collections.new("reference")
-        bpy.context.scene.collection.children.link(ref_collection)
-        human_collection = bpy.data.collections.new("human")
-        ref_collection.children.link(human_collection)
-        carabiners_collection = bpy.data.collections.new("carabiners")
-        ref_collection.children.link(carabiners_collection)
+        wall_collection = create_collection("walls")
+        structure_collection = create_collection("structures", wall_collection)
+        route_collection = create_collection("route", wall_collection, get_random_color_tag())
+        rock_collection = create_collection("rocks")
+        path_collection = create_collection("path", rock_collection, get_random_color_tag())
+        ref_collection = create_collection("reference")
+        carabiners_collection = create_collection("carabiners", ref_collection)
+        human_collection = create_collection("human", ref_collection)
         return {'FINISHED'}
+
+def create_collection(name, parent=None, color=None):
+    collection = bpy.data.collections.new(name)
+    if parent is None:
+        bpy.context.scene.collection.children.link(collection)
+    else:
+        parent.children.link(collection)
+    if color is not None:
+        collection.color_tag = color
+    return collection
 
 def get_random_color_tag():
     index = random.randint(0, 8)
@@ -58,9 +58,22 @@ class AddRouteCollection(bpy.types.Operator):
             return {'CANCELLED'}
 
         wall_collection = bpy.data.collections["walls"]
-        path_collection = bpy.data.collections.new("route")
-        wall_collection.children.link(path_collection)
-        path_collection.color_tag = get_random_color_tag()
+        route_collection = create_collection("route", wall_collection, get_random_color_tag())
+        return {'FINISHED'}
+
+class AddPathCollection(bpy.types.Operator):
+    """Adds new path collection."""
+    bl_idname = "object.add_path_collection"
+    bl_label = "Add new path"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        if "rocks" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
+
+        rock_collection = bpy.data.collections["rocks"]
+        path_collection = create_collection("path", rock_collection, get_random_color_tag())
         return {'FINISHED'}
 
 
@@ -908,7 +921,6 @@ def prepare_collisions():
 
 classes = (
     CreateEmptyScene,
-    AddRouteCollection,
     MoveObjectWithSnapping,
     RotateModal,
     ScaleObject,
@@ -927,6 +939,8 @@ classes = (
     RemoveFromStructureLibrary,
     RemoveFromHoldLibrary,
     RemoveFromRockLibrary,
+    AddRouteCollection,
+    AddPathCollection,
     RenderOperator,
     AddRiggedHumanOperator,
     AddCarabinerOperator,
