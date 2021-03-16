@@ -105,11 +105,9 @@ def enum_previews_collections(self, context):
         return enum_items
 
     pcoll = preview_collections["collections"]
-    for key in bpy.data.collections.keys():
-        enum_items.append((key, key, ""))
-    for obj in bpy.data.objects.keys():
-        if bpy.data.objects[obj].name.split(".")[0] == "path":
-            enum_items.append((obj, obj, ""))
+    for collection in bpy.data.collections:
+        if collection.name.split(".")[0] in ["path", "route", "carabiners"]:
+            enum_items.append((collection.name, collection.name, ""))
     pcoll.collections_previews = enum_items
     return pcoll.collections_previews
 
@@ -282,8 +280,6 @@ class RenderPanel(bpy.types.Panel):
         row = layout.row()
         row.prop(wm, "collections_previews", text="")
         row = layout.row()
-        row.prop(wm, "rotation_prop", slider=True, text="Rotation")
-        row = layout.row()
         row.operator("object.render")
 
 
@@ -403,8 +399,7 @@ def register():
         update=update_path_collections,
     )
 
-    WindowManager.rotation_prop = IntProperty(default=0, soft_min=-180, soft_max=180)
-    WindowManager.scale_prop = IntProperty(default=180, soft_min=100, soft_max=230)
+    WindowManager.scale_prop = IntProperty(default=180, soft_min=100, soft_max=210)
 
     pcoll_walls = bpy.utils.previews.new()
     pcoll_walls.walls_previews_dir = ""
@@ -457,7 +452,6 @@ def unregister():
     del WindowManager.structures_previews_dir
     del WindowManager.holds_previews_dir
     del WindowManager.rocks_previews_dir
-    del WindowManager.rotation_prop
     del WindowManager.scale_prop
 
     for pcoll in preview_collections.values():

@@ -21,13 +21,13 @@ class CreateEmptyScene(bpy.types.Operator):
             bpy.data.curves.remove(c)
 
         wall_collection = create_collection("walls")
-        structure_collection = create_collection("structures", wall_collection)
-        route_collection = create_collection("route", wall_collection, get_random_color_tag())
+        create_collection("structures", wall_collection)
+        create_collection("route", wall_collection, get_random_color_tag())
         rock_collection = create_collection("rocks")
-        path_collection = create_collection("path", rock_collection, get_random_color_tag())
+        create_collection("path", rock_collection, get_random_color_tag())
         ref_collection = create_collection("reference")
-        carabiners_collection = create_collection("carabiners", ref_collection)
-        human_collection = create_collection("human", ref_collection)
+        create_collection("carabiners", ref_collection)
+        create_collection("human", ref_collection)
         return {'FINISHED'}
 
 def create_collection(name, parent=None, color=None):
@@ -58,7 +58,7 @@ class AddRouteCollection(bpy.types.Operator):
             return {'CANCELLED'}
 
         wall_collection = bpy.data.collections["walls"]
-        route_collection = create_collection("route", wall_collection, get_random_color_tag())
+        create_collection("route", wall_collection, get_random_color_tag())
         return {'FINISHED'}
 
 class AddPathCollection(bpy.types.Operator):
@@ -73,7 +73,7 @@ class AddPathCollection(bpy.types.Operator):
             return {'CANCELLED'}
 
         rock_collection = bpy.data.collections["rocks"]
-        path_collection = create_collection("path", rock_collection, get_random_color_tag())
+        create_collection("path", rock_collection, get_random_color_tag())
         return {'FINISHED'}
 
 
@@ -559,9 +559,9 @@ class RemoveFromRockLibrary(bpy.types.Operator):
 
 
 class DrawPath(bpy.types.Operator):
-    """Draw route on rock. If this button is disabled, select any object and switch to object mode to active it."""
+    """Draw path on rock. If this button is disabled, select any object and switch to object mode to active it."""
     bl_idname = "object.draw"
-    bl_label = "Draw route"
+    bl_label = "Draw path"
 
     @classmethod
     def poll(self, context):
@@ -583,7 +583,7 @@ class DrawPath(bpy.types.Operator):
 
 
 class DrawDone(bpy.types.Operator):
-    """Finish route. If this button is disabled, select object named GPencil and switch to draw mode to active it."""
+    """Finish path. If this button is disabled, press Draw route first or select object named GPencil and switch to draw mode to active it."""
     bl_idname = "object.done"
     bl_label = "Done"
     bl_options = {'REGISTER', 'UNDO'}
@@ -637,9 +637,6 @@ class RenderOperator(bpy.types.Operator):
         collection_color_tag = bpy.data.collections[render_collection].color_tag
 
         bpy.ops.object.select_all(action='DESELECT')
-        collection = bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews]
-        for obj in collection.all_objects:
-            obj.select_set(True)
 
         assign_material("walls", walls_color, collection="wall")
         assign_material("rocks", rocks_color, collection="rock")
@@ -647,13 +644,26 @@ class RenderOperator(bpy.types.Operator):
         assign_material("carabiners", carabiners_color, collection="structure")
         assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), collection=render_collection)
 
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects:
+            print(obj.name)
+            obj.select_set(True)
+
         focus_camera(rotation=(math.radians(85), math.radians(0),
-                               math.radians(bpy.data.window_managers["WinMan"].rotation_prop)))
+                               get_angle_for_render() + math.radians(90)))
         focus_light(rotation=(math.radians(45), math.radians(-45),
-                              math.radians(bpy.data.window_managers["WinMan"].rotation_prop + 45)))
+                              get_angle_for_render() + math.radians(45)))
         set_output_dimensions(1920, 1080, 100)
         bpy.ops.render.render('INVOKE_DEFAULT')
         return {'FINISHED'}
+
+def get_angle_for_render():
+    angles = []
+    bpy.ops.object.select_all(action='DESELECT')
+    for obj in bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects:
+        angles.append(math.atan2(obj.location.y, obj.location.x))
+        print(math.degrees(math.atan2(obj.location.y, obj.location.x)))
+    return sum(angles) / len(angles)
 
 def get_color_from_color_tag(tag):
     if tag == 'COLOR_01':
