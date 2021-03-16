@@ -26,7 +26,11 @@ class CreateEmptyScene(bpy.types.Operator):
         wall_collection.children.link(structure_collection)
         path_collection = bpy.data.collections.new("route")
         wall_collection.children.link(path_collection)
+        path_collection.color_tag = get_random_color_tag()
         rock_collection = bpy.data.collections.new("rocks")
+        route_collection = bpy.data.collections.new("path")
+        rock_collection.children.link(route_collection)
+        route_collection.color_tag = get_random_color_tag()
         bpy.context.scene.collection.children.link(rock_collection)
         ref_collection = bpy.data.collections.new("reference")
         bpy.context.scene.collection.children.link(ref_collection)
@@ -35,6 +39,11 @@ class CreateEmptyScene(bpy.types.Operator):
         carabiners_collection = bpy.data.collections.new("carabiners")
         ref_collection.children.link(carabiners_collection)
         return {'FINISHED'}
+
+def get_random_color_tag():
+    index = random.randint(0, 8)
+    colors = ['NONE', 'COLOR_01', 'COLOR_02', 'COLOR_03', 'COLOR_04', 'COLOR_05', 'COLOR_06', 'COLOR_07', 'COLOR_08']
+    return colors[index]
 
 
 class AddRouteCollection(bpy.types.Operator):
@@ -51,6 +60,7 @@ class AddRouteCollection(bpy.types.Operator):
         wall_collection = bpy.data.collections["walls"]
         path_collection = bpy.data.collections.new("route")
         wall_collection.children.link(path_collection)
+        path_collection.color_tag = get_random_color_tag()
         return {'FINISHED'}
 
 
@@ -444,12 +454,10 @@ def assign_material(name, color, collection=None, object_name=None):
 
     if not material:
         material = bpy.data.materials.new(name=name)
-
     material.diffuse_color = color
 
     for obj in bpy.context.selected_objects:
-        if (collection is None and object_name is None) or obj.users_collection[0].name.split('.')[
-                0] == collection or obj.name.split('.')[0] == object_name:
+        if (collection is None and object_name is None) or obj.users_collection[0].name == collection or obj.name.split('.')[0] == object_name:
             if obj.data.materials:
                 obj.data.materials[0] = material
             else:
@@ -611,8 +619,8 @@ class RenderOperator(bpy.types.Operator):
         walls_color = (0.7, 0.7, 0.7, 0)
         rocks_color = (0.7, 0.7, 0.7, 0)
         structures_color = (0.1, 0.1, 0.1, 0)
-        route_color = get_random_color()
-        path_color = get_random_color()
+        render_collection = bpy.data.window_managers["WinMan"].collections_previews
+        collection_color_tag = bpy.data.collections[render_collection].color_tag
 
         bpy.ops.object.select_all(action='DESELECT')
         if bpy.data.window_managers["WinMan"].collections_previews.split(".")[0] == "path":
@@ -624,11 +632,10 @@ class RenderOperator(bpy.types.Operator):
             for ob in objs:
                 ob.select_set(True)
 
-        assign_material("Walls", walls_color, collection="wall")
-        assign_material("Rocks", rocks_color, collection="rock")
-        assign_material("Structures", structures_color, collection="structure")
-        assign_material("Holds", route_color, object_name="hold")
-        assign_material("Paths", path_color, object_name="path")
+        assign_material("walls", walls_color, collection="wall")
+        assign_material("rocks", rocks_color, collection="rock")
+        assign_material("structures", structures_color, collection="structure")
+        assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), collection=render_collection)
 
         focus_camera(rotation=(math.radians(85), math.radians(0),
                                math.radians(bpy.data.window_managers["WinMan"].rotation_prop)))
@@ -638,13 +645,26 @@ class RenderOperator(bpy.types.Operator):
         bpy.ops.render.render('INVOKE_DEFAULT')
         return {'FINISHED'}
 
-
-def get_random_color():
-    index = random.randint(0, 5)
-    colors = [(0.5, 0, 0, 0), (0.5, 0.5, 0, 0), (0.5, 0, 0.5, 0), (0, 0.5, 0, 0), (0, 0.5, 0.5, 0),
-              (0, 0, 0.5, 0)]
-    return colors[index]
-
+def get_color_from_color_tag(tag):
+    if tag == 'COLOR_01':
+        color = (1, 0, 0, 0)
+    elif tag == 'COLOR_02':
+        color = (1, 0.25, 0, 0)
+    elif tag == 'COLOR_03':
+        color = (1, 1, 0, 0)
+    elif tag == 'COLOR_04':
+        color = (0, 1, 0, 0)
+    elif tag == 'COLOR_05':
+        color = (0, 0, 1, 0)
+    elif tag == 'COLOR_06':
+        color = (0.3, 0, 1, 0)
+    elif tag == 'COLOR_07':
+        color = (1, 0, 0.5, 0)
+    elif tag == 'COLOR_08':
+        color = (0.15, 0.05, 0, 0)
+    else:
+        color = (1, 1, 1, 0)
+    return color
 
 class AddRiggedHumanOperator(bpy.types.Operator):
     """Add real size character"""
