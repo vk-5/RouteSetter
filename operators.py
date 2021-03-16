@@ -598,7 +598,7 @@ class DrawDone(bpy.types.Operator):
         bpy.ops.gpencil.paintmode_toggle(back=True)
         bpy.ops.gpencil.convert(type='POLY', use_timing_data=False)
 
-        add_mesh("libraries\\circle.blend", context, "rocks")
+        add_mesh("libraries\\circle.blend", context, bpy.data.window_managers["WinMan"].path_collection)
         bpy.data.objects.remove(bpy.data.objects["GPencil"], do_unlink=True)
         new_name = bpy.context.active_object.name
         bpy.context.view_layer.objects.active = bpy.data.objects[new_name]
@@ -632,22 +632,19 @@ class RenderOperator(bpy.types.Operator):
         walls_color = (0.7, 0.7, 0.7, 0)
         rocks_color = (0.7, 0.7, 0.7, 0)
         structures_color = (0.1, 0.1, 0.1, 0)
+        carabiners_color = (0.1, 0.1, 0.1, 0)
         render_collection = bpy.data.window_managers["WinMan"].collections_previews
         collection_color_tag = bpy.data.collections[render_collection].color_tag
 
         bpy.ops.object.select_all(action='DESELECT')
-        if bpy.data.window_managers["WinMan"].collections_previews.split(".")[0] == "path":
-            ob = bpy.data.objects[bpy.data.window_managers["WinMan"].collections_previews]
-            ob.select_set(True)
-        else:
-            collection = bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews]
-            objs = collection.all_objects
-            for ob in objs:
-                ob.select_set(True)
+        collection = bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews]
+        for obj in collection.all_objects:
+            obj.select_set(True)
 
         assign_material("walls", walls_color, collection="wall")
         assign_material("rocks", rocks_color, collection="rock")
         assign_material("structures", structures_color, collection="structure")
+        assign_material("carabiners", carabiners_color, collection="structure")
         assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), collection=render_collection)
 
         focus_camera(rotation=(math.radians(85), math.radians(0),
