@@ -462,15 +462,21 @@ def focus_light(rotation):
     light_obj.data.energy = 2
 
 
-def assign_material(name, color, collection=None, object_name=None):
+def assign_material(name, color, collection=None):
     material = bpy.data.materials.get(name)
 
     if not material:
         material = bpy.data.materials.new(name=name)
     material.diffuse_color = color
 
-    for obj in bpy.context.selected_objects:
-        if (collection is None and object_name is None) or obj.users_collection[0].name == collection or obj.name.split('.')[0] == object_name:
+    if collection is None:
+        for obj in bpy.context.selected_objects:
+            if obj.data.materials:
+                obj.data.materials[0] = material
+            else:
+                obj.data.materials.append(material)
+    else:
+        for obj in bpy.data.collections[collection].objects:
             if obj.data.materials:
                 obj.data.materials[0] = material
             else:
@@ -620,13 +626,13 @@ class DrawDone(bpy.types.Operator):
 
 
 class RenderOperator(bpy.types.Operator):
-    """Render selected collection hierachy"""
+    """Render selected collection. If this button is disabled, you are trying to render empty collection, select different collection or add some object to active it."""
     bl_idname = "object.render"
     bl_label = "Render"
 
     @classmethod
     def poll(self, context):
-        return bpy.data.collections
+        return bpy.data.collections and len(bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects) != 0
 
     def execute(self, context):
         walls_color = (0.7, 0.7, 0.7, 0)
@@ -637,22 +643,21 @@ class RenderOperator(bpy.types.Operator):
         collection_color_tag = bpy.data.collections[render_collection].color_tag
 
         bpy.ops.object.select_all(action='DESELECT')
-
-        assign_material("walls", walls_color, collection="wall")
-        assign_material("rocks", rocks_color, collection="rock")
-        assign_material("structures", structures_color, collection="structure")
-        assign_material("carabiners", carabiners_color, collection="structure")
-        assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), collection=render_collection)
+        assign_material("walls", walls_color, collection="walls")
+        assign_material("rocks", rocks_color, collection="rocks")
+        assign_material("structures", structures_color, collection="structures")
+        assign_material("carabiners", carabiners_color, collection="carabiners")
+        assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), render_collection)
 
         bpy.ops.object.select_all(action='DESELECT')
-        for obj in bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects:
-            print(obj.name)
+        for obj in bpy.data.collections[render_collection].objects:
             obj.select_set(True)
 
         focus_camera(rotation=(math.radians(85), math.radians(0),
                                get_angle_for_render() + math.radians(90)))
         focus_light(rotation=(math.radians(45), math.radians(-45),
                               get_angle_for_render() + math.radians(45)))
+
         set_output_dimensions(1920, 1080, 100)
         bpy.ops.render.render('INVOKE_DEFAULT')
         return {'FINISHED'}
@@ -662,7 +667,6 @@ def get_angle_for_render():
     bpy.ops.object.select_all(action='DESELECT')
     for obj in bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects:
         angles.append(math.atan2(obj.location.y, obj.location.x))
-        print(math.degrees(math.atan2(obj.location.y, obj.location.x)))
     return sum(angles) / len(angles)
 
 def get_color_from_color_tag(tag):
