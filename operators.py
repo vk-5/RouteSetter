@@ -427,7 +427,7 @@ def filenames_to_ints(file_name):
     return int(file_name.split("_")[1].split(".")[0])
 
 
-def focus_camera(rotation):
+def focus_camera(rotation, collection=None):
     if bpy.data.objects.get("Camera Asset") is None:
         camera_data = bpy.data.cameras.new(name="Camera Asset")
         cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
@@ -438,6 +438,10 @@ def focus_camera(rotation):
     bpy.data.cameras["Camera Asset"].lens = 50
     bpy.context.scene.camera = cam_obj
     cam_obj.rotation_euler = rotation
+    if collection is not None:
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in bpy.data.collections[collection].objects:
+            obj.select_set(True)
     bpy.ops.view3d.camera_to_view_selected()
     bpy.data.cameras["Camera Asset"].lens = 30
 
@@ -649,12 +653,8 @@ class RenderOperator(bpy.types.Operator):
         assign_material("carabiners", carabiners_color, collection="carabiners")
         assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), render_collection)
 
-        bpy.ops.object.select_all(action='DESELECT')
-        for obj in bpy.data.collections[render_collection].objects:
-            obj.select_set(True)
-
         focus_camera(rotation=(math.radians(85), math.radians(0),
-                               get_angle_for_render() + math.radians(90)))
+                               get_angle_for_render() + math.radians(90)), collection=render_collection)
         focus_light(rotation=(math.radians(45), math.radians(-45),
                               get_angle_for_render() + math.radians(45)))
 
@@ -667,6 +667,7 @@ def get_angle_for_render():
     bpy.ops.object.select_all(action='DESELECT')
     for obj in bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects:
         angles.append(math.atan2(obj.location.y, obj.location.x))
+        print()
     return sum(angles) / len(angles)
 
 def get_color_from_color_tag(tag):
