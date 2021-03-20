@@ -1,12 +1,6 @@
 import bpy
 import os
 import bpy.utils.previews
-from bpy.props import (
-    StringProperty,
-    EnumProperty,
-)
-
-
 
 def enum_previews_from_directory_walls(self, context):
     """EnumProperty callback"""

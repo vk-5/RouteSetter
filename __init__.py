@@ -1,6 +1,6 @@
 import bpy
 
-from . import panels, operators, properties
+from . import properties, operators, panels
 
 bl_info = {
     "name": "Route setter Add-on",
@@ -11,9 +11,9 @@ bl_info = {
 
 
 files = (
+    properties,
     operators,
-    panels,
-    properties
+    panels
 )
 
 

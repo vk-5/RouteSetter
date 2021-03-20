@@ -1,7 +1,7 @@
 import bpy, math, mathutils, bpy_extras, random
-from bpy_extras.view3d_utils import region_2d_to_location_3d
 import os
 from os import listdir
+
 
 class CreateEmptyScene(bpy.types.Operator):
     """Delete all objects and create new empty scene."""
@@ -30,6 +30,7 @@ class CreateEmptyScene(bpy.types.Operator):
         create_collection("human", ref_collection)
         return {'FINISHED'}
 
+
 def create_collection(name, parent=None, color=None):
     collection = bpy.data.collections.new(name)
     if parent is None:
@@ -39,6 +40,7 @@ def create_collection(name, parent=None, color=None):
     if color is not None:
         collection.color_tag = color
     return collection
+
 
 def get_random_color_tag():
     index = random.randint(0, 8)
@@ -636,7 +638,7 @@ class RenderOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.data.collections and len(bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects) != 0
+        return len(bpy.data.collections) > 1 and len(bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects) != 0
 
     def execute(self, context):
         walls_color = (0.7, 0.7, 0.7, 0)
