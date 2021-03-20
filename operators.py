@@ -443,7 +443,7 @@ def focus_camera(rotation, collection=None):
         for obj in bpy.data.collections[collection].objects:
             obj.select_set(True)
     bpy.ops.view3d.camera_to_view_selected()
-    bpy.data.cameras["Camera Asset"].lens = 30
+    bpy.data.cameras["Camera Asset"].lens = 20
 
 
 def set_output_dimensions(dimension_x, dimension_y, percentage):
@@ -658,7 +658,7 @@ class RenderOperator(bpy.types.Operator):
         focus_light(rotation=(math.radians(45), math.radians(-45),
                               get_angle_for_render() + math.radians(45)))
 
-        set_output_dimensions(1920, 1080, 100)
+        set_output_dimensions(1080, 1920, 100)
         bpy.ops.render.render('INVOKE_DEFAULT')
         return {'FINISHED'}
 
