@@ -2,6 +2,7 @@ import bpy
 import os
 import bpy.utils.previews
 
+
 def enum_previews_from_directory_walls(self, context):
     """EnumProperty callback"""
     enum_items = []
@@ -84,6 +85,7 @@ def enum_previews_collections(self, context):
     pcoll.collections_previews = enum_items
     return pcoll.collections_previews
 
+
 def enum_route_previews_collections(self, context):
     """EnumProperty callback"""
     enum_items = []
@@ -97,6 +99,7 @@ def enum_route_previews_collections(self, context):
             enum_items.append((key, key, ""))
     pcoll.route_collection = enum_items
     return pcoll.route_collection
+
 
 def enum_path_previews_collections(self, context):
     """EnumProperty callback"""
@@ -162,6 +165,7 @@ def update_route_collections(self, context):
 def update_path_collections(self, context):
     enum_path_previews_collections(self, context)
     return None
+
 
 preview_collections = {}
 
