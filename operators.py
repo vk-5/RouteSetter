@@ -896,6 +896,7 @@ def chain_clean_up():
     for obj in bpy.context.selected_objects:
         if obj.name.split("_")[0] == "helper" or obj.name.split("_")[0] == "curve" or obj.name.split("_")[0] == "helperParent":
             bpy.data.objects.remove(obj, do_unlink=True)
+            
 
 class PlaySimulationOperator(bpy.types.Operator):
     """Play physics simulation. If this button is disabled, generate rope to active it."""
