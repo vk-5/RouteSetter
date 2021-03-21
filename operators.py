@@ -19,6 +19,12 @@ class CreateEmptyScene(bpy.types.Operator):
             bpy.data.materials.remove(m)
         for c in bpy.data.curves:
             bpy.data.curves.remove(c)
+        for m in bpy.data.meshes:
+            bpy.data.meshes.remove(m)
+        for l in bpy.data.lights:
+            bpy.data.lights.remove(l)
+        for c in bpy.data.cameras:
+            bpy.data.cameras.remove(c)
 
         wall_collection = create_collection("walls")
         create_collection("structures", wall_collection)
@@ -549,13 +555,14 @@ class GenerateChainOperator(bpy.types.Operator):
         coordinates = prepare_coordinates()     
         prepare_curve_and_empty(coordinates)
         prepare_modifiers(context)
-        bpy.ops.object.modifier_apply(modifier="Array")
-        bpy.ops.object.modifier_apply(modifier="Curve")
+        apply_modifiers("chain_big.001", ['Array', 'Curve'])
+        apply_modifiers("chain_small.001", ['Array', 'Curve'])
         prepare_chain_rigid()
         chain_set_parent()
         prepare_chain_children()
         chain_clean_up()
         return {'FINISHED'}
+
 
 def prepare_carabiners():
     bpy.ops.object.select_all(action='DESELECT')
@@ -571,6 +578,7 @@ def prepare_carabiners():
             bpy.ops.object.parent_clear(type='CLEAR')
             carabiner.select_set(False)
 
+
 def prepare_points():
     bpy.ops.object.select_all(action='DESELECT')
     for helper_parent in bpy.data.collections["carabiners"].objects:
@@ -581,6 +589,7 @@ def prepare_points():
                 obj.select_set(True)
             bpy.ops.object.parent_clear(type='CLEAR')
             helper_parent.select_set(False)
+
 
 def prepare_coordinates():
     coordinates = []
@@ -598,12 +607,14 @@ def prepare_coordinates():
     coordinates = merge_coordinates(coordinates)
     return coordinates
 
+
 def merge_coordinates(coordinates):
     while len(coordinates) > 1:
         new_coordinates = merge_edges(coordinates[0], coordinates[1])
         coordinates.pop(0)
         coordinates[0] = new_coordinates
     return coordinates[0]
+
 
 def merge_edges( coordinates_a, coordinates_b):
     first_a_first_b = vertices_distance(coordinates_a[0],coordinates_b[0])
@@ -623,8 +634,10 @@ def merge_edges( coordinates_a, coordinates_b):
 
     return coordinates_a + coordinates_b
 
+
 def vertices_distance( vertex_a, vertex_b):
     return math.sqrt((vertex_b[0] - vertex_a[0])**2 + (vertex_b[1] - vertex_a[1])**2 + (vertex_a[2] - vertex_b[2])**2) 
+
 
 def prepare_curve_and_empty(coordinates):
     curve_data = bpy.data.curves.new('curve_chain', 'CURVE')
@@ -641,10 +654,11 @@ def prepare_curve_and_empty(coordinates):
     bpy.context.active_object.rotation_euler.rotate_axis("X", math.radians(90))
     bpy.context.active_object.name = "curve_rotate"
 
+
 def prepare_modifiers(context):
     bpy.ops.object.select_all(action='DESELECT')
     add_mesh("libraries\\chain.blend", context, "carabiners")
-    bpy.context.view_layer.objects.active = bpy.data.objects["chain_big"]
+    bpy.context.view_layer.objects.active = bpy.data.objects["chain_big.001"]
     bpy.ops.object.modifier_add(type='ARRAY')
     bpy.context.object.modifiers["Array"].fit_type = 'FIT_CURVE'
     bpy.context.object.modifiers["Array"].curve = bpy.data.objects["curve_chain"]
@@ -659,24 +673,36 @@ def prepare_modifiers(context):
     bpy.context.object.modifiers["Curve"].deform_axis = 'POS_X'
     bpy.ops.object.make_links_data(type='MODIFIERS')
 
+
+def apply_modifiers( obj_name, modifiers):
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.view_layer.objects.active = bpy.data.objects[obj_name]
+    for mod in modifiers:
+        bpy.ops.object.modifier_apply(modifier=mod)
+
+
 def prepare_chain_rigid():
+    bpy.context.view_layer.objects.active = bpy.data.objects["chain_big.001"]
     bpy.ops.object.editmode_toggle()
     bpy.ops.mesh.separate(type='LOOSE')
     bpy.ops.object.editmode_toggle()
-    bpy.context.view_layer.objects.active = bpy.data.objects["chain_small"]
+    bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.view_layer.objects.active = bpy.data.objects["chain_small.001"]
     bpy.ops.object.editmode_toggle()
     bpy.ops.mesh.separate(type='LOOSE')
     bpy.ops.object.editmode_toggle()
     bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
 
+
 def chain_set_parent():
     for obj_small in bpy.data.collections["carabiners"].objects:
         if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
             for obj_big in bpy.data.collections["carabiners"].objects:
-                if obj_big.name.split("_")[0] == "chain" and obj_big.name.split("_")[1].split(".")[0] == "big" and len(obj_small.name.split(".")) == len(obj_big.name.split(".")):
-                    if len(obj_small.name.split(".")) == 1 or obj_small.name.split(".")[1] == obj_big.name.split(".")[1]:
-                        obj_small.parent = obj_big
-                        obj_small.matrix_parent_inverse = obj_big.matrix_world.inverted()
+                if obj_big.name.split("_")[0] == "chain" and obj_big.name.split("_")[1].split(".")[0] == "big" and obj_small.name.split(".")[1] == obj_big.name.split(".")[1]:
+                    obj_small.parent = obj_big
+                    obj_small.matrix_parent_inverse = obj_big.matrix_world.inverted()
+
 
 def prepare_chain_children():
     bpy.ops.object.select_all(action='DESELECT')
@@ -705,7 +731,7 @@ class PlaySimulationOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return "chain_big" in bpy.data.objects.keys()
+        return "chain_big.001" in bpy.data.objects.keys()
 
     def execute(self, context):
         prepare_rigid_world()    
