@@ -686,12 +686,14 @@ def prepare_chain_rigid():
     bpy.ops.object.editmode_toggle()
     bpy.ops.mesh.separate(type='LOOSE')
     bpy.ops.object.editmode_toggle()
-    bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
     bpy.ops.object.select_all(action='DESELECT')
     bpy.context.view_layer.objects.active = bpy.data.objects["chain_small.001"]
     bpy.ops.object.editmode_toggle()
     bpy.ops.mesh.separate(type='LOOSE')
     bpy.ops.object.editmode_toggle()
+    for obj in bpy.data.collections["carabiners"].objects:
+        if obj.name.split("_")[0] == "chain":
+            obj.select_set(True)
     bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
 
 
