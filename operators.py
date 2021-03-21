@@ -1,4 +1,4 @@
-import bpy, math, mathutils, bpy_extras, random
+import bpy, math, mathutils, bpy_extras.view3d_utils, random
 import os
 from os import listdir
 
@@ -46,37 +46,6 @@ def get_random_color_tag():
     index = random.randint(0, 8)
     colors = ['NONE', 'COLOR_01', 'COLOR_02', 'COLOR_03', 'COLOR_04', 'COLOR_05', 'COLOR_06', 'COLOR_07', 'COLOR_08']
     return colors[index]
-
-
-class AddRouteCollection(bpy.types.Operator):
-    """Adds new route collection."""
-    bl_idname = "object.add_route_collection"
-    bl_label = "Add new route"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context):
-        if "walls" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
-            return {'CANCELLED'}
-
-        wall_collection = bpy.data.collections["walls"]
-        create_collection("route", wall_collection, get_random_color_tag())
-        return {'FINISHED'}
-
-class AddPathCollection(bpy.types.Operator):
-    """Adds new path collection."""
-    bl_idname = "object.add_path_collection"
-    bl_label = "Add new path"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context):
-        if "rocks" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
-            return {'CANCELLED'}
-
-        rock_collection = bpy.data.collections["rocks"]
-        create_collection("path", rock_collection, get_random_color_tag())
-        return {'FINISHED'}
 
 
 class MoveObjectWithSnapping(bpy.types.Operator):
@@ -365,6 +334,36 @@ def assign_material(name, color, collection=None):
             else:
                 obj.data.materials.append(material)
 
+class AddRouteCollection(bpy.types.Operator):
+    """Adds new route collection."""
+    bl_idname = "object.add_route_collection"
+    bl_label = "Add new route"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        if "walls" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
+
+        wall_collection = bpy.data.collections["walls"]
+        create_collection("route", wall_collection, get_random_color_tag())
+        return {'FINISHED'}
+
+class AddPathCollection(bpy.types.Operator):
+    """Adds new path collection."""
+    bl_idname = "object.add_path_collection"
+    bl_label = "Add new path"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        if "rocks" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
+
+        rock_collection = bpy.data.collections["rocks"]
+        create_collection("path", rock_collection, get_random_color_tag())
+        return {'FINISHED'}
+
 
 class DrawPath(bpy.types.Operator):
     """Draw path on rock. If this button is disabled, select any object and switch to object mode to active it."""
@@ -421,7 +420,8 @@ class DrawDone(bpy.types.Operator):
         bpy.context.object.modifiers["Curve"].object = bpy.data.objects["GP_Layer"]
         bpy.context.object.modifiers["Curve"].deform_axis = 'POS_Z'
 
-        bpy.ops.object.apply_all_modifiers()
+        bpy.ops.object.modifier_apply(modifier="Array")
+        bpy.ops.object.modifier_apply(modifier="Curve")
         bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
         bpy.data.objects.remove(bpy.data.objects["GP_Layer"], do_unlink=True)
         return {'FINISHED'}
@@ -549,7 +549,8 @@ class GenerateChainOperator(bpy.types.Operator):
         coordinates = prepare_coordinates()     
         prepare_curve_and_empty(coordinates)
         prepare_modifiers(context)
-        bpy.ops.object.apply_all_modifiers()
+        bpy.ops.object.modifier_apply(modifier="Array")
+        bpy.ops.object.modifier_apply(modifier="Curve")
         prepare_chain_rigid()
         chain_set_parent()
         prepare_chain_children()

@@ -1,4 +1,4 @@
-import bpy, math, mathutils, bpy_extras, random
+import bpy, math, mathutils, random
 import os
 from os import listdir
 
@@ -186,15 +186,6 @@ def assign_material(name, color, collection=None):
                 obj.data.materials.append(material)
 
 
-def delete_asset_from_library(icon, directory):
-    asset = icon.split('.')[0] + ".blend"
-    filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),directory)
-    icon = os.path.join(filepath, icon)
-    asset = os.path.join(filepath, asset)
-    os.remove(icon)
-    os.remove(asset)
-
-
 class RemoveFromWallLibrary(bpy.types.Operator):
     """Remove asset from Wall library. If this button is disabled, select any icon from collection to active it."""
     bl_idname = "object.wall_library_remove"
@@ -265,6 +256,14 @@ class RemoveFromRockLibrary(bpy.types.Operator):
 
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
+
+def delete_asset_from_library(icon, directory):
+    asset = icon.split('.')[0] + ".blend"
+    filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),directory)
+    icon = os.path.join(filepath, icon)
+    asset = os.path.join(filepath, asset)
+    os.remove(icon)
+    os.remove(asset)
 
 classes = (
     AddToWallLibrary,
