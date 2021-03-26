@@ -1,7 +1,7 @@
 import bpy, math, mathutils, bpy_extras.view3d_utils, random
 import os
 from os import listdir
-from . functions import move_with_snapping, add_mesh
+from . asset_import_functions import add_mesh, move_with_snapping
 
 
 class MoveObjectWithSnapping(bpy.types.Operator):

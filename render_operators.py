@@ -1,7 +1,6 @@
 import bpy, math, mathutils, bpy_extras.view3d_utils, random
 import os
 from os import listdir
-from . functions import move_with_snapping, add_mesh
 
 class RenderOperator(bpy.types.Operator):
     """Render selected collection. If this button is disabled, you are trying to render empty collection, select different collection or add some object to active it."""

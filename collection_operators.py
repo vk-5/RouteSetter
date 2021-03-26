@@ -1,7 +1,7 @@
 import bpy, math, mathutils, bpy_extras.view3d_utils, random
 import os
 from os import listdir
-from . functions import move_with_snapping, add_mesh
+from . asset_import_functions import add_mesh, move_with_snapping
 
 class CreateEmptyScene(bpy.types.Operator):
     """Delete all objects and create new empty scene."""
@@ -151,7 +151,7 @@ class AddRocksFromCollection(bpy.types.Operator):
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh("libraries\\rocks\\" + asset, context, "rocks")
         return {'FINISHED'}
-        
+
 
 class AddRouteCollection(bpy.types.Operator):
     """Adds new route collection."""
