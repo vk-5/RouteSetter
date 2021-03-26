@@ -2,6 +2,7 @@ import bpy, math, mathutils, bpy_extras.view3d_utils, random
 import os
 from os import listdir
 from . asset_import_functions import add_mesh, move_with_snapping
+
     
 class AddCarabinerOperator(bpy.types.Operator):
     """Add carabiner to the scene."""
@@ -9,12 +10,21 @@ class AddCarabinerOperator(bpy.types.Operator):
     bl_label = "Add carabiner"
 
     def execute(self, context):
+
         bpy.context.scene.frame_set(0)
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh("libraries\\carabiner.blend", context, "carabiners")
         for obj in bpy.context.selected_objects:
             if obj.name.split(".")[0] == "carabiner_1":
                 bpy.context.view_layer.objects.active = obj
+
+        carabiners = bpy.data.window_managers["WinMan"].carabiners
+        obj = carabiners.add()
+        obj.name = context.object.name
+        obj.obj_type = context.object.type
+        obj.obj_id = len(carabiners)
+        bpy.data.window_managers["WinMan"].carabiners_index = len(carabiners)-1
+
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -30,6 +40,14 @@ class AddHelperPointsOperator(bpy.types.Operator):
         for obj in bpy.context.selected_objects:
             if obj.name.split(".")[0] == "helperParent":
                 bpy.context.view_layer.objects.active = obj
+        
+        carabiners = bpy.data.window_managers["WinMan"].carabiners
+        obj = carabiners.add()
+        obj.name = context.object.name
+        obj.obj_type = context.object.type
+        obj.obj_id = len(carabiners)
+        bpy.data.window_managers["WinMan"].carabiners_index = len(carabiners) - 1
+
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -45,9 +63,13 @@ class GenerateChainOperator(bpy.types.Operator):
 
     def execute(self, context):
         bpy.context.scene.frame_set(0)
+        helper_meshes = []
+        for obj in bpy.data.collections["carabiners"].objects:
+            if obj.name.split(".")[0] == "helperParent" or obj.name.split(".")[0] == "carabiner_1":
+                helper_meshes.append(obj.name)
         prepare_carabiners()
         prepare_points()
-        coordinates = prepare_coordinates()     
+        coordinates = prepare_coordinates(helper_meshes)     
         prepare_curve_and_empty(coordinates)
         prepare_modifiers(context)
         apply_modifiers("chain_big.001", ['Array', 'Curve'])
@@ -55,7 +77,7 @@ class GenerateChainOperator(bpy.types.Operator):
         prepare_chain_rigid()
         chain_set_parent()
         prepare_chain_children()
-        chain_clean_up()
+        #chain_clean_up()
         return {'FINISHED'}
 
 
@@ -86,19 +108,29 @@ def prepare_points():
             helper_parent.select_set(False)
 
 
-def prepare_coordinates():
+def prepare_coordinates(helper_meshes):
     coordinates = []
-    edges = []
     
     bpy.ops.object.select_all(action='DESELECT')
-    for helper in bpy.data.collections["carabiners"].objects:
-        if helper.name.split("_")[0] == "helper":
-            if len(edges) == 2:
-                coordinates.append(edges)
-                edges = [[helper.location.x, helper.location.y, helper.location.z]]
-            else:
-                edges.append([helper.location.x, helper.location.y, helper.location.z])
-    coordinates.append(edges)      
+    i = 0
+    print(str(helper_meshes))
+    for carabiner in bpy.data.window_managers["WinMan"].carabiners.keys():
+        helper_a = str(helper_meshes.index(carabiner) * 2 + 1)
+        while len(helper_a) < 3:
+            helper_a = "0" + helper_a
+        helper_b = str(helper_meshes.index(carabiner) * 2 + 2)
+        while len(helper_b) < 3:
+            helper_b = "0" + helper_b
+        helper_a = "helper_chain." + helper_a
+        helper_b = "helper_chain." + helper_b
+        print(helper_a + helper_b)
+        helper_a = bpy.data.objects[helper_a]
+        helper_b = bpy.data.objects[helper_b]
+        vertex_a = [helper_a.location.x, helper_a.location.y, helper_a.location.z]
+        vertex_b = [helper_b.location.x, helper_b.location.y, helper_b.location.z]
+        coordinates.append([vertex_a, vertex_b])
+        i += 1
+   
     coordinates = merge_coordinates(coordinates)
     return coordinates
 

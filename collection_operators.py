@@ -35,6 +35,9 @@ class CreateEmptyScene(bpy.types.Operator):
         create_collection("carabiners", ref_collection)
         create_collection("human", ref_collection)
         bpy.context.scene.frame_set(0)
+
+        bpy.data.window_managers["WinMan"].carabiners.clear()
+        bpy.data.window_managers["WinMan"].carabiners_index = -1
         return {'FINISHED'}
 
 

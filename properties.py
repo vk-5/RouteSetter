@@ -2,6 +2,14 @@ import bpy
 import os
 import bpy.utils.previews
 
+from bpy.types import WindowManager, PropertyGroup
+from bpy.props import (
+        StringProperty,
+        EnumProperty,
+        IntProperty,
+        CollectionProperty
+    )
+
 
 def enum_previews_from_directory_walls(self, context):
     """EnumProperty callback"""
@@ -166,17 +174,67 @@ def update_path_collections(self, context):
     enum_path_previews_collections(self, context)
     return None
 
+class CUSTOM_objectCollection(PropertyGroup):
+    key: IntProperty()
+    value: StringProperty()
+
+class MoveUpUIlist(bpy.types.Operator):
+    """Moves selected carabiner up. If this button is disabled, carabiner is first."""
+    bl_idname = "object.move_up"
+    bl_label = "UP"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.data.window_managers["WinMan"].carabiners_index >= 1
+
+    def execute(self, context):
+        bpy.data.window_managers["WinMan"].carabiners.move(bpy.data.window_managers["WinMan"].carabiners_index - 1, bpy.data.window_managers["WinMan"].carabiners_index)
+        bpy.data.window_managers["WinMan"].carabiners_index -= 1
+        return {'FINISHED'}
+
+class MoveDownUIlist(bpy.types.Operator):
+    """Moves selected carabiner down. If this button is disabled, carabiner is last."""
+    bl_idname = "object.move_down"
+    bl_label = "DOWN"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.data.window_managers["WinMan"].carabiners_index < len(bpy.data.window_managers["WinMan"].carabiners) - 1
+
+    def execute(self, context):
+        bpy.data.window_managers["WinMan"].carabiners.move(bpy.data.window_managers["WinMan"].carabiners_index, bpy.data.window_managers["WinMan"].carabiners_index + 1)
+        bpy.data.window_managers["WinMan"].carabiners_index += 1
+        return {'FINISHED'}
+
+class RemoveFromUIlist(bpy.types.Operator):
+    """Remove selected carabiner. If this button is disabled, no carabiner is choosen."""
+    bl_idname = "object.remove_carabiner"
+    bl_label = "Remove"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.data.window_managers["WinMan"].carabiners_index != -1
+
+    def execute(self, context):
+        bpy.data.window_managers["WinMan"].carabiners.remove(bpy.data.window_managers["WinMan"].carabiners_index)
+        bpy.data.window_managers["WinMan"].carabiners_index -= 1
+        return {'FINISHED'}
+
+
+classes = (
+    CUSTOM_objectCollection,
+    MoveUpUIlist,
+    MoveDownUIlist,
+    RemoveFromUIlist,
+)
 
 preview_collections = {}
 
 
 def register():
-    from bpy.types import WindowManager
-    from bpy.props import (
-        StringProperty,
-        EnumProperty,
-        IntProperty,
-    )
+    for cls in classes:
+        bpy.utils.register_class(cls)
+    
 
     WindowManager.walls_previews_dir = StringProperty(
         name="Folder Path",
@@ -250,6 +308,9 @@ def register():
 
     WindowManager.scale_prop = IntProperty(default=180, soft_min=100, soft_max=210)
 
+    WindowManager.carabiners = CollectionProperty(type=CUSTOM_objectCollection)
+    WindowManager.carabiners_index = IntProperty()
+
     pcoll_walls = bpy.utils.previews.new()
     pcoll_walls.walls_previews_dir = ""
     pcoll_walls.walls_previews = ()
@@ -283,8 +344,10 @@ def register():
     preview_collections["route_collections"] = pcoll_route_collections
     preview_collections["path_collections"] = pcoll_path_collections
 
+
 def unregister():
-    from bpy.types import WindowManager
+    for cls in classes:
+        bpy.utils.unregister_class(cls)
 
     del WindowManager.walls_previews
     del WindowManager.structures_previews
@@ -298,7 +361,10 @@ def unregister():
     del WindowManager.holds_previews_dir
     del WindowManager.rocks_previews_dir
     del WindowManager.scale_prop
+    del WindowManager.carabiners
+    del WindowManager.carabiners_index
 
     for pcoll in preview_collections.values():
         bpy.utils.previews.remove(pcoll)
     preview_collections.clear()
+

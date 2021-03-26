@@ -1,5 +1,7 @@
 import bpy
 import os
+from bpy.types import UIList, WindowManager
+
 
 class EditPanel(bpy.types.Panel):
     """Creates Edit panel."""
@@ -141,12 +143,33 @@ class ReferencePanel(bpy.types.Panel):
         row.prop(wm, "scale_prop", slider=True, text="Centimeters")
         row = layout.row()
         row.operator("object.human")
+        row = layout.row()
+
+        rows = 2
+        row = layout.row()
+        row.template_list("REFERENCE_UL_carabiners", "", wm, "carabiners", wm, "carabiners_index", rows=rows)
+
+        col = row.column(align=True)
+        col.operator("object.move_up", icon='TRIA_UP', text="")
+        col.operator("object.move_down", icon='TRIA_DOWN', text="")
+        col.separator()
+        col.operator("object.remove_carabiner", icon='X', text="")
+
+
+class REFERENCE_UL_carabiners(UIList):
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        split = layout.split(factor=0.3)
+        split.label(text=item.name, icon="MESH_CUBE")
+
+    def invoke(self, context, event):
+        pass   
 
 
 classes = (
     EditPanel,
     BoulderPreviewsPanel,
     RockPreviewsPanel,
+    REFERENCE_UL_carabiners,
     ReferencePanel,
     RenderPanel
 )
@@ -160,3 +183,4 @@ def register():
 def unregister():
     for cls in classes:
         bpy.utils.unregister_class(cls)
+    
