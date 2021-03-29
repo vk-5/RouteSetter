@@ -23,6 +23,8 @@ class EditPanel(bpy.types.Panel):
         row.operator("object.scale")
         row.operator("object.delete")
         row = layout.row()
+        row.operator("object.materials")
+        row = layout.row()
         row.operator("wm.url_open", text="Documentation", icon='URL').url = "https://github.com/vk-5/RouteSetter"
 
 
@@ -133,6 +135,16 @@ class ReferencePanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.carabiner")
         row.operator("object.helper_points")
+
+        row = layout.row()
+        row.template_list("REFERENCE_UL_carabiners", "", wm, "carabiners", wm, "carabiners_index")
+        col = row.column(align=True)
+        col.operator("object.move_up", icon='TRIA_UP', text="")
+        col.operator("object.move_down", icon='TRIA_DOWN', text="")
+        col.separator()
+        col.operator("object.select_carabiner", icon='VIS_SEL_11', text="")
+        col.operator("object.remove_carabiner", icon='X', text="")
+
         row = layout.row()
         row.operator("object.chain")
         row = layout.row()
@@ -144,17 +156,6 @@ class ReferencePanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.human")
         row = layout.row()
-
-        rows = 2
-        row = layout.row()
-        row.template_list("REFERENCE_UL_carabiners", "", wm, "carabiners", wm, "carabiners_index", rows=rows)
-
-        col = row.column(align=True)
-        col.operator("object.move_up", icon='TRIA_UP', text="")
-        col.operator("object.move_down", icon='TRIA_DOWN', text="")
-        col.separator()
-        col.operator("object.select_carabiner", icon='VIS_SEL_11', text="")
-        col.operator("object.remove_carabiner", icon='X', text="")
 
 
 class REFERENCE_UL_carabiners(UIList):

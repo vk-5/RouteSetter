@@ -59,7 +59,7 @@ class GenerateChainOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return "carabiner_1.001" in bpy.data.objects.keys() or "helperParent.001" in bpy.data.objects.keys()
+        return "chain_big.001" not in bpy.data.objects.keys() and ("carabiner_1.001" in bpy.data.objects.keys() or "helperParent.001" in bpy.data.objects.keys())
 
     def execute(self, context):
         bpy.context.scene.frame_set(0)
@@ -249,6 +249,10 @@ def chain_clean_up():
     for obj in bpy.context.selected_objects:
         if obj.name.split("_")[0] == "curve" or obj.name.split("_")[0] == "helper" or obj.name.split(".")[0] == "helperParent":
             bpy.data.objects.remove(obj, do_unlink=True)
+
+def stop_animation_handler(scene):
+    if scene.frame_current >= 50:
+        bpy.ops.screen.animation_cancel()
             
 
 class PlaySimulationOperator(bpy.types.Operator):
@@ -395,6 +399,8 @@ classes = (
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
+    
+    bpy.app.handlers.frame_change_pre.append(stop_animation_handler)
 
 
 def unregister():

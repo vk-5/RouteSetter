@@ -174,13 +174,13 @@ def update_path_collections(self, context):
     enum_path_previews_collections(self, context)
     return None
 
-class CUSTOM_objectCollection(PropertyGroup):
-    key: IntProperty()
-    value: StringProperty()
+class CARABINERS_objectCollection(PropertyGroup):
+    # only default name
+    pass
 
 
 classes = (
-    CUSTOM_objectCollection,
+    CARABINERS_objectCollection,
 )
 
 
@@ -264,7 +264,7 @@ def register():
 
     WindowManager.scale_prop = IntProperty(default=180, soft_min=100, soft_max=210)
 
-    WindowManager.carabiners = CollectionProperty(type=CUSTOM_objectCollection)
+    WindowManager.carabiners = CollectionProperty(type=CARABINERS_objectCollection)
     WindowManager.carabiners_index = IntProperty()
 
     pcoll_walls = bpy.utils.previews.new()
