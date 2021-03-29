@@ -59,7 +59,7 @@ class GenerateChainOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return "carabiner_1" in bpy.data.objects.keys() or "helperParent" in bpy.data.objects.keys()
+        return "carabiner_1.001" in bpy.data.objects.keys() or "helperParent.001" in bpy.data.objects.keys()
 
     def execute(self, context):
         bpy.context.scene.frame_set(0)
@@ -99,7 +99,7 @@ def prepare_carabiners():
 def prepare_points():
     bpy.ops.object.select_all(action='DESELECT')
     for helper_parent in bpy.data.collections["carabiners"].objects:
-        if helper_parent.name.split("_")[0] == "helperParent":
+        if helper_parent.name.split(".")[0] == "helperParent":
             helper_parent.select_set(True)
             bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
             for obj in helper_parent.children:
@@ -247,13 +247,7 @@ def chain_clean_up():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
     for obj in bpy.context.selected_objects:
-        if obj.name.split("_")[0] == "curve" or obj.name.split("_")[0] == "helper":
-            bpy.data.objects.remove(obj, do_unlink=True)
-        elif obj.name.split(".")[0] == "helperParent":
-            for i in range(0, bpy.data.window_managers["WinMan"].carabiners_index, 1):
-                if bpy.data.window_managers["WinMan"].carabiners[i].name == obj.name:
-                    bpy.data.window_managers["WinMan"].carabiners.remove(i)
-            bpy.data.window_managers["WinMan"].carabiners_index -= 1
+        if obj.name.split("_")[0] == "curve" or obj.name.split("_")[0] == "helper" or obj.name.split(".")[0] == "helperParent":
             bpy.data.objects.remove(obj, do_unlink=True)
             
 
@@ -335,16 +329,17 @@ class RemoveFromUIlist(bpy.types.Operator):
         return bpy.data.window_managers["WinMan"].carabiners_index != -1
 
     def execute(self, context):
-        select_whole_carabiner(bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name)
+        if bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name in bpy.data.objects.keys():    
+            select_whole_carabiner(bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name)
+            for obj in bpy.context.selected_objects:
+                bpy.data.objects.remove(obj, do_unlink=True)
         bpy.data.window_managers["WinMan"].carabiners.remove(bpy.data.window_managers["WinMan"].carabiners_index)
         bpy.data.window_managers["WinMan"].carabiners_index -= 1
-        for obj in bpy.context.selected_objects:
-            bpy.data.objects.remove(obj, do_unlink=True)
         return {'FINISHED'}
 
 
 class SelectCarabinerFromUIlist(bpy.types.Operator):
-    """Select carabiner in scene. If this button is disabled, no carabiner is choosen."""
+    """Select carabiner in scene. If this button is disabled, no carabiner is choosen or rope has been already generated, in that case roll back by ctrl + z."""
     bl_idname = "object.select_carabiner"
     bl_label = "Select"
 
@@ -353,6 +348,9 @@ class SelectCarabinerFromUIlist(bpy.types.Operator):
         return bpy.data.window_managers["WinMan"].carabiners_index != -1
 
     def execute(self, context):
+        if bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name not in bpy.data.objects.keys():
+            self.report({'ERROR'}, "Rope has been already generated, in that case roll back by ctrl + z.") 
+            return {'CANCELLED'}
         select_whole_carabiner(bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name)
         return {'FINISHED'}
 
