@@ -13,8 +13,10 @@ class RenderOperator(bpy.types.Operator):
 
     def execute(self, context):
         assign_material_for_render()
-        focus_camera(rotation=(math.radians(85), math.radians(0),
-                               get_angle_for_render() + math.radians(90)), collection=bpy.data.window_managers["WinMan"].collections_previews)
+        focus_camera(rotation=(math.radians(75), math.radians(0),
+                               get_angle_for_render() + math.radians(90)),
+                               collection=bpy.data.window_managers["WinMan"].collections_previews,
+                               ratio=2/5)
         focus_light(rotation=(math.radians(45), math.radians(-45),
                               get_angle_for_render() + math.radians(45)))
 
@@ -94,7 +96,7 @@ def focus_light(rotation):
     light_obj.data.energy = 2
 
 
-def focus_camera(rotation, collection=None):
+def focus_camera(rotation, collection=None, ratio=1):
     if bpy.data.objects.get("Camera Asset") is None:
         camera_data = bpy.data.cameras.new(name="Camera Asset")
         cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
@@ -110,7 +112,7 @@ def focus_camera(rotation, collection=None):
         for obj in bpy.data.collections[collection].objects:
             obj.select_set(True)
     bpy.ops.view3d.camera_to_view_selected()
-    bpy.data.cameras["Camera Asset"].lens = 20
+    bpy.data.cameras["Camera Asset"].lens = 50 * ratio
 
 
 def set_output_dimensions(dimension_x, dimension_y, percentage):
@@ -129,7 +131,7 @@ def get_angle_for_render():
     return sum(angles) / len(angles)
 
 class RecalculateMaterial(bpy.types.Operator):
-    """Delete selected objects. If this button is disabled, select any object to active it."""
+    """Assigne material, for routes and paths based on color of collection."""
     bl_idname = "object.materials"
     bl_label = "Assign materials"
     bl_options = {'REGISTER', 'UNDO'}

@@ -23,7 +23,7 @@ class EditPanel(bpy.types.Panel):
         row.operator("object.scale")
         row.operator("object.delete")
         row = layout.row()
-        row.operator("object.materials")
+        row.operator("object.materials", icon='MATERIAL')
         row = layout.row()
         row.operator("wm.url_open", text="Documentation", icon='URL').url = "https://github.com/vk-5/RouteSetter"
 
@@ -53,7 +53,7 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.label(text="Holds")
         row = layout.row()
-        row.operator("object.add_route_collection")
+        row.operator("object.add_route_collection", icon='OUTLINER_OB_GROUP_INSTANCE')
         row.prop(wm, "route_collection", text="")
         add_preview_with_add_button(layout, wm, "holds_previews", "hold")
         add_manage_library_buttons(layout, "hold_library", "hold_library_remove")
@@ -91,7 +91,7 @@ class RockPreviewsPanel(bpy.types.Panel):
         row = layout.row()
         row.label(text="Paths")
         row = layout.row()
-        row.operator("object.add_path_collection")
+        row.operator("object.add_path_collection", icon='OUTLINER_OB_GROUP_INSTANCE')
         row.prop(wm, "path_collection", text="")
         row = layout.row()
         row.operator("object.draw")
@@ -115,7 +115,7 @@ class RenderPanel(bpy.types.Panel):
         row = layout.row()
         row.prop(wm, "collections_previews", text="")
         row = layout.row()
-        row.operator("object.render")
+        row.operator("object.render", icon='OUTLINER_DATA_CAMERA')
 
 
 class ReferencePanel(bpy.types.Panel):
@@ -147,8 +147,9 @@ class ReferencePanel(bpy.types.Panel):
 
         row = layout.row()
         row.operator("object.chain")
+        row.operator("object.mark_rope")
         row = layout.row()
-        row.operator("object.play_simulation")
+        row.operator("object.play_simulation", icon='PLAY')
         row = layout.row()
         row.label(text="Add real size human reference")
         row = layout.row()

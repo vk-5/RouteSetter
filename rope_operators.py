@@ -258,7 +258,7 @@ def stop_animation_handler(scene):
 class PlaySimulationOperator(bpy.types.Operator):
     """Play physics simulation. If this button is disabled, generate rope to active it."""
     bl_idname = "object.play_simulation"
-    bl_label = "Play / Stop Simulation"
+    bl_label = "Play Simulation"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -382,6 +382,21 @@ def select_whole_carabiner(name):
         bpy.context.view_layer.objects.active = bpy.data.objects[name]
         bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
         bpy.data.objects[name].select_set(True)
+
+class MarkRope(bpy.types.Operator):
+    """Mark rope intersecting with object. If this button is disabled, rope has not been generated yet."""
+    bl_idname = "object.mark_rope"
+    bl_label = "Intersection"
+
+    @classmethod
+    def poll(self, context):
+        return "chain_big.001" in bpy.data.objects.keys()
+
+    def execute(self, context):
+        for obj in bpy.data.objects:
+            if obj.name.split(".")[0] == "chain_big":
+                obj.select_set(True)
+        return {'FINISHED'}
         
 
 classes = (
@@ -392,7 +407,8 @@ classes = (
     MoveUpUIlist,
     MoveDownUIlist,
     RemoveFromUIlist,
-    SelectCarabinerFromUIlist
+    SelectCarabinerFromUIlist,
+    MarkRope
 )
 
 
