@@ -12,28 +12,30 @@ class RenderOperator(bpy.types.Operator):
         return len(bpy.data.collections) > 1 and len(bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects) != 0
 
     def execute(self, context):
-        walls_color = (0.7, 0.7, 0.7, 0)
-        rocks_color = (0.7, 0.7, 0.7, 0)
-        structures_color = (0.1, 0.1, 0.1, 0)
-        carabiners_color = (0.1, 0.1, 0.1, 0)
-        render_collection = bpy.data.window_managers["WinMan"].collections_previews
-        collection_color_tag = bpy.data.collections[render_collection].color_tag
-
-        bpy.ops.object.select_all(action='DESELECT')
-        assign_material("walls", walls_color, collection="walls")
-        assign_material("rocks", rocks_color, collection="rocks")
-        assign_material("structures", structures_color, collection="structures")
-        assign_material("carabiners", carabiners_color, collection="carabiners")
-        assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), render_collection)
-
+        assign_material_for_render()
         focus_camera(rotation=(math.radians(85), math.radians(0),
-                               get_angle_for_render() + math.radians(90)), collection=render_collection)
+                               get_angle_for_render() + math.radians(90)), collection=bpy.data.window_managers["WinMan"].collections_previews)
         focus_light(rotation=(math.radians(45), math.radians(-45),
                               get_angle_for_render() + math.radians(45)))
 
         set_output_dimensions(1080, 1920, 100)
         bpy.ops.render.render('INVOKE_DEFAULT')
         return {'FINISHED'}
+
+def assign_material_for_render():
+    walls_color = (0.7, 0.7, 0.7, 0)
+    rocks_color = (0.7, 0.7, 0.7, 0)
+    structures_color = (0.1, 0.1, 0.1, 0)
+    carabiners_color = (0.1, 0.1, 0.1, 0)
+    bpy.ops.object.select_all(action='DESELECT')
+    assign_material("walls", walls_color, collection="walls")
+    assign_material("rocks", rocks_color, collection="rocks")
+    assign_material("structures", structures_color, collection="structures")
+    assign_material("carabiners", carabiners_color, collection="carabiners")
+    for col in bpy.data.collections.keys():
+        if col.split(".")[0] in ["path", "route"]:
+            collection_color_tag = bpy.data.collections[col].color_tag
+            assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), col)
 
 
 def assign_material(name, color, collection=None):
@@ -126,8 +128,24 @@ def get_angle_for_render():
         print()
     return sum(angles) / len(angles)
 
+class RecalculateMaterial(bpy.types.Operator):
+    """Delete selected objects. If this button is disabled, select any object to active it."""
+    bl_idname = "object.materials"
+    bl_label = "Assign materials"
+    bl_options = {'REGISTER', 'UNDO'}
 
-classes = (RenderOperator,)
+    def execute(self, context):
+        if "walls" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
+        assign_material_for_render()
+        return {'FINISHED'}
+
+
+classes = (
+    RenderOperator,
+    RecalculateMaterial,
+)
 
 
 def register():
