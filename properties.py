@@ -178,55 +178,11 @@ class CUSTOM_objectCollection(PropertyGroup):
     key: IntProperty()
     value: StringProperty()
 
-class MoveUpUIlist(bpy.types.Operator):
-    """Moves selected carabiner up. If this button is disabled, carabiner is first."""
-    bl_idname = "object.move_up"
-    bl_label = "UP"
-
-    @classmethod
-    def poll(self, context):
-        return bpy.data.window_managers["WinMan"].carabiners_index >= 1
-
-    def execute(self, context):
-        bpy.data.window_managers["WinMan"].carabiners.move(bpy.data.window_managers["WinMan"].carabiners_index - 1, bpy.data.window_managers["WinMan"].carabiners_index)
-        bpy.data.window_managers["WinMan"].carabiners_index -= 1
-        return {'FINISHED'}
-
-class MoveDownUIlist(bpy.types.Operator):
-    """Moves selected carabiner down. If this button is disabled, carabiner is last."""
-    bl_idname = "object.move_down"
-    bl_label = "DOWN"
-
-    @classmethod
-    def poll(self, context):
-        return bpy.data.window_managers["WinMan"].carabiners_index < len(bpy.data.window_managers["WinMan"].carabiners) - 1
-
-    def execute(self, context):
-        bpy.data.window_managers["WinMan"].carabiners.move(bpy.data.window_managers["WinMan"].carabiners_index, bpy.data.window_managers["WinMan"].carabiners_index + 1)
-        bpy.data.window_managers["WinMan"].carabiners_index += 1
-        return {'FINISHED'}
-
-class RemoveFromUIlist(bpy.types.Operator):
-    """Remove selected carabiner. If this button is disabled, no carabiner is choosen."""
-    bl_idname = "object.remove_carabiner"
-    bl_label = "Remove"
-
-    @classmethod
-    def poll(self, context):
-        return bpy.data.window_managers["WinMan"].carabiners_index != -1
-
-    def execute(self, context):
-        bpy.data.window_managers["WinMan"].carabiners.remove(bpy.data.window_managers["WinMan"].carabiners_index)
-        bpy.data.window_managers["WinMan"].carabiners_index -= 1
-        return {'FINISHED'}
-
 
 classes = (
     CUSTOM_objectCollection,
-    MoveUpUIlist,
-    MoveDownUIlist,
-    RemoveFromUIlist,
 )
+
 
 preview_collections = {}
 
@@ -367,4 +323,3 @@ def unregister():
     for pcoll in preview_collections.values():
         bpy.utils.previews.remove(pcoll)
     preview_collections.clear()
-

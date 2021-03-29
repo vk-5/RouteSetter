@@ -65,7 +65,7 @@ class GenerateChainOperator(bpy.types.Operator):
         bpy.context.scene.frame_set(0)
         helper_meshes = []
         for obj in bpy.data.collections["carabiners"].objects:
-            if obj.name.split(".")[0] == "helperParent" or obj.name.split(".")[0] == "carabiner_1":
+            if obj.name.split(".")[0] in ["helperParent", "carabiner_1"]:
                 helper_meshes.append(obj.name)
         prepare_carabiners()
         prepare_points()
@@ -77,7 +77,7 @@ class GenerateChainOperator(bpy.types.Operator):
         prepare_chain_rigid()
         chain_set_parent()
         prepare_chain_children()
-        #chain_clean_up()
+        chain_clean_up()
         return {'FINISHED'}
 
 
@@ -113,7 +113,6 @@ def prepare_coordinates(helper_meshes):
     
     bpy.ops.object.select_all(action='DESELECT')
     i = 0
-    print(str(helper_meshes))
     for carabiner in bpy.data.window_managers["WinMan"].carabiners.keys():
         helper_a = str(helper_meshes.index(carabiner) * 2 + 1)
         while len(helper_a) < 3:
@@ -123,7 +122,6 @@ def prepare_coordinates(helper_meshes):
             helper_b = "0" + helper_b
         helper_a = "helper_chain." + helper_a
         helper_b = "helper_chain." + helper_b
-        print(helper_a + helper_b)
         helper_a = bpy.data.objects[helper_a]
         helper_b = bpy.data.objects[helper_b]
         vertex_a = [helper_a.location.x, helper_a.location.y, helper_a.location.z]
@@ -249,7 +247,13 @@ def chain_clean_up():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
     for obj in bpy.context.selected_objects:
-        if obj.name.split("_")[0] == "helper" or obj.name.split("_")[0] == "curve" or obj.name.split("_")[0] == "helperParent":
+        if obj.name.split("_")[0] == "curve" or obj.name.split("_")[0] == "helper":
+            bpy.data.objects.remove(obj, do_unlink=True)
+        elif obj.name.split(".")[0] == "helperParent":
+            for i in range(0, bpy.data.window_managers["WinMan"].carabiners_index, 1):
+                if bpy.data.window_managers["WinMan"].carabiners[i].name == obj.name:
+                    bpy.data.window_managers["WinMan"].carabiners.remove(i)
+            bpy.data.window_managers["WinMan"].carabiners_index -= 1
             bpy.data.objects.remove(obj, do_unlink=True)
             
 
@@ -291,12 +295,102 @@ def prepare_collisions():
             bpy.context.object.rigid_body.collision_shape = 'MESH'
 
 
-classes = (
+class MoveUpUIlist(bpy.types.Operator):
+    """Moves selected carabiner up. If this button is disabled, carabiner is first."""
+    bl_idname = "object.move_up"
+    bl_label = "UP"
 
+    @classmethod
+    def poll(self, context):
+        return bpy.data.window_managers["WinMan"].carabiners_index >= 1
+
+    def execute(self, context):
+        bpy.data.window_managers["WinMan"].carabiners.move(bpy.data.window_managers["WinMan"].carabiners_index - 1, bpy.data.window_managers["WinMan"].carabiners_index)
+        bpy.data.window_managers["WinMan"].carabiners_index -= 1
+        return {'FINISHED'}
+
+
+class MoveDownUIlist(bpy.types.Operator):
+    """Moves selected carabiner down. If this button is disabled, carabiner is last."""
+    bl_idname = "object.move_down"
+    bl_label = "DOWN"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.data.window_managers["WinMan"].carabiners_index < len(bpy.data.window_managers["WinMan"].carabiners) - 1
+
+    def execute(self, context):
+        bpy.data.window_managers["WinMan"].carabiners.move(bpy.data.window_managers["WinMan"].carabiners_index, bpy.data.window_managers["WinMan"].carabiners_index + 1)
+        bpy.data.window_managers["WinMan"].carabiners_index += 1
+        return {'FINISHED'}
+
+
+class RemoveFromUIlist(bpy.types.Operator):
+    """Remove selected carabiner. If this button is disabled, no carabiner is choosen."""
+    bl_idname = "object.remove_carabiner"
+    bl_label = "Remove"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.data.window_managers["WinMan"].carabiners_index != -1
+
+    def execute(self, context):
+        select_whole_carabiner(bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name)
+        bpy.data.window_managers["WinMan"].carabiners.remove(bpy.data.window_managers["WinMan"].carabiners_index)
+        bpy.data.window_managers["WinMan"].carabiners_index -= 1
+        for obj in bpy.context.selected_objects:
+            bpy.data.objects.remove(obj, do_unlink=True)
+        return {'FINISHED'}
+
+
+class SelectCarabinerFromUIlist(bpy.types.Operator):
+    """Select carabiner in scene. If this button is disabled, no carabiner is choosen."""
+    bl_idname = "object.select_carabiner"
+    bl_label = "Select"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.data.window_managers["WinMan"].carabiners_index != -1
+
+    def execute(self, context):
+        select_whole_carabiner(bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name)
+        return {'FINISHED'}
+
+def select_whole_carabiner(name):
+    bpy.ops.object.select_all(action='DESELECT')
+    if "chain_big.001" in  bpy.data.objects:
+        number = name.split(".")[1]
+        bpy.context.view_layer.objects.active = bpy.data.objects[name]
+        bpy.ops.object.select_hierarchy(direction='CHILD', extend=True)
+        bpy.data.objects[name].select_set(True)
+        name = "carabiner_2." + number
+        bpy.context.view_layer.objects.active = bpy.data.objects[name]
+        bpy.ops.object.select_hierarchy(direction='CHILD', extend=True)
+        bpy.data.objects[name].select_set(True)
+        name = "carabiner_3." + number
+        bpy.context.view_layer.objects.active = bpy.data.objects[name]
+        bpy.ops.object.select_hierarchy(direction='CHILD', extend=True)
+        bpy.data.objects[name].select_set(True)
+        name = "carabiner_4." + number
+        bpy.context.view_layer.objects.active = bpy.data.objects[name]
+        bpy.ops.object.select_hierarchy(direction='CHILD', extend=True)
+        bpy.data.objects[name].select_set(True)
+        bpy.context.view_layer.objects.active = bpy.data.objects["carabiner_1." + number]
+    else:
+        bpy.context.view_layer.objects.active = bpy.data.objects[name]
+        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
+        bpy.data.objects[name].select_set(True)
+        
+
+classes = (
     AddCarabinerOperator,
     AddHelperPointsOperator,
     GenerateChainOperator,
-    PlaySimulationOperator
+    PlaySimulationOperator,
+    MoveUpUIlist,
+    MoveDownUIlist,
+    RemoveFromUIlist,
+    SelectCarabinerFromUIlist
 )
 
 

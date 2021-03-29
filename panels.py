@@ -23,7 +23,7 @@ class EditPanel(bpy.types.Panel):
         row.operator("object.scale")
         row.operator("object.delete")
         row = layout.row()
-        row.operator("wm.url_open", text="Documentation").url = "https://github.com/vk-5/RouteSetter"
+        row.operator("wm.url_open", text="Documentation", icon='URL').url = "https://github.com/vk-5/RouteSetter"
 
 
 class BoulderPreviewsPanel(bpy.types.Panel):
@@ -153,6 +153,7 @@ class ReferencePanel(bpy.types.Panel):
         col.operator("object.move_up", icon='TRIA_UP', text="")
         col.operator("object.move_down", icon='TRIA_DOWN', text="")
         col.separator()
+        col.operator("object.select_carabiner", icon='VIS_SEL_11', text="")
         col.operator("object.remove_carabiner", icon='X', text="")
 
 
