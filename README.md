@@ -74,9 +74,15 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 #### Assign materials
 - assigns material by color of collection
 - useful when you change holds collection and want to see actual color based on collections
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/assign_materials.gif)
 #### Documentation
 - opens this documentation page
 ### Boulder
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_wall_from_collection.gif)
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_structures_from_collection.gif)
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_holds_from_collection.gif)
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_collection.gif)
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_hold.gif)
 ### Rock
 ### References
 ### Render
