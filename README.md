@@ -62,10 +62,13 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 #### Move
 - moves selected object
 - snaps to surface of another object
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/move.gif)
 #### Rotate
 - rotates selected object based on mouse movement
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/rotate.gif)
 #### Scale
 - changes size of selected object based on mouse movement
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/scale.gif)
 #### Delete
 - deletes selected objects
 #### Assign materials
