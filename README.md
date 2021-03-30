@@ -55,8 +55,24 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 
 ## Features
 ### Edit
-Prepare new scene
+#### Prepare new scene
+- removes all objects, materials, collections etc.
+- prepares collection hierarchy 
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/prepare_new_scene.gif)
+#### Move
+- moves selected object
+- snaps to surface of another object
+#### Rotate
+- rotates selected object based on mouse movement
+#### Scale
+- changes size of selected object based on mouse movement
+#### Delete
+- deletes selected objects
+#### Assign materials
+- assigns material by color of collection
+- useful when you change holds collection and want to see actual color based on collections
+#### Documentation
+- opens this documentation page
 ### Boulder
 ### Rock
 ### References
