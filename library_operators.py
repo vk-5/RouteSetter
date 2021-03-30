@@ -22,7 +22,7 @@ class AddToWallLibrary(bpy.types.Operator):
         name = get_file_name(filepath, "wall")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
-        assign_material("Walls", (0.9, 0.9, 0.9, 0))
+        assign_material("Walls", (0.9, 0.9, 0.9, 1))
         focus_camera(rotation=(math.radians(85), math.radians(0), math.radians(20)))
         focus_light(rotation=(math.radians(45), math.radians(-45), math.radians(0)))
         set_output_dimensions(512, 512, 100)
@@ -50,7 +50,7 @@ class AddToStructureLibrary(bpy.types.Operator):
         name = get_file_name(filepath, "structure")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
-        assign_material("Structures", (0.5, 0.5, 0.5, 0))
+        assign_material("Structures", (0.5, 0.5, 0.5, 1))
         focus_camera(rotation=(math.radians(10), math.radians(10), math.radians(0)))
         focus_light(rotation=(math.radians(45), math.radians(-45), math.radians(0)))
         set_output_dimensions(512, 512, 100)
@@ -77,7 +77,7 @@ class AddToHoldLibrary(bpy.types.Operator):
         name = get_file_name(filepath, "hold")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
-        assign_material("Holds", (0.1, 0.1, 0.1, 0))
+        assign_material("Holds", (0.1, 0.1, 0.1, 1))
         focus_camera(rotation=(math.radians(60), math.radians(0), math.radians(30)))
         focus_light(rotation=(math.radians(45), math.radians(-45), math.radians(0)))
         set_output_dimensions(512, 512, 100)
@@ -104,7 +104,7 @@ class AddToRockLibrary(bpy.types.Operator):
         name = get_file_name(filepath, "rock")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
-        assign_material("Rocks", (0.1, 0.1, 0.1, 0))
+        assign_material("Rocks", (0.1, 0.1, 0.1, 1))
         focus_camera(rotation=(math.radians(85), math.radians(0), math.radians(20)))
         focus_light(rotation=(math.radians(45), math.radians(-45), math.radians(0)))
         set_output_dimensions(512, 512, 100)

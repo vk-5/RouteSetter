@@ -25,10 +25,10 @@ class RenderOperator(bpy.types.Operator):
         return {'FINISHED'}
 
 def assign_material_for_render():
-    walls_color = (0.7, 0.7, 0.7, 0)
-    rocks_color = (0.7, 0.7, 0.7, 0)
-    structures_color = (0.1, 0.1, 0.1, 0)
-    carabiners_color = (0.1, 0.1, 0.1, 0)
+    walls_color = (0.7, 0.7, 0.7, 1)
+    rocks_color = (0.7, 0.7, 0.7, 1)
+    structures_color = (0.1, 0.1, 0.1, 1)
+    carabiners_color = (0.1, 0.1, 0.1, 1)
     bpy.ops.object.select_all(action='DESELECT')
     assign_material("walls", walls_color, collection="walls")
     assign_material("rocks", rocks_color, collection="rocks")
@@ -63,23 +63,23 @@ def assign_material(name, color, collection=None):
 
 def get_color_from_color_tag(tag):
     if tag == 'COLOR_01':
-        color = (1, 0, 0, 0)
+        color = (1, 0, 0, 1)
     elif tag == 'COLOR_02':
-        color = (1, 0.25, 0, 0)
+        color = (1, 0.25, 0, 1)
     elif tag == 'COLOR_03':
-        color = (1, 1, 0, 0)
+        color = (1, 1, 0, 1)
     elif tag == 'COLOR_04':
-        color = (0, 1, 0, 0)
+        color = (0, 1, 0, 1)
     elif tag == 'COLOR_05':
-        color = (0, 0, 1, 0)
+        color = (0, 0, 1, 1)
     elif tag == 'COLOR_06':
-        color = (0.3, 0, 1, 0)
+        color = (0.3, 0, 1, 1)
     elif tag == 'COLOR_07':
-        color = (1, 0, 0.5, 0)
+        color = (1, 0, 0.5, 1)
     elif tag == 'COLOR_08':
-        color = (0.15, 0.05, 0, 0)
+        color = (0.15, 0.05, 0, 1)
     else:
-        color = (1, 1, 1, 0)
+        color = (1, 1, 1, 1)
     return color
 
 
