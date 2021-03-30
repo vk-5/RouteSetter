@@ -55,6 +55,8 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 
 ## Features
 ### Edit
+Prepare new scene
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/prepare_new_scene.gif)
 ### Boulder
 ### Rock
 ### References
