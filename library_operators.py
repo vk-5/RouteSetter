@@ -1,6 +1,7 @@
 import bpy, math, mathutils, random
 import os
 from os import listdir
+from . render_operators import focus_camera, focus_light
 
 
 class AddToWallLibrary(bpy.types.Operator):
@@ -126,43 +127,12 @@ def filenames_to_ints(file_name):
     return int(file_name.split("_")[1].split(".")[0])
 
 
-def focus_camera(rotation, collection=None):
-    if bpy.data.objects.get("Camera Asset") is None:
-        camera_data = bpy.data.cameras.new(name="Camera Asset")
-        cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
-        bpy.context.view_layer.active_layer_collection.collection.objects.link(cam_obj)
-    else:
-        cam_obj = bpy.data.objects.get("Camera Asset")
-
-    bpy.data.cameras["Camera Asset"].lens = 50
-    bpy.context.scene.camera = cam_obj
-    cam_obj.rotation_euler = rotation
-    if collection is not None:
-        bpy.ops.object.select_all(action='DESELECT')
-        for obj in bpy.data.collections[collection].objects:
-            obj.select_set(True)
-    bpy.ops.view3d.camera_to_view_selected()
-    bpy.data.cameras["Camera Asset"].lens = 20
-
 
 def set_output_dimensions(dimension_x, dimension_y, percentage):
     scene = bpy.data.scenes["Scene"]
     scene.render.resolution_x = dimension_x
     scene.render.resolution_y = dimension_y
     scene.render.resolution_percentage = percentage
-
-
-def focus_light(rotation):
-    if not bpy.data.objects.get("Light Asset"):
-        light_data = bpy.data.lights.new(name="Light Asset", type='SUN')
-        light_obj = bpy.data.objects.new("Light Asset", light_data)
-        bpy.context.view_layer.active_layer_collection.collection.objects.link(light_obj)
-    else:
-        light_obj = bpy.data.objects.get("Light Asset")
-
-    bpy.context.scene.render.engine = 'BLENDER_EEVEE'
-    light_obj.rotation_euler = rotation
-    light_obj.data.energy = 2
 
 
 def assign_material(name, color, collection=None):

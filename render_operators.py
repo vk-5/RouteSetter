@@ -16,7 +16,7 @@ class RenderOperator(bpy.types.Operator):
         focus_camera(rotation=(math.radians(75), math.radians(0),
                                get_angle_for_render() + math.radians(90)),
                                collection=bpy.data.window_managers["WinMan"].collections_previews,
-                               ratio=2/5)
+                               lens_before=50, lens_after=20)
         focus_light(rotation=(math.radians(45), math.radians(-45),
                               get_angle_for_render() + math.radians(45)))
 
@@ -96,7 +96,7 @@ def focus_light(rotation):
     light_obj.data.energy = 2
 
 
-def focus_camera(rotation, collection=None, ratio=1):
+def focus_camera(rotation, collection=None, lens_before=50, lens_after=50):
     if bpy.data.objects.get("Camera Asset") is None:
         camera_data = bpy.data.cameras.new(name="Camera Asset")
         cam_obj = bpy.data.objects.new("Camera Asset", camera_data)
@@ -104,7 +104,7 @@ def focus_camera(rotation, collection=None, ratio=1):
     else:
         cam_obj = bpy.data.objects.get("Camera Asset")
 
-    bpy.data.cameras["Camera Asset"].lens = 50
+    bpy.data.cameras["Camera Asset"].lens = lens_before
     bpy.context.scene.camera = cam_obj
     cam_obj.rotation_euler = rotation
     if collection is not None:
@@ -112,7 +112,7 @@ def focus_camera(rotation, collection=None, ratio=1):
         for obj in bpy.data.collections[collection].objects:
             obj.select_set(True)
     bpy.ops.view3d.camera_to_view_selected()
-    bpy.data.cameras["Camera Asset"].lens = 50 * ratio
+    bpy.data.cameras["Camera Asset"].lens = lens_after
 
 
 def set_output_dimensions(dimension_x, dimension_y, percentage):

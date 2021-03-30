@@ -38,6 +38,8 @@ class CreateEmptyScene(bpy.types.Operator):
 
         bpy.data.window_managers["WinMan"].carabiners.clear()
         bpy.data.window_managers["WinMan"].carabiners_index = -1
+        bpy.data.window_managers["WinMan"].route_collection = "route"
+        bpy.data.window_managers["WinMan"].path_collection = "path"
         return {'FINISHED'}
 
 
