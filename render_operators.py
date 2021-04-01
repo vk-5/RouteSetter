@@ -35,7 +35,7 @@ def assign_material_for_render():
     assign_material("structures", structures_color, collection="structures")
     assign_material("carabiners", carabiners_color, collection="carabiners")
     for col in bpy.data.collections.keys():
-        if col.split(".")[0] in ["path", "route"]:
+        if "path" in col or "route" in col:
             collection_color_tag = bpy.data.collections[col].color_tag
             assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), col)
 

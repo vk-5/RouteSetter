@@ -70,7 +70,7 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - changes size of selected object based on mouse movement
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/scale.gif)
 #### Delete
-- deletes selected objects
+- deletes selected object
 #### Assign materials
 - assigns material by color of collection
 - useful when you change holds collection and want to see actual color based on collections
@@ -78,6 +78,7 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 #### Documentation
 - opens this documentation page
 ### Boulder
+-
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_wall_from_collection.gif)
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_structures_from_collection.gif)
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_holds_from_collection.gif)

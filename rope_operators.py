@@ -15,7 +15,7 @@ class AddCarabinerOperator(bpy.types.Operator):
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh("libraries\\carabiner.blend", context, "carabiners")
         for obj in bpy.context.selected_objects:
-            if obj.name.split(".")[0] == "carabiner_1":
+            if "carabiner_1" in obj.name:
                 bpy.context.view_layer.objects.active = obj
 
         carabiners = bpy.data.window_managers["WinMan"].carabiners
@@ -38,7 +38,7 @@ class AddHelperPointsOperator(bpy.types.Operator):
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh("libraries\\points.blend", context, "carabiners")
         for obj in bpy.context.selected_objects:
-            if obj.name.split(".")[0] == "helperParent":
+            if "helperParent" in obj.name:
                 bpy.context.view_layer.objects.active = obj
         
         carabiners = bpy.data.window_managers["WinMan"].carabiners
@@ -65,7 +65,7 @@ class GenerateChainOperator(bpy.types.Operator):
         bpy.context.scene.frame_set(0)
         helper_meshes = []
         for obj in bpy.data.collections["carabiners"].objects:
-            if obj.name.split(".")[0] in ["helperParent", "carabiner_1"]:
+            if "helperParent" in obj.name or "carabiner_1." in obj.name:
                 helper_meshes.append(obj.name)
         prepare_carabiners()
         prepare_points()
@@ -84,11 +84,11 @@ class GenerateChainOperator(bpy.types.Operator):
 def prepare_carabiners():
     bpy.ops.object.select_all(action='DESELECT')
     for carabiner in bpy.data.collections["carabiners"].objects:
-        if carabiner.name.split("_")[0] == "carabiner" and len(carabiner.name.split("_")) == 2 and carabiner.name.split("_")[1].split(".")[0] == "1":
+        if "carabiner_1." in carabiner.name:
             carabiner.select_set(True)
             bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
             for obj in carabiner.children:
-                if obj.name.split("_")[1] != "1":
+                if "carabiner_1." in obj.name:
                     obj.select_set(True)
                 else:
                     obj.select_set(False)
@@ -109,6 +109,7 @@ def prepare_points():
 
 
 def prepare_coordinates(helper_meshes):
+    # TODO refactor
     coordinates = []
     
     bpy.ops.object.select_all(action='DESELECT')
@@ -217,16 +218,16 @@ def prepare_chain_rigid():
     bpy.ops.mesh.separate(type='LOOSE')
     bpy.ops.object.editmode_toggle()
     for obj in bpy.data.collections["carabiners"].objects:
-        if obj.name.split("_")[0] == "chain":
+        if "chain_" in obj.name:
             obj.select_set(True)
     bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
 
 
 def chain_set_parent():
     for obj_small in bpy.data.collections["carabiners"].objects:
-        if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
+        if "chain_" in obj_small.name and "_small." in obj_small.name:
             for obj_big in bpy.data.collections["carabiners"].objects:
-                if obj_big.name.split("_")[0] == "chain" and obj_big.name.split("_")[1].split(".")[0] == "big" and obj_small.name.split(".")[1] == obj_big.name.split(".")[1]:
+                if "chain_" in obj_big.name and "_big." in obj_big.name and obj_small.name.split(".")[1] == obj_big.name.split(".")[1]:
                     obj_small.parent = obj_big
                     obj_small.matrix_parent_inverse = obj_big.matrix_world.inverted()
 
@@ -234,7 +235,7 @@ def chain_set_parent():
 def prepare_chain_children():
     bpy.ops.object.select_all(action='DESELECT')
     for obj_small in bpy.data.collections["carabiners"].objects:
-        if obj_small.name.split("_")[0] == "chain" and obj_small.name.split("_")[1].split(".")[0] == "small":
+        if  "chain_" in obj_small.name and "_small." in obj_small.name:
             obj_small.select_set(True)
     bpy.ops.object.editmode_toggle()
     bpy.ops.mesh.select_all(action='SELECT')
@@ -247,7 +248,7 @@ def chain_clean_up():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
     for obj in bpy.context.selected_objects:
-        if obj.name.split("_")[0] == "curve" or obj.name.split("_")[0] == "helper" or obj.name.split(".")[0] == "helperParent":
+        if "curve" in obj.name or "helper" in obj.name:
             bpy.data.objects.remove(obj, do_unlink=True)
 
 def stop_animation_handler(scene):
@@ -286,7 +287,7 @@ def prepare_rigid_world():
 def prepare_collisions():
     bpy.ops.object.select_all(action='SELECT')
     for obj in bpy.context.selected_objects:
-        if obj.name.split("_")[0] != "carabiner" and obj.name.split("_")[0] != "chain":
+        if "carabiner_" not in obj.name and "chain_" not in obj.name:
             bpy.context.view_layer.objects.active = obj
             bpy.ops.rigidbody.object_add()
             bpy.context.object.rigid_body.enabled = False
@@ -359,6 +360,7 @@ class SelectCarabinerFromUIlist(bpy.types.Operator):
         return {'FINISHED'}
 
 def select_whole_carabiner(name):
+    # TODO refactor
     bpy.ops.object.select_all(action='DESELECT')
     if "chain_big.001" in  bpy.data.objects:
         number = name.split(".")[1]
@@ -394,7 +396,7 @@ class MarkRope(bpy.types.Operator):
 
     def execute(self, context):
         for obj in bpy.data.objects:
-            if obj.name.split(".")[0] == "chain_big":
+            if "chain_big" in obj.name:
                 obj.select_set(True)
         return {'FINISHED'}
         

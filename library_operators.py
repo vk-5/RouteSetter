@@ -1,7 +1,7 @@
 import bpy, math, mathutils, random
 import os
 from os import listdir
-from . render_operators import focus_camera, focus_light
+from . render_operators import focus_camera, focus_light, assign_material, set_output_dimensions
 
 
 class AddToWallLibrary(bpy.types.Operator):
@@ -125,35 +125,6 @@ def get_file_name(filepath, name):
 
 def filenames_to_ints(file_name):
     return int(file_name.split("_")[1].split(".")[0])
-
-
-
-def set_output_dimensions(dimension_x, dimension_y, percentage):
-    scene = bpy.data.scenes["Scene"]
-    scene.render.resolution_x = dimension_x
-    scene.render.resolution_y = dimension_y
-    scene.render.resolution_percentage = percentage
-
-
-def assign_material(name, color, collection=None):
-    material = bpy.data.materials.get(name)
-
-    if not material:
-        material = bpy.data.materials.new(name=name)
-    material.diffuse_color = color
-
-    if collection is None:
-        for obj in bpy.context.selected_objects:
-            if obj.data.materials:
-                obj.data.materials[0] = material
-            else:
-                obj.data.materials.append(material)
-    else:
-        for obj in bpy.data.collections[collection].objects:
-            if obj.data.materials:
-                obj.data.materials[0] = material
-            else:
-                obj.data.materials.append(material)
 
 
 class RemoveFromWallLibrary(bpy.types.Operator):
