@@ -28,6 +28,7 @@ class AddCarabinerOperator(bpy.types.Operator):
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
+
 class AddHelperPointsOperator(bpy.types.Operator):
     """Add points so chain will not go through any other object."""
     bl_idname = "object.helper_points"
@@ -51,6 +52,7 @@ class AddHelperPointsOperator(bpy.types.Operator):
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
+
 class GenerateChainOperator(bpy.types.Operator):
     """Generates chain through all carabiners and points. If this button is disabled, add carabiner or point to active it."""
     bl_idname = "object.chain"
@@ -63,10 +65,7 @@ class GenerateChainOperator(bpy.types.Operator):
 
     def execute(self, context):
         bpy.context.scene.frame_set(0)
-        helper_meshes = []
-        for obj in bpy.data.collections["carabiners"].objects:
-            if "helperParent" in obj.name or "carabiner_1." in obj.name:
-                helper_meshes.append(obj.name)
+        helper_meshes = prepare_helper_meshes()
         prepare_carabiners()
         prepare_points()
         coordinates = prepare_coordinates(helper_meshes)     
@@ -79,6 +78,14 @@ class GenerateChainOperator(bpy.types.Operator):
         prepare_chain_children()
         chain_clean_up()
         return {'FINISHED'}
+    
+
+def prepare_helper_meshes():
+    helper_meshes = []
+    for obj in bpy.data.collections["carabiners"].objects:
+        if "helperParent" in obj.name or "carabiner_1." in obj.name:
+            helper_meshes.append(obj.name)
+    return helper_meshes
 
 
 def prepare_carabiners():
@@ -248,6 +255,7 @@ def chain_clean_up():
     for obj in bpy.context.selected_objects:
         if "curve" in obj.name or "helper" in obj.name:
             bpy.data.objects.remove(obj, do_unlink=True)
+
 
 def stop_animation_handler(scene):
     if scene.frame_current >= 50:
