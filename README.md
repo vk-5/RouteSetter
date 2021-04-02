@@ -88,11 +88,19 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 #### Add
 - adds selected model from collection
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_from_collection.gif)
+#### Save
+- saves selected object in collection
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_hold.gif)
+#### Remove
+- remove selected object from collection
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/remove_hold.gif)
 #### Add collection
 - at the beginning holds are inserted into collection named "route" and drawn path is inserted into "path" collection
 - by this button you can add new collections and choose which you want to insert into
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_collection.gif)
-![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_hold.gif)
+#### Draw path and Done
+- 
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_done.gif)
 
 ### References
 ### Render
