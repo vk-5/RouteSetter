@@ -109,29 +109,27 @@ def prepare_points():
 
 
 def prepare_coordinates(helper_meshes):
-    # TODO refactor
     coordinates = []
     
     bpy.ops.object.select_all(action='DESELECT')
     i = 0
     for carabiner in bpy.data.window_managers["WinMan"].carabiners.keys():
-        helper_a = str(helper_meshes.index(carabiner) * 2 + 1)
-        while len(helper_a) < 3:
-            helper_a = "0" + helper_a
-        helper_b = str(helper_meshes.index(carabiner) * 2 + 2)
-        while len(helper_b) < 3:
-            helper_b = "0" + helper_b
-        helper_a = "helper_chain." + helper_a
-        helper_b = "helper_chain." + helper_b
-        helper_a = bpy.data.objects[helper_a]
-        helper_b = bpy.data.objects[helper_b]
-        vertex_a = [helper_a.location.x, helper_a.location.y, helper_a.location.z]
-        vertex_b = [helper_b.location.x, helper_b.location.y, helper_b.location.z]
+        vertex_a = get_vertex(helper_meshes.index(carabiner) * 2 + 1)
+        vertex_b = get_vertex(helper_meshes.index(carabiner) * 2 + 2)
         coordinates.append([vertex_a, vertex_b])
         i += 1
    
     coordinates = merge_coordinates(coordinates)
     return coordinates
+
+
+def get_vertex(point_number):
+    point_number = str(point_number)
+    while len(point_number) < 3:
+        point_number = "0" + point_number
+    point_number = "helper_chain." + point_number
+    point_number = bpy.data.objects[point_number]
+    return [point_number.location.x, point_number.location.y, point_number.location.z]
 
 
 def merge_coordinates(coordinates):
@@ -360,30 +358,25 @@ class SelectCarabinerFromUIlist(bpy.types.Operator):
         return {'FINISHED'}
 
 def select_whole_carabiner(name):
-    # TODO refactor
     bpy.ops.object.select_all(action='DESELECT')
     if "chain_big.001" in  bpy.data.objects:
         number = name.split(".")[1]
-        bpy.context.view_layer.objects.active = bpy.data.objects[name]
-        bpy.ops.object.select_hierarchy(direction='CHILD', extend=True)
-        bpy.data.objects[name].select_set(True)
-        name = "carabiner_2." + number
-        bpy.context.view_layer.objects.active = bpy.data.objects[name]
-        bpy.ops.object.select_hierarchy(direction='CHILD', extend=True)
-        bpy.data.objects[name].select_set(True)
-        name = "carabiner_3." + number
-        bpy.context.view_layer.objects.active = bpy.data.objects[name]
-        bpy.ops.object.select_hierarchy(direction='CHILD', extend=True)
-        bpy.data.objects[name].select_set(True)
-        name = "carabiner_4." + number
-        bpy.context.view_layer.objects.active = bpy.data.objects[name]
-        bpy.ops.object.select_hierarchy(direction='CHILD', extend=True)
-        bpy.data.objects[name].select_set(True)
+        select_object_with_children(name)
+        select_object_with_children("carabiner_2." + number)
+        select_object_with_children("carabiner_3." + number)
+        select_object_with_children("carabiner_4." + number)
         bpy.context.view_layer.objects.active = bpy.data.objects["carabiner_1." + number]
     else:
         bpy.context.view_layer.objects.active = bpy.data.objects[name]
         bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
         bpy.data.objects[name].select_set(True)
+
+
+def select_object_with_children(name):
+    bpy.context.view_layer.objects.active = bpy.data.objects[name]
+    bpy.ops.object.select_hierarchy(direction='CHILD', extend=True)
+    bpy.data.objects[name].select_set(True)
+
 
 class MarkRope(bpy.types.Operator):
     """Mark rope intersecting with object. If this button is disabled, rope has not been generated yet."""
