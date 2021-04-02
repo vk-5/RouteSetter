@@ -1,7 +1,7 @@
 import bpy, math, mathutils, bpy_extras.view3d_utils, random
 import os
 from os import listdir
-from . asset_import_functions import add_mesh, move_with_snapping
+from . operators import add_mesh, move_with_snapping
 
 class CreateEmptyScene(bpy.types.Operator):
     """Delete all objects and create new empty scene."""
@@ -40,6 +40,7 @@ class CreateEmptyScene(bpy.types.Operator):
         bpy.data.window_managers["WinMan"].carabiners_index = -1
         bpy.data.window_managers["WinMan"].route_collection = "route"
         bpy.data.window_managers["WinMan"].path_collection = "path"
+        bpy.data.window_managers["WinMan"].collections_previews = "carabiners"
         return {'FINISHED'}
 
 

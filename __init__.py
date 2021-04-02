@@ -1,5 +1,5 @@
 import bpy
-from . import properties, asset_import_functions, operators, collection_operators, library_operators, rope_operators, render_operators, panels
+from . import properties, operators, collection_operators, library_operators, rope_operators, render_operators, panels
 
 bl_info = {
     "name": "Route setter Add-on",

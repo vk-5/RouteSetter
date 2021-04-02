@@ -1,7 +1,7 @@
 import bpy, math, mathutils, bpy_extras.view3d_utils, random
 import os
 from os import listdir
-from . asset_import_functions import add_mesh, move_with_snapping
+from . operators import add_mesh, move_with_snapping
 
     
 class AddCarabinerOperator(bpy.types.Operator):
@@ -88,7 +88,7 @@ def prepare_carabiners():
             carabiner.select_set(True)
             bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
             for obj in carabiner.children:
-                if "carabiner_1." in obj.name:
+                if obj.name.split("_")[1] != "1":
                     obj.select_set(True)
                 else:
                     obj.select_set(False)
