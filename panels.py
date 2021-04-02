@@ -30,7 +30,7 @@ class EditPanel(bpy.types.Panel):
 
 class BoulderPreviewsPanel(bpy.types.Panel):
     """Creates Boulder panel."""
-    bl_label = "Boulder"
+    bl_label = "Climbing wall"
     bl_idname = "OBJECT_PT_preview_boulder"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'

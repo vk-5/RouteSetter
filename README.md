@@ -55,6 +55,8 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 
 ## Features
 ### Edit
+- this panel is useful for all three scenarios
+- I recommend leaving this panel visible.
 #### Prepare new scene
 - removes all objects, materials, collections etc.
 - prepares collection hierarchy 
@@ -65,26 +67,33 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/move.gif)
 #### Rotate
 - rotates selected object based on mouse movement
+- rotates in Z axis
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/rotate.gif)
 #### Scale
 - changes size of selected object based on mouse movement
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/scale.gif)
 #### Delete
 - deletes selected object
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/delete.gif)
 #### Assign materials
 - assigns material by color of collection
 - useful when you change holds collection and want to see actual color based on collections
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/assign_materials.gif)
 #### Documentation
 - opens this documentation page
-### Boulder
--
-![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_wall_from_collection.gif)
-![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_structures_from_collection.gif)
-![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_holds_from_collection.gif)
+### Climbing wall and Rock
+- in these panels the funcionality is almost similar
+- they contain collections of 3D models
+- you can manage these collections
+#### Add
+- adds selected model from collection
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_from_collection.gif)
+#### Add collection
+- at the beginning holds are inserted into collection named "route" and drawn path is inserted into "path" collection
+- by this button you can add new collections and choose which you want to insert into
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_collection.gif)
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_hold.gif)
-### Rock
+
 ### References
 ### Render
 
