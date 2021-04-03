@@ -120,7 +120,7 @@ class RenderPanel(bpy.types.Panel):
 
 class ReferencePanel(bpy.types.Panel):
     """Creates a reference panel."""
-    bl_label = "References"
+    bl_label = "Rope"
     bl_idname = "OBJECT_PT_human"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -151,12 +151,12 @@ class ReferencePanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.play_simulation", icon='PLAY')
         row = layout.row()
-        row.label(text="Add real size human reference")
-        row = layout.row()
-        row.prop(wm, "scale_prop", slider=True, text="Centimeters")
-        row = layout.row()
-        row.operator("object.human")
-        row = layout.row()
+        #row.label(text="Add real size human reference")
+        #row = layout.row()
+        #row.prop(wm, "scale_prop", slider=True, text="Centimeters")
+        #row = layout.row()
+        #row.operator("object.human")
+        #row = layout.row()
 
 
 class REFERENCE_UL_carabiners(UIList):

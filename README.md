@@ -104,7 +104,22 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - remember to draw only one line and press Done
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_done.gif)
 
-### References
+### Rope
+#### Add carabiner
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_carabiner.gif)
+#### Add point
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_point.gif)
+#### Generate rope
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/generate_rope.gif)
+#### Intersection
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/intersection.gif)
+#### Up and down arrow
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/change_order.gif)
+#### Select whole carabiner
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/select_whole_carabiner.gif)
+#### Remove whole carabiner
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/remove_whole_carabiner.gif)
+#### Play animation
 ### Render
 #### Creation of 3D models
 
