@@ -66,10 +66,8 @@ class GenerateChainOperator(bpy.types.Operator):
     def execute(self, context):
         bpy.context.scene.frame_set(0)
         helper_meshes = prepare_helper_meshes()
-        print(bpy.data.window_managers["WinMan"].carabiners.keys()[0])
-        print(bpy.data.window_managers["WinMan"].carabiners.keys()[-1])
-        print(str(bpy.data.objects[bpy.data.window_managers["WinMan"].carabiners.keys()[0]].rotation_euler))
-        print(str(bpy.data.objects[bpy.data.window_managers["WinMan"].carabiners.keys()[-1]].rotation_euler))
+        weight_start_rotation = bpy.data.objects[bpy.data.window_managers["WinMan"].carabiners.keys()[0]].rotation_euler.copy()
+        weight_end_rotation = bpy.data.objects[bpy.data.window_managers["WinMan"].carabiners.keys()[-1]].rotation_euler.copy()
         prepare_carabiners()
         prepare_points()
         coordinates = prepare_coordinates(helper_meshes)     
@@ -81,6 +79,7 @@ class GenerateChainOperator(bpy.types.Operator):
         chain_set_parent()
         prepare_chain_children()
         chain_clean_up()
+        add_weights(context, weight_start_rotation, weight_end_rotation)
         return {'FINISHED'}
     
 
@@ -135,12 +134,17 @@ def prepare_coordinates(helper_meshes):
 
 
 def get_vertex(point_number):
-    point_number = str(point_number)
-    while len(point_number) < 3:
-        point_number = "0" + point_number
+    point_number = add_zero_to_number(point_number)
     point_number = "helper_chain." + point_number
     point_number = bpy.data.objects[point_number]
     return [point_number.location.x, point_number.location.y, point_number.location.z]
+
+
+def add_zero_to_number(number):
+    number = str(number)
+    while len(number) < 3:
+        number = "0" + number
+    return number
 
 
 def merge_coordinates(coordinates):
@@ -269,9 +273,47 @@ def chain_clean_up():
             bpy.data.objects.remove(obj, do_unlink=True)
 
 
-def stop_animation_handler(scene):
-    if scene.frame_current >= 50:
-        bpy.ops.screen.animation_cancel()
+def add_weights(context, start_rotation, end_rotation):
+    # TODO refactor
+    bpy.ops.object.select_all(action='DESELECT')
+
+    add_mesh("libraries\\weight.blend", context, "carabiners")
+    start_object = bpy.data.objects["weight_big.001"]
+    start_object.select_set(True)
+    start_object.location = bpy.data.collections["carabiners"].objects["chain_big.001"].location.copy()
+    start_object.rotation_euler = start_rotation
+    bpy.ops.transform.translate(value=[0.07, 0.0, 0.0], orient_type='NORMAL')
+    if vertices_distance(start_object.location, bpy.data.collections["carabiners"].objects["chain_big.002"].location) < 0.05:
+        bpy.ops.transform.translate(value=[-0.14, 0.0, 0.0], orient_type='NORMAL')
+        start_object.scale = start_object.scale * -1
+    start_object.select_set(False)
+
+    add_mesh("libraries\\weight.blend", context, "carabiners")
+    end_object = bpy.data.objects["weight_big.002"]
+    end_object.select_set(True)
+    end_object.location = bpy.data.collections["carabiners"].objects[get_last_chain()].location.copy()
+    end_object.rotation_euler = end_rotation 
+    bpy.ops.transform.translate(value=[0.07, 0.0, 0.0], orient_type='NORMAL')
+    if vertices_distance(end_object.location, bpy.data.collections["carabiners"].objects["chain_big." + add_zero_to_number(int(get_last_chain().split(".")[1]) - 1)].location) < 0.05:
+        bpy.ops.transform.translate(value=[-0.14, 0.0, 0.0], orient_type='NORMAL')
+        end_object.scale = end_object.scale * -1
+    if int(get_last_chain().split(".")[1]) % 2 == 0:
+        end_object.rotation_euler.rotate_axis("X", math.radians(90))
+
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+    for obj in start_object.children:
+        obj.location = start_object.location
+    for obj in end_object.children:
+        obj.location = end_object.location
+
+
+def get_last_chain():
+    last = "chain_big.001"
+    for obj in bpy.data.collections["carabiners"].objects:
+        if "chain_big." in obj.name:
+            last = obj.name
+    return last
             
 
 class PlaySimulationOperator(bpy.types.Operator):
@@ -293,6 +335,11 @@ class PlaySimulationOperator(bpy.types.Operator):
         return {'FINISHED'}
 
 
+def stop_animation_handler(scene):
+    if scene.frame_current >= 50:
+        bpy.ops.screen.animation_cancel()
+
+
 def prepare_rigid_world():
     if bpy.context.scene.rigidbody_world is None:
         bpy.ops.rigidbody.world_add()
@@ -305,7 +352,7 @@ def prepare_rigid_world():
 def prepare_collisions():
     bpy.ops.object.select_all(action='SELECT')
     for obj in bpy.context.selected_objects:
-        if "carabiner_" not in obj.name and "chain_" not in obj.name:
+        if "carabiner_" not in obj.name and "chain_" not in obj.name and "weight_" not in obj.name:
             bpy.context.view_layer.objects.active = obj
             bpy.ops.rigidbody.object_add()
             bpy.context.object.rigid_body.enabled = False
