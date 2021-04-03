@@ -66,6 +66,10 @@ class GenerateChainOperator(bpy.types.Operator):
     def execute(self, context):
         bpy.context.scene.frame_set(0)
         helper_meshes = prepare_helper_meshes()
+        print(bpy.data.window_managers["WinMan"].carabiners.keys()[0])
+        print(bpy.data.window_managers["WinMan"].carabiners.keys()[-1])
+        print(str(bpy.data.objects[bpy.data.window_managers["WinMan"].carabiners.keys()[0]].rotation_euler))
+        print(str(bpy.data.objects[bpy.data.window_managers["WinMan"].carabiners.keys()[-1]].rotation_euler))
         prepare_carabiners()
         prepare_points()
         coordinates = prepare_coordinates(helper_meshes)     
@@ -140,20 +144,28 @@ def get_vertex(point_number):
 
 
 def merge_coordinates(coordinates):
+    first_edge = True
     while len(coordinates) > 1:
-        new_coordinates = merge_edges(coordinates[0], coordinates[1])
+        if first_edge:
+            new_coordinates = merge_edges(coordinates[0], coordinates[1], first_edge)
+            first_edge = False
+        else:
+            new_coordinates = merge_edges(coordinates[0], coordinates[1], first_edge)
         coordinates.pop(0)
         coordinates[0] = new_coordinates
     return coordinates[0]
 
 
-def merge_edges( coordinates_a, coordinates_b):
+def merge_edges( coordinates_a, coordinates_b, first_edge):
     first_a_first_b = vertices_distance(coordinates_a[0],coordinates_b[0])
     first_a_last_b = vertices_distance(coordinates_a[0],coordinates_b[-1])
     last_a_first_b = vertices_distance(coordinates_a[-1],coordinates_b[0])
     last_a_last_b = vertices_distance(coordinates_a[-1],coordinates_b[-1])
 
-    lowest_distance = min(first_a_first_b,first_a_last_b,last_a_first_b,last_a_last_b)
+    if first_edge:
+        lowest_distance = min(first_a_first_b,first_a_last_b,last_a_first_b,last_a_last_b)
+    else:
+        lowest_distance = min(last_a_first_b,last_a_last_b)
 
     if lowest_distance == first_a_first_b:
         coordinates_a.reverse()

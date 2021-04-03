@@ -99,10 +99,13 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - by this button you can add new collections and choose which you want to insert into
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_collection.gif)
 #### Draw path and Done
-- 
+- these two buttons serves for marking path
+- you have to start drawing by Draw path button
+- remember to draw only one line and press Done
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_done.gif)
 
 ### References
 ### Render
+#### Creation of 3D models
 
 
