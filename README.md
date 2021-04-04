@@ -54,6 +54,7 @@ When you are done with whatever you have choosed and you want to see result of y
 You can save your render by pressing Crtl + S or go to Image -> Save / Save As in render window.
 
 ## Features
+
 ### Edit
 - this panel is useful for all three scenarios
 - I recommend leaving this panel visible.
@@ -81,6 +82,7 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/assign_materials.gif)
 #### Documentation
 - opens this documentation page
+
 ### Climbing wall and Rock
 - in these panels the funcionality is almost similar
 - they contain collections of 3D models
@@ -92,7 +94,7 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - saves selected object in collection
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_hold.gif)
 #### Remove
-- remove selected object from collection
+- removes selected object from collection
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/remove_hold.gif)
 #### Add collection
 - at the beginning holds are inserted into collection named "route" and drawn path is inserted into "path" collection
@@ -106,21 +108,40 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 
 ### Rope
 #### Add carabiner
+- adds carabiner 
+- similar to Add button from climbing wall 
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_carabiner.gif)
 #### Add point
+- adds points
+- similar to Add carabiner
+- points are useful when you need to set the rope further from the carabiners or when the rope is going through the wall
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_point.gif)
 #### Generate rope
+- generates rope through carabiners and points
+- order depends on table above
+- generating may take a while and for longer ropes Blender can crash, saving file before generating rope is highly recommended
+- if you are not happy with the result, go back by Undo (ctrl + z) before generating the rope otherwise issues can appear due to Blender Undo modification limits
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/generate_rope.gif)
 #### Intersection
+- highlights intersection of rope and wall
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/intersection.gif)
 #### Up and down arrow
+- change order carabiners
+- rope generating depends on order of carabiners and helpers
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/change_order.gif)
 #### Select whole carabiner
+- selects all needed parts of the carabiner
+- carabiner consists of many parts because of physical simulation
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/select_whole_carabiner.gif)
 #### Remove whole carabiner
+- remove all parts of the carabiner
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/remove_whole_carabiner.gif)
 #### Play animation
 ### Render
+- choose collection you want to render
+- press render button and waint until render is finished
+- rendering may take a while and for bigger scenes Blender can crash, saving file before rendering is highly recommended
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/render.gif)
 #### Creation of 3D models
 
 
