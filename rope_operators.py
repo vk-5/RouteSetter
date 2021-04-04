@@ -274,38 +274,30 @@ def chain_clean_up():
 
 
 def add_weights(context, start_rotation, end_rotation):
-    # TODO refactor
     bpy.ops.object.select_all(action='DESELECT')
-
-    add_mesh("libraries\\weight.blend", context, "carabiners")
-    start_object = bpy.data.objects["weight_big.001"]
-    start_object.select_set(True)
-    start_object.location = bpy.data.collections["carabiners"].objects["chain_big.001"].location.copy()
-    start_object.rotation_euler = start_rotation
-    bpy.ops.transform.translate(value=[0.07, 0.0, 0.0], orient_type='NORMAL')
-    if vertices_distance(start_object.location, bpy.data.collections["carabiners"].objects["chain_big.002"].location) < 0.05:
-        bpy.ops.transform.translate(value=[-0.14, 0.0, 0.0], orient_type='NORMAL')
-        start_object.scale = start_object.scale * -1
+    start_object = add_weight(context, "weight_big.001", start_rotation, "chain_big.001", "chain_big.002")
     start_object.select_set(False)
-
-    add_mesh("libraries\\weight.blend", context, "carabiners")
-    end_object = bpy.data.objects["weight_big.002"]
-    end_object.select_set(True)
-    end_object.location = bpy.data.collections["carabiners"].objects[get_last_chain()].location.copy()
-    end_object.rotation_euler = end_rotation 
-    bpy.ops.transform.translate(value=[0.07, 0.0, 0.0], orient_type='NORMAL')
-    if vertices_distance(end_object.location, bpy.data.collections["carabiners"].objects["chain_big." + add_zero_to_number(int(get_last_chain().split(".")[1]) - 1)].location) < 0.05:
-        bpy.ops.transform.translate(value=[-0.14, 0.0, 0.0], orient_type='NORMAL')
-        end_object.scale = end_object.scale * -1
+    end_object = add_weight(context, "weight_big.002", end_rotation, get_last_chain(), "chain_big." + add_zero_to_number(int(get_last_chain().split(".")[1]) - 1))
     if int(get_last_chain().split(".")[1]) % 2 == 0:
         end_object.rotation_euler.rotate_axis("X", math.radians(90))
 
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-    for obj in start_object.children:
-        obj.location = start_object.location
-    for obj in end_object.children:
-        obj.location = end_object.location
+    set_location_to_children(start_object)
+    set_location_to_children(end_object)
+
+
+def add_weight(context, name, rotation, chain, next_chain):
+    add_mesh("libraries\\weight.blend", context, "carabiners")
+    obj = bpy.data.objects[name]
+    obj.select_set(True)
+    obj.location = bpy.data.collections["carabiners"].objects[chain].location.copy()
+    obj.rotation_euler = rotation
+    bpy.ops.transform.translate(value=[0.07, 0.0, 0.0], orient_type='NORMAL')
+    if vertices_distance(obj.location, bpy.data.collections["carabiners"].objects[next_chain].location) < 0.05:
+        bpy.ops.transform.translate(value=[-0.14, 0.0, 0.0], orient_type='NORMAL')
+        obj.scale = obj.scale * -1
+    return obj
 
 
 def get_last_chain():
@@ -314,6 +306,11 @@ def get_last_chain():
         if "chain_big." in obj.name:
             last = obj.name
     return last
+
+
+def set_location_to_children(parent_object):
+    for obj in parent_object.children:
+        obj.location = parent_object.location
             
 
 class PlaySimulationOperator(bpy.types.Operator):
