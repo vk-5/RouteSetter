@@ -5,7 +5,7 @@ from . render_operators import focus_camera, focus_light, assign_material, set_o
 
 
 class AddToWallLibrary(bpy.types.Operator):
-    """Save selected to Wall library. If this button is disabled, select any object to active it."""
+    """Save selected to Wall library. If this button is disabled, select any object to active it"""
     bl_idname = "object.wall_library"
     bl_label = "Save"
 
@@ -32,7 +32,7 @@ class AddToWallLibrary(bpy.types.Operator):
 
 
 class AddToStructureLibrary(bpy.types.Operator):
-    """Save selected to Structure library. If this button is disabled, select any object to active it."""
+    """Save selected to Structure library. If this button is disabled, select any object to active it"""
     bl_idname = "object.structure_library"
     bl_label = "Save"
 
@@ -60,7 +60,7 @@ class AddToStructureLibrary(bpy.types.Operator):
 
 
 class AddToHoldLibrary(bpy.types.Operator):
-    """Save selected to Hold library. If this button is disabled, select any object to active it."""
+    """Save selected to Hold library. If this button is disabled, select any object to active it"""
     bl_idname = "object.hold_library"
     bl_label = "Save"
 
@@ -87,7 +87,7 @@ class AddToHoldLibrary(bpy.types.Operator):
 
 
 class AddToRockLibrary(bpy.types.Operator):
-    """Save selected to Rock library. If this button is disabled, select any object to active it."""
+    """Save selected to Rock library. If this button is disabled, select any object to active it"""
     bl_idname = "object.rock_library"
     bl_label = "Save"
 
@@ -128,7 +128,7 @@ def filenames_to_ints(file_name):
 
 
 class RemoveFromWallLibrary(bpy.types.Operator):
-    """Remove asset from Wall library. If this button is disabled, select any icon from collection to active it."""
+    """Remove asset from Wall library. If this button is disabled, select any icon from collection to active it"""
     bl_idname = "object.wall_library_remove"
     bl_label = "Remove"
 
@@ -146,7 +146,7 @@ class RemoveFromWallLibrary(bpy.types.Operator):
 
 
 class RemoveFromStructureLibrary(bpy.types.Operator):
-    """Remove asset from Structure library. If this button is disabled, select any icon from collection to active it."""
+    """Remove asset from Structure library. If this button is disabled, select any icon from collection to active it"""
     bl_idname = "object.structure_library_remove"
     bl_label = "Remove"
 
@@ -164,7 +164,7 @@ class RemoveFromStructureLibrary(bpy.types.Operator):
 
 
 class RemoveFromHoldLibrary(bpy.types.Operator):
-    """Remove asset from Hold library. If this button is disabled, select any icon from collection to active it."""
+    """Remove asset from Hold library. If this button is disabled, select any icon from collection to active it"""
     bl_idname = "object.hold_library_remove"
     bl_label = "Remove"
 
@@ -182,7 +182,7 @@ class RemoveFromHoldLibrary(bpy.types.Operator):
 
 
 class RemoveFromRockLibrary(bpy.types.Operator):
-    """Remove asset from Rock library. If this button is disabled, select any icon from collection to active it."""
+    """Remove asset from Rock library. If this button is disabled, select any icon from collection to active it"""
     bl_idname = "object.rock_library_remove"
     bl_label = "Remove"
 

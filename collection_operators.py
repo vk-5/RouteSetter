@@ -62,7 +62,7 @@ def get_random_color_tag():
 
 
 class AddWallFromCollection(bpy.types.Operator):
-    """Add Wall asset from collection. If this button is disabled, select any icon from collection to active it."""
+    """Add Wall asset from collection. If this button is disabled, select any icon from collection to active it"""
     bl_idname = "object.wall"
     bl_label = "Add"
     bl_options = {'REGISTER', 'UNDO'}
@@ -85,7 +85,7 @@ class AddWallFromCollection(bpy.types.Operator):
 
 
 class AddStructuresFromCollection(bpy.types.Operator):
-    """Add Structure asset from collection. If this button is disabled, select any icon from collection to active it."""
+    """Add Structure asset from collection. If this button is disabled, select any icon from collection to active it"""
     bl_idname = "object.structure"
     bl_label = "Add"
     bl_options = {'REGISTER', 'UNDO'}
@@ -109,7 +109,7 @@ class AddStructuresFromCollection(bpy.types.Operator):
 
 
 class AddHoldsFromCollection(bpy.types.Operator):
-    """Add Hold asset from collection. If this button is disabled, select any icon from collection to active it."""
+    """Add Hold asset from collection. If this button is disabled, select any icon from collection to active it"""
     bl_idname = "object.hold"
     bl_label = "Add"
     bl_options = {'REGISTER', 'UNDO'}
@@ -137,7 +137,7 @@ class AddHoldsFromCollection(bpy.types.Operator):
 
 
 class AddRocksFromCollection(bpy.types.Operator):
-    """Add Rock asset from collection. If this button is disabled, select any icon from collection to active it."""
+    """Add Rock asset from collection. If this button is disabled, select any icon from collection to active it"""
     bl_idname = "object.rock"
     bl_label = "Add"
     bl_options = {'REGISTER', 'UNDO'}
@@ -160,7 +160,7 @@ class AddRocksFromCollection(bpy.types.Operator):
 
 
 class AddRouteCollection(bpy.types.Operator):
-    """Adds new route collection."""
+    """Adds new route collection"""
     bl_idname = "object.add_route_collection"
     bl_label = "Add new route"
     bl_options = {'REGISTER', 'UNDO'}
@@ -176,7 +176,7 @@ class AddRouteCollection(bpy.types.Operator):
         return {'FINISHED'}
 
 class AddPathCollection(bpy.types.Operator):
-    """Adds new path collection."""
+    """Adds new path collection"""
     bl_idname = "object.add_path_collection"
     bl_label = "Add new path"
     bl_options = {'REGISTER', 'UNDO'}

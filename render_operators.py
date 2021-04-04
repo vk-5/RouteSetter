@@ -3,7 +3,7 @@ import os
 from os import listdir
 
 class RenderOperator(bpy.types.Operator):
-    """Render selected collection. If this button is disabled, you are trying to render empty collection, select different collection or add some object to active it."""
+    """Render selected collection. If this button is disabled, you are trying to render empty collection, select different collection or add some object to active it"""
     bl_idname = "object.render"
     bl_label = "Render"
 
@@ -131,7 +131,7 @@ def get_angle_for_render():
     return sum(angles) / len(angles)
 
 class RecalculateMaterial(bpy.types.Operator):
-    """Assigne material, for routes and paths based on color of collection."""
+    """Assigne material, for routes and paths based on color of collection"""
     bl_idname = "object.materials"
     bl_label = "Assign materials"
     bl_options = {'REGISTER', 'UNDO'}

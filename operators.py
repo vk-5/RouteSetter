@@ -4,7 +4,7 @@ from os import listdir
 
 
 class MoveObjectWithSnapping(bpy.types.Operator):
-    """Move selected objects. If this button is disabled, select any object to active it."""
+    """Move selected objects. If this button is disabled, select any object to active it"""
     bl_idname = "object.move_object_with_snapping"
     bl_label = "Move"
 
@@ -18,7 +18,7 @@ class MoveObjectWithSnapping(bpy.types.Operator):
         return {'FINISHED'}
 
 class RotateModal(bpy.types.Operator):
-    """Rotate selected objects. If this button is disabled, select any object to active it."""
+    """Rotate selected objects. If this button is disabled, select any object to active it"""
     bl_idname = "object.rotate_modal"
     bl_label = "Rotate"
     bl_options = {'REGISTER', 'UNDO'}
@@ -54,7 +54,7 @@ class RotateModal(bpy.types.Operator):
 
 
 class ScaleObject(bpy.types.Operator):
-    """Scale selected objects. If this button is disabled, select any object to active it."""
+    """Scale selected objects. If this button is disabled, select any object to active it"""
     bl_idname = "object.scale"
     bl_label = "Scale"
     bl_options = {'REGISTER', 'UNDO'}
@@ -70,7 +70,7 @@ class ScaleObject(bpy.types.Operator):
 
 
 class DeleteObject(bpy.types.Operator):
-    """Delete selected objects. If this button is disabled, select any object to active it."""
+    """Delete selected objects. If this button is disabled, select any object to active it"""
     bl_idname = "object.delete"
     bl_label = "Delete"
     bl_options = {'REGISTER', 'UNDO'}
@@ -121,7 +121,7 @@ def rotation_set_up(context, boolSettings, snap_elements):
 
 
 class DrawPath(bpy.types.Operator):
-    """Draw path on rock. If this button is disabled, select any object and switch to object mode to active it."""
+    """Draw path on rock. If this button is disabled, select any object and switch to object mode to active it"""
     bl_idname = "object.draw"
     bl_label = "Draw path"
 
@@ -145,7 +145,7 @@ class DrawPath(bpy.types.Operator):
 
 
 class DrawDone(bpy.types.Operator):
-    """Finish path. If this button is disabled, press Draw route first or select object named GPencil and switch to draw mode to active it."""
+    """Finish path. If this button is disabled, press Draw route first or select object named GPencil and switch to draw mode to active it"""
     bl_idname = "object.done"
     bl_label = "Done"
     bl_options = {'REGISTER', 'UNDO'}

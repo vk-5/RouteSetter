@@ -317,7 +317,7 @@ def get_last_chain():
             
 
 class PlaySimulationOperator(bpy.types.Operator):
-    """Play physics simulation. If this button is disabled, generate rope to active it."""
+    """Play physics simulation. If this button is disabled, generate rope to active it"""
     bl_idname = "object.play_simulation"
     bl_label = "Play Simulation"
     bl_options = {'REGISTER', 'UNDO'}
@@ -360,7 +360,7 @@ def prepare_collisions():
 
 
 class MoveUpUIlist(bpy.types.Operator):
-    """Moves selected carabiner up. If this button is disabled, carabiner is first."""
+    """Moves selected carabiner up. If this button is disabled, carabiner is first"""
     bl_idname = "object.move_up"
     bl_label = "UP"
 
@@ -375,7 +375,7 @@ class MoveUpUIlist(bpy.types.Operator):
 
 
 class MoveDownUIlist(bpy.types.Operator):
-    """Moves selected carabiner down. If this button is disabled, carabiner is last."""
+    """Moves selected carabiner down. If this button is disabled, carabiner is last"""
     bl_idname = "object.move_down"
     bl_label = "DOWN"
 
@@ -390,7 +390,7 @@ class MoveDownUIlist(bpy.types.Operator):
 
 
 class RemoveFromUIlist(bpy.types.Operator):
-    """Remove selected carabiner. If this button is disabled, no carabiner is choosen."""
+    """Remove selected carabiner. If this button is disabled, no carabiner is choosen"""
     bl_idname = "object.remove_carabiner"
     bl_label = "Remove"
 
@@ -409,7 +409,7 @@ class RemoveFromUIlist(bpy.types.Operator):
 
 
 class SelectCarabinerFromUIlist(bpy.types.Operator):
-    """Select carabiner in scene. If this button is disabled, no carabiner is choosen or rope has been already generated, in that case roll back by ctrl + z."""
+    """Select carabiner in scene. If this button is disabled, no carabiner is choosen or rope has been already generated, in that case roll back by ctrl + z"""
     bl_idname = "object.select_carabiner"
     bl_label = "Select"
 
@@ -446,7 +446,7 @@ def select_object_with_children(name):
 
 
 class MarkRope(bpy.types.Operator):
-    """Mark rope intersecting with object. If this button is disabled, rope has not been generated yet."""
+    """Mark rope intersecting with object. If this button is disabled, rope has not been generated yet"""
     bl_idname = "object.mark_rope"
     bl_label = "Intersection"
 
