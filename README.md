@@ -86,7 +86,7 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 ### Climbing wall and Rock
 - in these panels the funcionality is almost similar
 - they contain collections of 3D models
-- you can manage these collections
+- you can manage these collections by Save and Remove buttons
 #### Add
 - adds selected model from collection
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_from_collection.gif)
@@ -125,15 +125,15 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 #### Intersection
 - highlights intersection of rope and wall
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/intersection.gif)
-#### Up and down arrow
+#### Up and Down arrow
 - change order carabiners
 - rope generating depends on order of carabiners and helpers
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/change_order.gif)
-#### Select whole carabiner
+#### Select
 - selects all needed parts of the carabiner
 - carabiner consists of many parts because of physical simulation
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/select_whole_carabiner.gif)
-#### Remove whole carabiner
+#### Remove
 - remove all parts of the carabiner
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/remove_whole_carabiner.gif)
 #### Play animation
