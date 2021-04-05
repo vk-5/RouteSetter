@@ -152,10 +152,30 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - if you have any 3D model which is in another format, it is very likely you will find a converter of 3D model formats
 - the simplest way of obtaining new 3D model is downloading it from the internet
 - you can also try asking some climbing center to provide you 3D design of their wall
-#### Modelling
-##### Mesh modelling
-##### Boolean
-##### Sculpting
+#### Mesh modelling
+- modelling is hard and can take years to learn so I will demonstate only easy step by step example
+- press Prepare empty scene button in addon menu and add plane (shift + A -> Mesh -> Plane)
+- with plane selected press Tab on keyboard to switch to edit mode
+- now you can edit mesh as you like by selecting some vertices, edges or faces
+- common operations are rotation, moving, scaling and extruding
+- keyboard shortcuts are rotation (R), moving (G), scaling (S) and extruding (E)
+- when you start the operating it can be approved by left button on mouse or canceled by right button on mouse
+- you can also press X, Y or Z when the operation is active to set the direction
+- when you are done with editing pres A to select all, then press G and Z and put your mesh all the way above its origin (orange point)
+- at the end press Tab again to get to object mode also check if your model meets the requirements mentioned above
+#### Boolean modelling
+- you have to have some object at the beggining, for example cube (shift + A -> Mesh -> Cube)
+- now you can add another cubes, spheres etc, position them and subtract them from the first one
+- at the end you have to apply all modifiers
+- check if your model meets the mentioned requirements
+#### Sculpting
+- suitable for rocks and holds with organic look
+- you have to have some object at the beggining for example cube (shift + A -> Mesh -> Cube)
+- now switch to sculpt mode
+- sculpt your desired shape with available brushes
+- switch back to object mode
+- sculpted surfaces are never perfectly flat, so it is good to subtract cube at the bottom to make it flat (see Boolean modelling)
+- check if your model meets the mentioned requirements
 #### Photogrammetry
 - complex technique of getting real world objects into 3D scene
 - this technique can be useful for creating rocks from real world
