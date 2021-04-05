@@ -142,6 +142,24 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - press render button and waint until render is finished
 - rendering may take a while and for bigger scenes Blender can crash, saving file before rendering is highly recommended
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/render.gif)
-#### Creation of 3D models
+### Obtaining new 3D models
+#### How model should look like
+- model has to have the origin at the bottom otherwise parts would go through the wall 
+- model should be located in the middle of the scene at coordinates X: 0 Y: 0 Z: 0
+- model should have some reasonable size based on real holds, walls etc
+#### Importing
+- Blender supports importing of .obj .stl and .fbx file formats
+- if you have any 3D model which is in another format, it is very likely you will find a converter of 3D model formats
+- the simplest way of obtaining new 3D model is downloading it from the internet
+- you can also try asking some climbing center to provide you 3D design of their wall
+#### Modelling
+##### Mesh modelling
+##### Boolean
+##### Sculpting
+#### Photogrammetry
+- complex technique of getting real world objects into 3D scene
+- this technique can be useful for creating rocks from real world
+- good camera is a required and for big rocks you need drone or plane
+
 
 
