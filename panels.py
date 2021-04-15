@@ -57,6 +57,9 @@ class BoulderPreviewsPanel(bpy.types.Panel):
         row.prop(wm, "route_collection", text="")
         add_preview_with_add_button(layout, wm, "holds_previews", "hold")
         add_manage_library_buttons(layout, "hold_library", "hold_library_remove")
+        row = layout.row()
+        row.label(text="Add marker")
+        row.operator("object.marker")
 
 
 def add_preview_with_add_button(layout, wm, preview_name, operator_name):

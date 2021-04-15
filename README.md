@@ -154,7 +154,7 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - the simplest way of obtaining new 3D model is downloading it from the internet
 - you can also try asking some climbing center to provide you 3D design of their wall
 #### Mesh modelling
-- modelling is hard and can take years to learn so I will demonstate only easy step by step example, you can see all shortcuts I used in bottom left corner
+- modelling is hard and can take years to learn properly so I will demonstate only easy step by step example, you can see all shortcuts I used in bottom left corner
 - press Prepare empty scene button in addon menu and add plane (shift + A -> Mesh -> Plane)
 - with plane selected press Tab on keyboard to switch to edit mode
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/mesh_modelling1.gif)

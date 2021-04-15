@@ -159,6 +159,29 @@ class AddRocksFromCollection(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class AddMarkerFromCollection(bpy.types.Operator):
+    """Add Marker of start or end of route."""
+    bl_idname = "object.marker"
+    bl_label = "Add"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        number_of_routes = 0
+        for key in bpy.data.collections.keys():
+            if key.split(".")[0] == "route":
+                number_of_routes += 1
+        if number_of_routes == 0:
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
+
+        asset = "marker.blend"
+
+        bpy.ops.object.select_all(action='DESELECT')
+        add_mesh("libraries\\" + asset, context, bpy.data.window_managers["WinMan"].route_collection)
+        move_with_snapping(self, context, context.active_object)
+        return {'FINISHED'}
+
+
 class AddRouteCollection(bpy.types.Operator):
     """Adds new route collection"""
     bl_idname = "object.add_route_collection"
@@ -198,6 +221,7 @@ classes = (
     AddStructuresFromCollection,
     AddHoldsFromCollection,
     AddRocksFromCollection,
+    AddMarkerFromCollection,
     AddRouteCollection,
     AddPathCollection
 )
