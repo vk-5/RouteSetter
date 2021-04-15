@@ -18,7 +18,7 @@ class AddToWallLibrary(bpy.types.Operator):
         ob = set(bpy.context.selected_objects)
         for obj in bpy.context.selected_objects:
             obj.name = "wall.001"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\walls\\")
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.join("libraries", "walls"))
         name = get_file_name(filepath, "wall")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
@@ -46,7 +46,7 @@ class AddToStructureLibrary(bpy.types.Operator):
         for obj in bpy.context.selected_objects:
             obj.name = "structure.001"
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                "libraries\\structures\\")
+                                os.path.join("libraries", "structures"))
         name = get_file_name(filepath, "structure")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
@@ -73,7 +73,7 @@ class AddToHoldLibrary(bpy.types.Operator):
         ob = set(bpy.context.selected_objects)
         for obj in bpy.context.selected_objects:
             obj.name = "hold.001"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\holds\\")
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.join("libraries", "holds"))
         name = get_file_name(filepath, "hold")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
@@ -100,7 +100,7 @@ class AddToRockLibrary(bpy.types.Operator):
         ob = set(bpy.context.selected_objects)
         for obj in bpy.context.selected_objects:
             obj.name = "rock.001"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries\\rocks\\")
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.join("libraries", "rocks"))
         name = get_file_name(filepath, "rock")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
@@ -138,7 +138,7 @@ class RemoveFromWallLibrary(bpy.types.Operator):
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].walls_previews
-        delete_asset_from_library(icon, "libraries\\walls\\")
+        delete_asset_from_library(icon, os.path.join("libraries", "walls"))
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -156,7 +156,7 @@ class RemoveFromStructureLibrary(bpy.types.Operator):
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].structures_previews
-        delete_asset_from_library(icon, "libraries\\structures\\")
+        delete_asset_from_library(icon, os.path.join("libraries", "structures"))
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -174,7 +174,7 @@ class RemoveFromHoldLibrary(bpy.types.Operator):
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].holds_previews
-        delete_asset_from_library(icon, "libraries\\holds\\")
+        delete_asset_from_library(icon, os.path.join("libraries", "holds"))
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -192,7 +192,7 @@ class RemoveFromRockLibrary(bpy.types.Operator):
 
     def execute(self, context):
         icon = bpy.data.window_managers["WinMan"].rocks_previews
-        delete_asset_from_library(icon, "libraries\\rocks\\")
+        delete_asset_from_library(icon, os.path.join("libraries", "rocks"))
         return {'FINISHED'}
 
     def invoke(self, context, event):

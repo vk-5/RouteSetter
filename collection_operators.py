@@ -80,7 +80,7 @@ class AddWallFromCollection(bpy.types.Operator):
         asset = icon.split('.')[0] + ".blend"
 
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\walls\\" + asset, context, "walls")
+        add_mesh(os.path.join(os.path.join("libraries", "walls"), asset), context, "walls")
         return {'FINISHED'}
 
 
@@ -103,7 +103,7 @@ class AddStructuresFromCollection(bpy.types.Operator):
         asset = icon.split(".")[0] + ".blend"
 
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\structures\\" + asset, context, "structures")
+        add_mesh(os.path.join(os.path.join("libraries", "structures"), asset), context, "structures")
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -131,7 +131,7 @@ class AddHoldsFromCollection(bpy.types.Operator):
         asset = icon.split('.')[0] + ".blend"
 
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\holds\\" + asset, context, bpy.data.window_managers["WinMan"].route_collection)
+        add_mesh(os.path.join(os.path.join("libraries", "holds"), asset), context, bpy.data.window_managers["WinMan"].route_collection)
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -155,7 +155,7 @@ class AddRocksFromCollection(bpy.types.Operator):
         asset = icon.split('.')[0] + ".blend"
 
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\rocks\\" + asset, context, "rocks")
+        add_mesh(os.path.join(os.path.join("libraries", "rocks"), asset), context, "rocks")
         return {'FINISHED'}
 
 
@@ -174,10 +174,8 @@ class AddMarkerFromCollection(bpy.types.Operator):
             self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
             return {'CANCELLED'}
 
-        asset = "marker.blend"
-
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\" + asset, context, bpy.data.window_managers["WinMan"].route_collection)
+        add_mesh(os.path.join("libraries", "marker.blend"), context, bpy.data.window_managers["WinMan"].route_collection)
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 

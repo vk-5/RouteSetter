@@ -13,7 +13,7 @@ class AddCarabinerOperator(bpy.types.Operator):
 
         bpy.context.scene.frame_set(0)
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\carabiner.blend", context, "carabiners")
+        add_mesh(os.path.join("libraries", "carabiner.blend"), context, "carabiners")
         for obj in bpy.context.selected_objects:
             if "carabiner_1" in obj.name:
                 bpy.context.view_layer.objects.active = obj
@@ -37,7 +37,7 @@ class AddHelperPointsOperator(bpy.types.Operator):
     def execute(self, context):
         bpy.context.scene.frame_set(0)
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\points.blend", context, "carabiners")
+        add_mesh(os.path.join("libraries", "points.blend"), context, "carabiners")
         for obj in bpy.context.selected_objects:
             if "helperParent" in obj.name:
                 bpy.context.view_layer.objects.active = obj
@@ -204,7 +204,7 @@ def prepare_curve_and_empty(coordinates):
 
 def prepare_modifiers(context):
     bpy.ops.object.select_all(action='DESELECT')
-    add_mesh("libraries\\chain.blend", context, "carabiners")
+    add_mesh(os.path.join("libraries", "chain.blend"), context, "carabiners")
     bpy.context.view_layer.objects.active = bpy.data.objects["chain_big.001"]
     bpy.ops.object.modifier_add(type='ARRAY')
     bpy.context.object.modifiers["Array"].fit_type = 'FIT_CURVE'
@@ -288,7 +288,7 @@ def add_weights(context, start_rotation, end_rotation):
 
 
 def add_weight(context, name, rotation, chain, next_chain):
-    add_mesh("libraries\\weight.blend", context, "carabiners")
+    add_mesh(os.path.join("libraries", "weight.blend"), context, "carabiners")
     obj = bpy.data.objects[name]
     obj.select_set(True)
     obj.location = bpy.data.collections["carabiners"].objects[chain].location.copy()

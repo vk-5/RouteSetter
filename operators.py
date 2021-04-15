@@ -160,7 +160,7 @@ class DrawDone(bpy.types.Operator):
         bpy.ops.gpencil.paintmode_toggle(back=True)
         bpy.ops.gpencil.convert(type='POLY', use_timing_data=False)
 
-        add_mesh("libraries\\circle.blend", context, bpy.data.window_managers["WinMan"].path_collection)
+        add_mesh(os.path.join("libraries", "circle.blend"), context, bpy.data.window_managers["WinMan"].path_collection)
         bpy.data.objects.remove(bpy.data.objects["GPencil"], do_unlink=True)
         new_name = bpy.context.active_object.name
         bpy.context.view_layer.objects.active = bpy.data.objects[new_name]
@@ -190,7 +190,7 @@ class AddRiggedHumanOperator(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh("libraries\\human.blend", context, "human")
+        add_mesh(os.path.join("libraries", "human.blend"), context, "human")
         scale = bpy.data.window_managers["WinMan"].scale_prop / 100
         bpy.ops.transform.resize(value=(scale, scale, scale))
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
