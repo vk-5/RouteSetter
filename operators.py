@@ -161,9 +161,10 @@ class DrawDone(bpy.types.Operator):
         bpy.ops.gpencil.convert(type='POLY', use_timing_data=False)
 
         add_mesh(os.path.join("libraries", "circle.blend"), context, bpy.data.window_managers["WinMan"].path_collection)
+        scale = bpy.data.window_managers["WinMan"].path_scale_prop / 5
+        resize_object("circle", scale)
         bpy.data.objects.remove(bpy.data.objects["GPencil"], do_unlink=True)
-        new_name = bpy.context.active_object.name
-        bpy.context.view_layer.objects.active = bpy.data.objects[new_name]
+        bpy.context.view_layer.objects.active = bpy.data.objects["circle"]
 
         bpy.ops.object.modifier_add(type='ARRAY')
         bpy.context.object.modifiers["Array"].fit_type = 'FIT_CURVE'
@@ -171,6 +172,7 @@ class DrawDone(bpy.types.Operator):
         bpy.context.object.modifiers["Array"].relative_offset_displace[0] = 0
         bpy.context.object.modifiers["Array"].relative_offset_displace[1] = 0
         bpy.context.object.modifiers["Array"].relative_offset_displace[2] = 1
+        bpy.context.object.modifiers["Array"].use_merge_vertices = True
         bpy.ops.object.modifier_add(type='CURVE')
         bpy.context.object.modifiers["Curve"].object = bpy.data.objects["GP_Layer"]
         bpy.context.object.modifiers["Curve"].deform_axis = 'POS_Z'
@@ -179,7 +181,15 @@ class DrawDone(bpy.types.Operator):
         bpy.ops.object.modifier_apply(modifier="Curve")
         bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
         bpy.data.objects.remove(bpy.data.objects["GP_Layer"], do_unlink=True)
+        bpy.data.objects["circle"].name = "Path"
         return {'FINISHED'}
+
+
+def resize_object(name, scale):
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.data.objects[name].select_set(True)
+    bpy.ops.transform.resize(value=(scale, scale, scale))
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
 
 class AddRiggedHumanOperator(bpy.types.Operator):
