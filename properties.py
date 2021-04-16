@@ -263,6 +263,7 @@ def register():
     )
 
     WindowManager.scale_prop = IntProperty(default=180, soft_min=100, soft_max=210)
+    WindowManager.path_scale_prop = IntProperty(default=5, soft_min=1, soft_max=100)
 
     WindowManager.carabiners = CollectionProperty(type=CARABINERS_objectCollection)
     WindowManager.carabiners_index = IntProperty()
@@ -317,6 +318,7 @@ def unregister():
     del WindowManager.holds_previews_dir
     del WindowManager.rocks_previews_dir
     del WindowManager.scale_prop
+    del WindowManager.path_scale_prop
     del WindowManager.carabiners
     del WindowManager.carabiners_index
 

@@ -202,8 +202,7 @@ class AddRiggedHumanOperator(bpy.types.Operator):
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh(os.path.join("libraries", "human.blend"), context, "human")
         scale = bpy.data.window_managers["WinMan"].scale_prop / 100
-        bpy.ops.transform.resize(value=(scale, scale, scale))
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        resize_object(bpy.context.active_object.name, scale)
         return {'FINISHED'}
 
 

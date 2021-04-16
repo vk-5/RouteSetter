@@ -97,6 +97,8 @@ class RockPreviewsPanel(bpy.types.Panel):
         row.operator("object.add_path_collection", icon='OUTLINER_OB_GROUP_INSTANCE')
         row.prop(wm, "path_collection", text="")
         row = layout.row()
+        row.prop(wm, "path_scale_prop", slider=True, text="Diameter")
+        row = layout.row()
         row.operator("object.draw")
         row.operator("object.done")
 
