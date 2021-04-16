@@ -126,10 +126,9 @@ def enum_path_previews_collections(self, context):
 
 def enum_previews_from_directory(directory, pcoll, enum_items):
     if directory and os.path.exists(directory):
-        VALID_EXTENSIONS = (".png", ".jpg", ".jpeg")
         image_paths = []
         for fn in os.listdir(directory):
-            if fn.lower().endswith(VALID_EXTENSIONS):
+            if fn.lower().endswith(".png"):
                 image_paths.append(fn)
 
         for i, name in enumerate(image_paths):
