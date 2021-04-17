@@ -4,11 +4,11 @@ import bpy.utils.previews
 
 from bpy.types import WindowManager, PropertyGroup
 from bpy.props import (
-        StringProperty,
-        EnumProperty,
-        IntProperty,
-        CollectionProperty
-    )
+    StringProperty,
+    EnumProperty,
+    IntProperty,
+    CollectionProperty
+)
 
 
 def enum_previews_from_directory_walls(self, context):
@@ -165,13 +165,16 @@ def update_collections_collection(self, context):
     enum_previews_collections(self, context)
     return None
 
+
 def update_route_collections(self, context):
     enum_route_previews_collections(self, context)
     return None
 
+
 def update_path_collections(self, context):
     enum_path_previews_collections(self, context)
     return None
+
 
 class CARABINERS_objectCollection(PropertyGroup):
     # only default name
@@ -182,14 +185,12 @@ classes = (
     CARABINERS_objectCollection,
 )
 
-
 preview_collections = {}
 
 
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    
 
     WindowManager.walls_previews_dir = StringProperty(
         name="Folder Path",

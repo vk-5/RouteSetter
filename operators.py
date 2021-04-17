@@ -1,6 +1,5 @@
-import bpy, math, mathutils, bpy_extras.view3d_utils, random
+import bpy, math, mathutils, bpy_extras.view3d_utils
 import os
-from os import listdir
 
 
 class MoveObjectWithSnapping(bpy.types.Operator):
@@ -10,12 +9,13 @@ class MoveObjectWithSnapping(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects and bpy.context.active_object and\
+        return bpy.context.selected_objects and bpy.context.active_object and \
                bpy.context.active_object.mode == 'OBJECT'
 
     def execute(self, context):
         move_with_snapping(self, context, bpy.context.selected_objects[0])
         return {'FINISHED'}
+
 
 class RotateModal(bpy.types.Operator):
     """Rotate selected objects. If this button is disabled, select any object to active it"""
@@ -27,7 +27,7 @@ class RotateModal(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects and bpy.context.active_object and\
+        return bpy.context.selected_objects and bpy.context.active_object and \
                bpy.context.active_object.mode == 'OBJECT'
 
     def modal(self, context, event):
@@ -99,6 +99,7 @@ def add_mesh(file_name, context, collection_name=None):
             bpy.context.collection.objects.link(obj)
     bpy.context.view_layer.objects.active = data_to.objects[0]
 
+
 def move_with_snapping(self, context, obj):
     x, y, z = obj.location.x, obj.location.y, obj.location.z
     loc = bpy_extras.view3d_utils.location_3d_to_region_2d(bpy.context.region,
@@ -106,7 +107,7 @@ def move_with_snapping(self, context, obj):
                                                            (x, y, z), (0, 0))
 
     context.window.cursor_warp(loc.x, loc.y)
-    rotation_set_up(context, [True,True,True,False,True], {'FACE'})
+    rotation_set_up(context, [True, True, True, False, True], {'FACE'})
     bpy.ops.transform.translate('INVOKE_DEFAULT')
 
 
@@ -133,7 +134,8 @@ class DrawPath(bpy.types.Operator):
 
     def execute(self, context):
         if "rocks" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         bpy.ops.object.gpencil_add(align='WORLD', location=(0, 0, 0), scale=(1, 1, 1), type='EMPTY')
@@ -162,7 +164,8 @@ class DrawDone(bpy.types.Operator):
         bpy.ops.gpencil.paintmode_toggle(back=True)
         bpy.ops.gpencil.convert(type='POLY', use_timing_data=False)
 
-        add_mesh(os.path.join("libraries", "circle.blend"), context, bpy.data.window_managers["WinMan"].path_collection)
+        add_mesh(os.path.join("libraries", "circle.blend"), context,
+                 bpy.data.window_managers["WinMan"].path_collection)
         scale = bpy.data.window_managers["WinMan"].path_scale_prop / 5
         resize_object("circle", scale)
         bpy.data.objects.remove(bpy.data.objects["GPencil"], do_unlink=True)
@@ -205,7 +208,8 @@ class AddRiggedHumanOperator(bpy.types.Operator):
 
     def execute(self, context):
         if "reference" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         bpy.ops.object.select_all(action='DESELECT')

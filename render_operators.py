@@ -1,6 +1,5 @@
-import bpy, math, mathutils, bpy_extras.view3d_utils, random
-import os
-from os import listdir
+import bpy, math, mathutils
+
 
 class RenderOperator(bpy.types.Operator):
     """Render selected collection. If this button is disabled, you are trying to render empty collection, select different collection or add some object to active it"""
@@ -9,20 +8,22 @@ class RenderOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return len(bpy.data.collections) > 1 and len(bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects) != 0
+        return len(bpy.data.collections) > 1 and len(bpy.data.collections[bpy.data.window_managers[
+            "WinMan"].collections_previews].objects) != 0
 
     def execute(self, context):
         assign_material_for_render()
         focus_camera(rotation=(math.radians(75), math.radians(0),
                                get_angle_for_render() + math.radians(90)),
-                               collection=bpy.data.window_managers["WinMan"].collections_previews,
-                               lens_before=50, lens_after=20)
+                     collection=bpy.data.window_managers["WinMan"].collections_previews,
+                     lens_before=50, lens_after=20)
         focus_light(rotation=(math.radians(45), math.radians(-45),
                               get_angle_for_render() + math.radians(45)))
 
         set_output_dimensions(1080, 1920, 100)
         bpy.ops.render.render('INVOKE_DEFAULT')
         return {'FINISHED'}
+
 
 def assign_material_for_render():
     walls_color = (0.7, 0.7, 0.7, 1)
@@ -37,7 +38,9 @@ def assign_material_for_render():
     for col in bpy.data.collections.keys():
         if "path" in col or "route" in col:
             collection_color_tag = bpy.data.collections[col].color_tag
-            assign_material(collection_color_tag, get_color_from_color_tag(collection_color_tag), col)
+            assign_material(collection_color_tag,
+                            get_color_from_color_tag(collection_color_tag),
+                            col)
 
 
 def assign_material(name, color, collection=None):
@@ -125,10 +128,12 @@ def set_output_dimensions(dimension_x, dimension_y, percentage):
 def get_angle_for_render():
     angles = []
     bpy.ops.object.select_all(action='DESELECT')
-    for obj in bpy.data.collections[bpy.data.window_managers["WinMan"].collections_previews].objects:
+    for obj in bpy.data.collections[
+        bpy.data.window_managers["WinMan"].collections_previews].objects:
         angles.append(math.atan2(obj.location.y, obj.location.x))
         print()
     return sum(angles) / len(angles)
+
 
 class RecalculateMaterial(bpy.types.Operator):
     """Assigne material, for routes and paths based on color of collection"""
@@ -138,7 +143,8 @@ class RecalculateMaterial(bpy.types.Operator):
 
     def execute(self, context):
         if "walls" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
         assign_material_for_render()
         return {'FINISHED'}

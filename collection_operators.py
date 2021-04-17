@@ -1,7 +1,7 @@
-import bpy, math, mathutils, bpy_extras.view3d_utils, random
+import bpy, mathutils, random
 import os
-from os import listdir
-from . operators import add_mesh, move_with_snapping
+from .operators import add_mesh, move_with_snapping
+
 
 class CreateEmptyScene(bpy.types.Operator):
     """Delete all objects and create new empty scene."""
@@ -57,7 +57,8 @@ def create_collection(name, parent=None, color=None):
 
 def get_random_color_tag():
     index = random.randint(0, 8)
-    colors = ['NONE', 'COLOR_01', 'COLOR_02', 'COLOR_03', 'COLOR_04', 'COLOR_05', 'COLOR_06', 'COLOR_07', 'COLOR_08']
+    colors = ['NONE', 'COLOR_01', 'COLOR_02', 'COLOR_03', 'COLOR_04', 'COLOR_05', 'COLOR_06',
+              'COLOR_07', 'COLOR_08']
     return colors[index]
 
 
@@ -73,7 +74,8 @@ class AddWallFromCollection(bpy.types.Operator):
 
     def execute(self, context):
         if "walls" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         icon = bpy.data.window_managers["WinMan"].walls_previews
@@ -96,14 +98,16 @@ class AddStructuresFromCollection(bpy.types.Operator):
 
     def execute(self, context):
         if "structures" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         icon = bpy.data.window_managers["WinMan"].structures_previews
         asset = icon.split(".")[0] + ".blend"
 
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh(os.path.join(os.path.join("libraries", "structures"), asset), context, "structures")
+        add_mesh(os.path.join(os.path.join("libraries", "structures"), asset), context,
+                 "structures")
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -124,14 +128,16 @@ class AddHoldsFromCollection(bpy.types.Operator):
             if key.split(".")[0] == "route":
                 number_of_routes += 1
         if number_of_routes == 0:
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         icon = bpy.data.window_managers["WinMan"].holds_previews
         asset = icon.split('.')[0] + ".blend"
 
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh(os.path.join(os.path.join("libraries", "holds"), asset), context, bpy.data.window_managers["WinMan"].route_collection)
+        add_mesh(os.path.join(os.path.join("libraries", "holds"), asset), context,
+                 bpy.data.window_managers["WinMan"].route_collection)
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -148,7 +154,8 @@ class AddRocksFromCollection(bpy.types.Operator):
 
     def execute(self, context):
         if "rocks" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         icon = bpy.data.window_managers["WinMan"].rocks_previews
@@ -171,11 +178,13 @@ class AddMarkerFromCollection(bpy.types.Operator):
             if key.split(".")[0] == "route":
                 number_of_routes += 1
         if number_of_routes == 0:
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         bpy.ops.object.select_all(action='DESELECT')
-        add_mesh(os.path.join("libraries", "marker.blend"), context, bpy.data.window_managers["WinMan"].route_collection)
+        add_mesh(os.path.join("libraries", "marker.blend"), context,
+                 bpy.data.window_managers["WinMan"].route_collection)
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
 
@@ -188,13 +197,15 @@ class AddRouteCollection(bpy.types.Operator):
 
     def execute(self, context):
         if "walls" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         wall_collection = bpy.data.collections["walls"]
         collection = create_collection("route", wall_collection, get_random_color_tag())
         bpy.data.window_managers["WinMan"].route_collection = collection.name
         return {'FINISHED'}
+
 
 class AddPathCollection(bpy.types.Operator):
     """Adds new path collection"""
@@ -204,7 +215,8 @@ class AddPathCollection(bpy.types.Operator):
 
     def execute(self, context):
         if "rocks" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         rock_collection = bpy.data.collections["rocks"]

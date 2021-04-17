@@ -1,5 +1,4 @@
 import bpy
-import os
 from bpy.types import UIList, WindowManager
 
 
@@ -25,7 +24,8 @@ class EditPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("object.materials", icon='MATERIAL')
         row = layout.row()
-        row.operator("wm.url_open", text="Documentation", icon='URL').url = "https://github.com/vk-5/RouteSetter"
+        row.operator("wm.url_open", text="Documentation",
+                     icon='URL').url = "https://github.com/vk-5/RouteSetter"
 
 
 class BoulderPreviewsPanel(bpy.types.Panel):
@@ -67,6 +67,7 @@ def add_preview_with_add_button(layout, wm, preview_name, operator_name):
     row.template_icon_view(wm, preview_name)
     row = layout.row()
     row.operator("object." + operator_name)
+
 
 def add_manage_library_buttons(layout, add_operator_name, remove_operator_name):
     row = layout.row()
@@ -170,7 +171,7 @@ class REFERENCE_UL_carabiners(UIList):
         split.label(text=item.name, icon="MESH_CUBE")
 
     def invoke(self, context, event):
-        pass   
+        pass
 
 
 classes = (
@@ -191,4 +192,3 @@ def register():
 def unregister():
     for cls in classes:
         bpy.utils.unregister_class(cls)
-    

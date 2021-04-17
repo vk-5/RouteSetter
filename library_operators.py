@@ -1,7 +1,7 @@
-import bpy, math, mathutils, random
+import bpy, math, mathutils
 import os
 from os import listdir
-from . render_operators import focus_camera, focus_light, assign_material, set_output_dimensions
+from .render_operators import focus_camera, focus_light, assign_material, set_output_dimensions
 
 
 class AddToWallLibrary(bpy.types.Operator):
@@ -18,7 +18,8 @@ class AddToWallLibrary(bpy.types.Operator):
         ob = set(bpy.context.selected_objects)
         for obj in bpy.context.selected_objects:
             obj.name = "wall.001"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.join("libraries", "walls"))
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                os.path.join("libraries", "walls"))
         name = get_file_name(filepath, "wall")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
@@ -73,7 +74,8 @@ class AddToHoldLibrary(bpy.types.Operator):
         ob = set(bpy.context.selected_objects)
         for obj in bpy.context.selected_objects:
             obj.name = "hold.001"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.join("libraries", "holds"))
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                os.path.join("libraries", "holds"))
         name = get_file_name(filepath, "hold")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
@@ -100,7 +102,8 @@ class AddToRockLibrary(bpy.types.Operator):
         ob = set(bpy.context.selected_objects)
         for obj in bpy.context.selected_objects:
             obj.name = "rock.001"
-        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.join("libraries", "rocks"))
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                os.path.join("libraries", "rocks"))
         name = get_file_name(filepath, "rock")
 
         bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
@@ -133,7 +136,7 @@ class RemoveFromWallLibrary(bpy.types.Operator):
     bl_label = "Remove"
 
     @classmethod
-    def poll(self,context):
+    def poll(self, context):
         return bpy.data.window_managers["WinMan"].walls_previews
 
     def execute(self, context):
@@ -151,7 +154,7 @@ class RemoveFromStructureLibrary(bpy.types.Operator):
     bl_label = "Remove"
 
     @classmethod
-    def poll(self,context):
+    def poll(self, context):
         return bpy.data.window_managers["WinMan"].structures_previews
 
     def execute(self, context):
@@ -169,7 +172,7 @@ class RemoveFromHoldLibrary(bpy.types.Operator):
     bl_label = "Remove"
 
     @classmethod
-    def poll(self,context):
+    def poll(self, context):
         return bpy.data.window_managers["WinMan"].holds_previews
 
     def execute(self, context):
@@ -187,7 +190,7 @@ class RemoveFromRockLibrary(bpy.types.Operator):
     bl_label = "Remove"
 
     @classmethod
-    def poll(self,context):
+    def poll(self, context):
         return bpy.data.window_managers["WinMan"].rocks_previews
 
     def execute(self, context):
@@ -198,13 +201,15 @@ class RemoveFromRockLibrary(bpy.types.Operator):
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
 
+
 def delete_asset_from_library(icon, directory):
     asset = icon.split('.')[0] + ".blend"
-    filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),directory)
+    filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), directory)
     icon = os.path.join(filepath, icon)
     asset = os.path.join(filepath, asset)
     os.remove(icon)
     os.remove(asset)
+
 
 classes = (
     AddToWallLibrary,

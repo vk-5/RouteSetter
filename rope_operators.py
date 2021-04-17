@@ -1,9 +1,8 @@
-import bpy, math, mathutils, bpy_extras.view3d_utils, random
+import bpy, math, mathutils
 import os
-from os import listdir
-from . operators import add_mesh, move_with_snapping
+from .operators import add_mesh, move_with_snapping
 
-    
+
 class AddCarabinerOperator(bpy.types.Operator):
     """Add carabiner to the scene."""
     bl_idname = "object.carabiner"
@@ -11,7 +10,8 @@ class AddCarabinerOperator(bpy.types.Operator):
 
     def execute(self, context):
         if "reference" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         bpy.context.scene.frame_set(0)
@@ -26,7 +26,7 @@ class AddCarabinerOperator(bpy.types.Operator):
         obj.name = context.object.name
         obj.obj_type = context.object.type
         obj.obj_id = len(carabiners)
-        bpy.data.window_managers["WinMan"].carabiners_index = len(carabiners)-1
+        bpy.data.window_managers["WinMan"].carabiners_index = len(carabiners) - 1
 
         move_with_snapping(self, context, context.active_object)
         return {'FINISHED'}
@@ -39,7 +39,8 @@ class AddHelperPointsOperator(bpy.types.Operator):
 
     def execute(self, context):
         if "reference" not in bpy.data.collections.keys():
-            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            self.report({'ERROR'},
+                        "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
         bpy.context.scene.frame_set(0)
@@ -48,7 +49,7 @@ class AddHelperPointsOperator(bpy.types.Operator):
         for obj in bpy.context.selected_objects:
             if "helperParent" in obj.name:
                 bpy.context.view_layer.objects.active = obj
-        
+
         carabiners = bpy.data.window_managers["WinMan"].carabiners
         obj = carabiners.add()
         obj.name = context.object.name
@@ -68,16 +69,19 @@ class GenerateChainOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return "chain_big.001" not in bpy.data.objects.keys() and ("carabiner_1.001" in bpy.data.objects.keys() or "helperParent.001" in bpy.data.objects.keys())
+        return "chain_big.001" not in bpy.data.objects.keys() and (
+                    "carabiner_1.001" in bpy.data.objects.keys() or "helperParent.001" in bpy.data.objects.keys())
 
     def execute(self, context):
         bpy.context.scene.frame_set(0)
         helper_meshes = prepare_helper_meshes()
-        weight_start_rotation = bpy.data.objects[bpy.data.window_managers["WinMan"].carabiners.keys()[0]].rotation_euler.copy()
-        weight_end_rotation = bpy.data.objects[bpy.data.window_managers["WinMan"].carabiners.keys()[-1]].rotation_euler.copy()
+        weight_start_rotation = bpy.data.objects[
+            bpy.data.window_managers["WinMan"].carabiners.keys()[0]].rotation_euler.copy()
+        weight_end_rotation = bpy.data.objects[
+            bpy.data.window_managers["WinMan"].carabiners.keys()[-1]].rotation_euler.copy()
         prepare_carabiners()
         prepare_points()
-        coordinates = prepare_coordinates(helper_meshes)     
+        coordinates = prepare_coordinates(helper_meshes)
         prepare_curve_and_empty(coordinates)
         prepare_modifiers(context)
         apply_modifiers("chain_big.001", ['Array', 'Curve'])
@@ -88,7 +92,7 @@ class GenerateChainOperator(bpy.types.Operator):
         chain_clean_up()
         add_weights(context, weight_start_rotation, weight_end_rotation)
         return {'FINISHED'}
-    
+
 
 def prepare_helper_meshes():
     helper_meshes = []
@@ -127,7 +131,7 @@ def prepare_points():
 
 def prepare_coordinates(helper_meshes):
     coordinates = []
-    
+
     bpy.ops.object.select_all(action='DESELECT')
     i = 0
     for carabiner in bpy.data.window_managers["WinMan"].carabiners.keys():
@@ -135,7 +139,7 @@ def prepare_coordinates(helper_meshes):
         vertex_b = get_vertex(helper_meshes.index(carabiner) * 2 + 2)
         coordinates.append([vertex_a, vertex_b])
         i += 1
-   
+
     coordinates = merge_coordinates(coordinates)
     return coordinates
 
@@ -167,16 +171,16 @@ def merge_coordinates(coordinates):
     return coordinates[0]
 
 
-def merge_edges( coordinates_a, coordinates_b, first_edge):
-    first_a_first_b = vertices_distance(coordinates_a[0],coordinates_b[0])
-    first_a_last_b = vertices_distance(coordinates_a[0],coordinates_b[-1])
-    last_a_first_b = vertices_distance(coordinates_a[-1],coordinates_b[0])
-    last_a_last_b = vertices_distance(coordinates_a[-1],coordinates_b[-1])
+def merge_edges(coordinates_a, coordinates_b, first_edge):
+    first_a_first_b = vertices_distance(coordinates_a[0], coordinates_b[0])
+    first_a_last_b = vertices_distance(coordinates_a[0], coordinates_b[-1])
+    last_a_first_b = vertices_distance(coordinates_a[-1], coordinates_b[0])
+    last_a_last_b = vertices_distance(coordinates_a[-1], coordinates_b[-1])
 
     if first_edge:
-        lowest_distance = min(first_a_first_b,first_a_last_b,last_a_first_b,last_a_last_b)
+        lowest_distance = min(first_a_first_b, first_a_last_b, last_a_first_b, last_a_last_b)
     else:
-        lowest_distance = min(last_a_first_b,last_a_last_b)
+        lowest_distance = min(last_a_first_b, last_a_last_b)
 
     if lowest_distance == first_a_first_b:
         coordinates_a.reverse()
@@ -189,17 +193,18 @@ def merge_edges( coordinates_a, coordinates_b, first_edge):
     return coordinates_a + coordinates_b
 
 
-def vertices_distance( vertex_a, vertex_b):
-    return math.sqrt((vertex_b[0] - vertex_a[0])**2 + (vertex_b[1] - vertex_a[1])**2 + (vertex_a[2] - vertex_b[2])**2) 
+def vertices_distance(vertex_a, vertex_b):
+    return math.sqrt((vertex_b[0] - vertex_a[0]) ** 2 + (vertex_b[1] - vertex_a[1]) ** 2 + (
+                vertex_a[2] - vertex_b[2]) ** 2)
 
 
 def prepare_curve_and_empty(coordinates):
     curve_data = bpy.data.curves.new('curve_chain', 'CURVE')
     curve_data.dimensions = '3D'
     spline = curve_data.splines.new(type='POLY')
-    spline.points.add(len(coordinates)-1)
+    spline.points.add(len(coordinates) - 1)
     for i in range(len(coordinates)):
-        x,y,z = coordinates[i]
+        x, y, z = coordinates[i]
         spline.points[i].co = (x, y, z, 1)
     curve_obj = bpy.data.objects.new('curve_chain', curve_data)
     bpy.data.collections["carabiners"].objects.link(curve_obj)
@@ -228,7 +233,7 @@ def prepare_modifiers(context):
     bpy.ops.object.make_links_data(type='MODIFIERS')
 
 
-def apply_modifiers( obj_name, modifiers):
+def apply_modifiers(obj_name, modifiers):
     bpy.ops.object.select_all(action='DESELECT')
     bpy.context.view_layer.objects.active = bpy.data.objects[obj_name]
     for mod in modifiers:
@@ -255,7 +260,8 @@ def chain_set_parent():
     for obj_small in bpy.data.collections["carabiners"].objects:
         if "chain_" in obj_small.name and "_small." in obj_small.name:
             for obj_big in bpy.data.collections["carabiners"].objects:
-                if "chain_" in obj_big.name and "_big." in obj_big.name and obj_small.name.split(".")[1] == obj_big.name.split(".")[1]:
+                if "chain_" in obj_big.name and "_big." in obj_big.name and \
+                        obj_small.name.split(".")[1] == obj_big.name.split(".")[1]:
                     obj_small.parent = obj_big
                     obj_small.matrix_parent_inverse = obj_big.matrix_world.inverted()
 
@@ -263,7 +269,7 @@ def chain_set_parent():
 def prepare_chain_children():
     bpy.ops.object.select_all(action='DESELECT')
     for obj_small in bpy.data.collections["carabiners"].objects:
-        if  "chain_" in obj_small.name and "_small." in obj_small.name:
+        if "chain_" in obj_small.name and "_small." in obj_small.name:
             obj_small.select_set(True)
     bpy.ops.object.editmode_toggle()
     bpy.ops.mesh.select_all(action='SELECT')
@@ -282,9 +288,12 @@ def chain_clean_up():
 
 def add_weights(context, start_rotation, end_rotation):
     bpy.ops.object.select_all(action='DESELECT')
-    start_object = add_weight(context, "weight_big.001", start_rotation, "chain_big.001", "chain_big.002")
+    start_object = add_weight(context, "weight_big.001", start_rotation, "chain_big.001",
+                              "chain_big.002")
     start_object.select_set(False)
-    end_object = add_weight(context, "weight_big.002", end_rotation, get_last_chain(), "chain_big." + add_zero_to_number(int(get_last_chain().split(".")[1]) - 1))
+    end_object = add_weight(context, "weight_big.002", end_rotation, get_last_chain(),
+                            "chain_big." + add_zero_to_number(
+                                int(get_last_chain().split(".")[1]) - 1))
     if int(get_last_chain().split(".")[1]) % 2 == 0:
         end_object.rotation_euler.rotate_axis("X", math.radians(90))
 
@@ -301,7 +310,8 @@ def add_weight(context, name, rotation, chain, next_chain):
     obj.location = bpy.data.collections["carabiners"].objects[chain].location.copy()
     obj.rotation_euler = rotation
     bpy.ops.transform.translate(value=[0.07, 0.0, 0.0], orient_type='NORMAL')
-    if vertices_distance(obj.location, bpy.data.collections["carabiners"].objects[next_chain].location) < 0.05:
+    if vertices_distance(obj.location,
+                         bpy.data.collections["carabiners"].objects[next_chain].location) < 0.05:
         bpy.ops.transform.translate(value=[-0.14, 0.0, 0.0], orient_type='NORMAL')
         obj.scale = obj.scale * -1
     return obj
@@ -318,7 +328,7 @@ def get_last_chain():
 def set_location_to_children(parent_object):
     for obj in parent_object.children:
         obj.location = parent_object.location
-            
+
 
 class PlaySimulationOperator(bpy.types.Operator):
     """Play physics simulation. If this button is disabled, generate rope to active it"""
@@ -332,7 +342,7 @@ class PlaySimulationOperator(bpy.types.Operator):
 
     def execute(self, context):
         bpy.context.scene.frame_set(0)
-        prepare_rigid_world()    
+        prepare_rigid_world()
         prepare_collisions()
         bpy.context.scene.frame_end = 51
         bpy.ops.screen.animation_play()
@@ -348,7 +358,8 @@ def prepare_rigid_world():
     if bpy.context.scene.rigidbody_world is None:
         bpy.ops.rigidbody.world_add()
     bpy.context.scene.rigidbody_world.collection = bpy.data.collections["carabiners"]
-    bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections["carabiners"]
+    bpy.context.scene.rigidbody_world.effector_weights.collection = bpy.data.collections[
+        "carabiners"]
     bpy.context.scene.rigidbody_world.substeps_per_frame = 30
     bpy.context.scene.rigidbody_world.solver_iterations = 30
 
@@ -373,7 +384,9 @@ class MoveUpUIlist(bpy.types.Operator):
         return bpy.data.window_managers["WinMan"].carabiners_index >= 1
 
     def execute(self, context):
-        bpy.data.window_managers["WinMan"].carabiners.move(bpy.data.window_managers["WinMan"].carabiners_index - 1, bpy.data.window_managers["WinMan"].carabiners_index)
+        bpy.data.window_managers["WinMan"].carabiners.move(
+            bpy.data.window_managers["WinMan"].carabiners_index - 1,
+            bpy.data.window_managers["WinMan"].carabiners_index)
         bpy.data.window_managers["WinMan"].carabiners_index -= 1
         return {'FINISHED'}
 
@@ -385,10 +398,13 @@ class MoveDownUIlist(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.data.window_managers["WinMan"].carabiners_index < len(bpy.data.window_managers["WinMan"].carabiners) - 1
+        return bpy.data.window_managers["WinMan"].carabiners_index < len(
+            bpy.data.window_managers["WinMan"].carabiners) - 1
 
     def execute(self, context):
-        bpy.data.window_managers["WinMan"].carabiners.move(bpy.data.window_managers["WinMan"].carabiners_index, bpy.data.window_managers["WinMan"].carabiners_index + 1)
+        bpy.data.window_managers["WinMan"].carabiners.move(
+            bpy.data.window_managers["WinMan"].carabiners_index,
+            bpy.data.window_managers["WinMan"].carabiners_index + 1)
         bpy.data.window_managers["WinMan"].carabiners_index += 1
         return {'FINISHED'}
 
@@ -403,11 +419,13 @@ class RemoveFromUIlist(bpy.types.Operator):
         return bpy.data.window_managers["WinMan"].carabiners_index != -1
 
     def execute(self, context):
-        if bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name in bpy.data.objects.keys():    
-            select_whole_carabiner(bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name)
+        if bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name in bpy.data.objects.keys():
+            select_whole_carabiner(bpy.data.window_managers["WinMan"].carabiners[
+                                       bpy.data.window_managers["WinMan"].carabiners_index].name)
             for obj in bpy.context.selected_objects:
                 bpy.data.objects.remove(obj, do_unlink=True)
-        bpy.data.window_managers["WinMan"].carabiners.remove(bpy.data.window_managers["WinMan"].carabiners_index)
+        bpy.data.window_managers["WinMan"].carabiners.remove(
+            bpy.data.window_managers["WinMan"].carabiners_index)
         bpy.data.window_managers["WinMan"].carabiners_index -= 1
         return {'FINISHED'}
 
@@ -423,14 +441,17 @@ class SelectCarabinerFromUIlist(bpy.types.Operator):
 
     def execute(self, context):
         if bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name not in bpy.data.objects.keys():
-            self.report({'ERROR'}, "Rope has been already generated, in that case roll back by ctrl + z.") 
+            self.report({'ERROR'},
+                        "Rope has been already generated, in that case roll back by ctrl + z.")
             return {'CANCELLED'}
-        select_whole_carabiner(bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name)
+        select_whole_carabiner(bpy.data.window_managers["WinMan"].carabiners[
+                                   bpy.data.window_managers["WinMan"].carabiners_index].name)
         return {'FINISHED'}
+
 
 def select_whole_carabiner(name):
     bpy.ops.object.select_all(action='DESELECT')
-    if "chain_big.001" in  bpy.data.objects:
+    if "chain_big.001" in bpy.data.objects:
         number = name.split(".")[1]
         select_object_with_children(name)
         select_object_with_children("carabiner_2." + number)
@@ -463,7 +484,7 @@ class MarkRope(bpy.types.Operator):
             if "chain_big" in obj.name:
                 obj.select_set(True)
         return {'FINISHED'}
-        
+
 
 classes = (
     AddCarabinerOperator,
@@ -481,7 +502,7 @@ classes = (
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    
+
     bpy.app.handlers.frame_change_pre.append(stop_animation_handler)
 
 
