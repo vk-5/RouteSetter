@@ -10,6 +10,9 @@ class AddCarabinerOperator(bpy.types.Operator):
     bl_label = "Add carabiner"
 
     def execute(self, context):
+        if "reference" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
 
         bpy.context.scene.frame_set(0)
         bpy.ops.object.select_all(action='DESELECT')
@@ -35,6 +38,10 @@ class AddHelperPointsOperator(bpy.types.Operator):
     bl_label = "Add point"
 
     def execute(self, context):
+        if "reference" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
+
         bpy.context.scene.frame_set(0)
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh(os.path.join("libraries", "points.blend"), context, "carabiners")

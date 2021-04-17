@@ -204,6 +204,10 @@ class AddRiggedHumanOperator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+        if "reference" not in bpy.data.collections.keys():
+            self.report({'ERROR'}, "Corrupted collection hierarchy, press Pepare new scene to reset.") 
+            return {'CANCELLED'}
+
         bpy.ops.object.select_all(action='DESELECT')
         add_mesh(os.path.join("libraries", "human.blend"), context, "human")
         scale = bpy.data.window_managers["WinMan"].scale_prop / 100
