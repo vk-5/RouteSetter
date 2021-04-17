@@ -141,6 +141,8 @@ class DrawPath(bpy.types.Operator):
         bpy.context.scene.tool_settings.gpencil_stroke_placement_view3d = 'SURFACE'
         bpy.context.object.data.zdepth_offset = 0
         bpy.context.scene.tool_settings.gpencil_sculpt.lock_axis = 'VIEW'
+
+        bpy.context.scene.tool_settings.use_keyframe_insert_auto = True
         return {'FINISHED'}
 
 
@@ -182,6 +184,9 @@ class DrawDone(bpy.types.Operator):
         bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
         bpy.data.objects.remove(bpy.data.objects["GP_Layer"], do_unlink=True)
         bpy.data.objects["circle"].name = "Path"
+
+        bpy.context.scene.tool_settings.use_keyframe_insert_auto = False
+        bpy.ops.object.transform_apply(location=True, rotation=False, scale=False)
         return {'FINISHED'}
 
 

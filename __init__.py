@@ -3,7 +3,7 @@ from . import properties, operators, collection_operators, library_operators, ro
 
 bl_info = {
     "name": "Route setter Add-on",
-    "blender": (2, 92, 0),
+    "blender": (2, 93, 0),
     "category": "Object",
     "author": "Vojtech Kovarik"
 }
