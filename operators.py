@@ -186,7 +186,7 @@ class DrawDone(bpy.types.Operator):
         bpy.data.objects["circle"].name = "Path"
 
         bpy.context.scene.tool_settings.use_keyframe_insert_auto = False
-        bpy.ops.object.transform_apply(location=True, rotation=False, scale=False)
+        bpy.ops.anim.keyframe_insert_menu(type='Location')
         return {'FINISHED'}
 
 
