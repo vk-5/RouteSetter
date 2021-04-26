@@ -344,13 +344,13 @@ class PlaySimulationOperator(bpy.types.Operator):
         bpy.context.scene.frame_set(0)
         prepare_rigid_world()
         prepare_collisions()
-        bpy.context.scene.frame_end = 51
+        bpy.context.scene.frame_end = 101
         bpy.ops.screen.animation_play()
         return {'FINISHED'}
 
 
 def stop_animation_handler(scene):
-    if scene.frame_current >= 50:
+    if scene.frame_current >= 100:
         bpy.ops.screen.animation_cancel()
 
 
