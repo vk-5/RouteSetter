@@ -2,144 +2,155 @@
 
 [EN documentation](README.md)
 
-## Installation
-### Blender installation
-- You can download and install Blender on https://www.blender.org/.
-- If actual version of blender is higher than 2.93, donwload 2.93 LTS version from here https://www.blender.org/download/lts/.
-- Add-on has been developed since version 2.90.0 and is tested on actual 2.92.0 and 2.93.0 LTS Experimental build (stable version should be released at the end of May) which you can download on https://builder.blender.org/download
-### Addon installation
-- Download [addon](RouteSetter.zip) from repository
-- Open Blender
-- Go to Edit -> Preferences -> Add-ons
-- Click on 'Install...'
-- Choose downloaded add-on file 
-- Click on 'Install Add-on'
-- Now you should see your addon in addon list
-- Enable add on by check box
-- Now you have installed and enabled addon
-- You can find addon tab in 'N panel' of '3D viewport'
-- '3D viewport' is the default viewport when you start Blender, by pressing N on you keyboard you hide/unhide 'N panel'
-- Now when you are in right viewport by pressing N on you keyboard you unhide 'N panel'
-- You should see some vertical tabs and one of them should be RouteSetter, probably the last one
-- Click on the tab and you are ready to build
-- Happy route setting!
+## Instalace
+### Instalace Blenderu
+- Blender je možné stáhnout z https://www.blender.org/.
+- Pokud je aktuální verze větší než 2.93, stáhněte 2.93 LTS verzi z https://www.blender.org/download/lts/.
+- Rozšíření bylo vyvíjeno od verze 2.90.0 a bylo otestováno na aktuální verzi 2.92.0 a 2.93.0 LTS Experimental build (stabilní verze 2.93.0 LTS vyjde během Května) stáhnutelné z https://builder.blender.org/download
+### Instalace rozšíření
+- Stáhněte [rozšíření](RouteSetter.zip) z repozitáře (soubor RouteSetter.zip)
+- Otevřete Blender
+- Běžte do Edit -> Preferences -> Add-ons
+- Zvolte tlačítko 'Install...'
+- Vyberte stáhnutý soubor s rozšířením
+- Klikněte na tlačítko 'Install Add-on'
+- Nyní byste měli vidět rozšíření v seznamu
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/instalation1.gif)
+- Povolte rozšíření zaškrtnutím políčka
+- Nyní je rozšíření nainstalované a povolené
+- Rozšíření najdete v 'N panelu' v '3D viewport'
+- '3D viewport' je základní obrazovka s 3D scénou a stiknutí tlačítka N na klávesnici společně s kurzorem v 3D vieportu zobrazí 'N panel'
+- Ve vertikálních záložkách najděte a otevřte RouteSetter
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/instalation2.gif)
 
-## Workflow
+## Postup práce
 ### Blender
 
-If you are absolute beginer in Blender all you need before you start are just few things about the scene.
-- By holding your middle button on mouse and move your mouse your view will rotate
-- By holding your middle button and shift key on keyboard your view will move
-- By clicking on an object by your left mouse button, the object will become selected
-- By clicking on an object by your left mouse and holding ctrl key on keyboard, you can select more objects
-- By clicking somewhere else all objects will become unselected
-- You can save your scene by pressing Crtl + S or go to File -> Save / Save As
-- Blender has its own documentation https://www.blender.org/support/tutorials/
+Pokud jste začátečník v Blenderu, stačí vám znát základní ovládání.
+- Pohyb myši spolu se stisknutým kolečkem rotuje pohled
+- Pohyb myši spolu se stisknutým kolečkem a klávesou Shift posune pohled
+- Objekt vyberete levým tlačítkem myši
+- Pokud držíte klávesu Ctrl můžete vybrat několik objektů
+- Kliknutím do prostoru 3D scény zrušíte výběr
+- Svou práci můžete uložit klávesovou zkratkou Crtl + S nebo File -> Save / Save As
+- Odkaz na dokumentaci Blenderu https://www.blender.org/support/tutorials/
 
-### Add-on
+### Rozšíření
 
-First thing you need to do every time is clicking on the first button called "Prepare new scene". 
-The reason of this is that Blender opens with default cube and other mess, so we need to clean it up and prepare Collections.
+První věc, kterou musíte udělat je stisknout tlačítko "Prepare new scene". 
+To vyčistí 3D scénu a připravý kolekce 
 
-Now when your screen is prepared you have three possibilites what you can do:
-1) Design a climbing wall with multiple routes in Boulder panel
-2) Create a path on a real rock in Rock panel
-3) Set up carabiners on wall or rock and simulate a fall of a climber, then you can see if carabiners are well placed in References panel
+Když je scéna připravená nastává pět možnosti:
+1) Navrhnout cesty na horolezecké stěně
+2) Označit cesty na skále
+3) Nastavit karabiny, zkontrolovat průnik lana se stěnou a simulovat pád
+4) Vymodelovat vlastní model a umístit ho do některé z knihoven
+5) Přidat a napozicovat postavu pro lepší představu rozměrů ostatních modelů
 
-When you decide what you want to do I recommend you to hide the other two panels by clicking on the small arrow next to the name of the panel.
-All features all described in Features section below.
-When you are done with whatever you have choosed and you want to see result of you work, go to Render tab, select collection which you worked with and press render. 
-You can save your render by pressing Crtl + S or go to Image -> Save / Save As in render window.
+Když se rozhodnete, kterou z možností využijete, doporučuji schovat ostatní části rozšíření kliknutím na jejich jména a tím zvýšit přehlednost.
+Když skončíte s prací běžte do záložky render a vyberte kolekci, kterou chcete vyrenderovat.
+Render uložíte klávesovou zkratkou Crtl + S ne Image -> Save / Save As v okně renderu.
 
-## Features
+## Funkcionalita
 
 ### Edit
-- this panel is useful for all three scenarios
-- I recommend leaving this panel visible.
+- tento panel je užitečný pro všechny možnosti využití, proto doporučuji nechat panel viditelný
 #### Prepare new scene
-- removes all objects, materials, collections etc.
-- prepares collection hierarchy 
+- odstraní všechny obejkty, materiály, kolekce etc.
+- ppřipraví hierarchii kolekcí 
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/prepare_new_scene.gif)
 #### Move
-- moves selected object
-- snaps to surface of another object
+- přesune vybrané objekty
+- přichytává se k povrchu jiných objektů
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/move.gif)
 #### Rotate
-- rotates selected object based on mouse movement
-- rotates in Z axis
+- otočí vybrané objekty na základě pohybu myši
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/rotate.gif)
 #### Scale
-- changes size of selected object based on mouse movement
+- změní velikost vybraných objektů na základě pohybu myši
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/scale.gif)
 #### Delete
-- deletes selected object
+- smaže vybrané objekty
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/delete.gif)
 #### Assign materials
-- assigns material by color of collection
-- useful when you change holds collection and want to see actual color based on collections
+- nastaví materiály objektům, podle jejich barvy kolekce
+- užitečné při přesunutí úchytu do jiné kolekce
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/assign_materials.gif)
 #### Documentation
-- opens this documentation page
+- otevře stránku s dokumentací
 
 ### Climbing wall and Rock
-- in these panels the funcionality is almost similar
-- they contain collections of 3D models
-- you can manage these collections by Save and Remove buttons
+- funkcionalita v těchto panelech je podobná
+- obsahují kolekce 3D modelů, které je možné upravovat pomocí tlačítek Save a Remove
 #### Add
-- adds selected model from collection
+- přidá vybraný model z kolekce
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_from_collection.gif)
 #### Save
-- saves selected object in collection
+- uloží vybraný model do kolekce
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_hold.gif)
 #### Remove
-- removes selected object from collection
+- odstraní vybraný model z kolekce
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/remove_hold.gif)
 #### Add collection
-- at the beginning holds are inserted into collection named "route" and drawn path is inserted into "path" collection
-- by this button you can add new collections and choose which you want to insert into
+- na začátku se úchyty přidávají do kolekce "route" a označení cesty na skále do kolekce "path"
+- tímto tlačítkem můžete přidat další kolekce nebo změnit kolekci do které chcete model přidat
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_collection.gif)
-#### Draw path and Done
-- these two buttons serves for marking path
-- you have to start drawing by Draw path button
-- remember to draw only one line and press Done
+#### Add marker
+- přidá označení pro počáteční a koncový úchyt
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_marker.gif)
+#### Diameter, Draw path and Done
+- tyto dvě tlačítka slouží pro označení cesty na skále
+- kleslení zahájíte tlačítkem "Draw"
+- nakleslete pouze jednu čáru a stiskněte "Done"
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_done.gif)
+- na posuvníku můžete nastavit průměr označení
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_diameter.gif)
 
 ### Rope
 #### Add carabiner
-- adds carabiner 
-- similar to Add button from climbing wall 
+- přidá karabinu 
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_carabiner.gif)
 #### Add point
-- adds points
-- similar to Add carabiner
-- points are useful when you need to set the rope further from the carabiners or when the rope is going through the wall
+- přidá pomocné body
+- hodí se, když lano prochází stěnou nebo když chcete umístit konec lana dál od karabiny
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_point.gif)
 #### Generate rope
-- generates rope through carabiners and points
-- order depends on table above
-- generating may take a while and for longer ropes Blender can crash, saving file before generating rope is highly recommended
-- if you are not happy with the result, go back by Undo (ctrl + z) before generating the rope otherwise issues can appear due to Blender Undo modification limits
+- vygeneruje lano pospojováním bodů a karabin
+- pořadí závisí na tabulce a jde měnit
+- generování může chvíli trvat a Blender se může nečekaně ukončit, proto doporučuji uložit scénu před generováním
+- pokud nejste spokojeni s výsledkem vraťte se pomocí klávesové zkratky Ctrl + z před generování, jinak můžou nastat problémy kvůli limitacím Blenderu
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/generate_rope.gif)
 #### Intersection
-- highlights intersection of rope and wall
+- znázorní průnik lana se stěnou
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/intersection.gif)
 #### Up and Down arrow
-- change order carabiners
-- rope generating depends on order of carabiners and helpers
+- změní pořadí karabin
+- generování lana závisí na pořadí
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/change_order.gif)
 #### Select
-- selects all needed parts of the carabiner
-- carabiner consists of many parts because of physical simulation
+- vybere všechny části karabiny
+- krabina se skládá z mnoha částí kvůli fyzikální simulaci
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/select_whole_carabiner.gif)
 #### Remove
-- remove all parts of the carabiner
+- odstraní všechny části karabiny
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/remove_whole_carabiner.gif)
-#### Play animation
+#### Play simulation
+- spustí/zastaví fyzikální simulaci
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/simulation.gif)
+#### Human reference
+- posuvník nastaví výšku člověka
+- napozicujte postavu v pose módu
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/human1.gif)
+- nastavte kosti
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/posing.gif)
+- po skončení se přepněte zpět do objektového módu
+
 ### Render
-- choose collection you want to render
-- press render button and waint until render is finished
-- rendering may take a while and for bigger scenes Blender can crash, saving file before rendering is highly recommended
+- vyberte kolekci pro renderování
+- stiskněte tlačítko render a počtejte než výpočet skončí
+- to může trvat déle a Blender se může neočekávaně zavřít
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/render.gif)
+
 ### Obtaining new 3D models
 #### How model should look like
 - model has to have the origin at the bottom otherwise parts would go through the wall 
