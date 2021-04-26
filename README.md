@@ -138,7 +138,9 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 #### Remove
 - remove all parts of the carabiner
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/remove_whole_carabiner.gif)
-#### Play animation
+#### Play simulation
+- start/stop physical simulation of rope
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/simulation.gif)
 #### Human reference
 - set high by slider
 - add human by button
