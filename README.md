@@ -8,7 +8,7 @@
 - If actual version of blender is higher than 2.93, donwload 2.93 LTS version from here https://www.blender.org/download/lts/.
 - Add-on has been developed since version 2.90.0 and is tested on actual 2.92.0 and 2.93.0 LTS Experimental build (stable version should be released at the end of May) which you can download on https://builder.blender.org/download
 ### Addon installation
-- Download [add-on](RouteSetter.zip) from repository
+- Download [add-on](RouteSetter.zip) from repository (file RouteSetter.zip)
 - Open Blender
 - Go to Edit -> Preferences -> Add-ons
 - Click on 'Install...'
@@ -99,12 +99,14 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_collection.gif)
 #### Add marker
 - adds marker for start and top holds
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_marker.gif)
 #### Diameter, Draw path and Done
 - these two buttons and slider serves for marking path
-- in slider you can set diametr of route
 - you have to start drawing by Draw path button
 - remember to draw only one line and press Done
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_done.gif)
+- in slider you can set diametr of route depending of size of rock
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_diameter.gif)
 
 ### Rope
 #### Add carabiner
@@ -143,7 +145,11 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - select sceleton
 - move human close to your wall
 - go to pose mode and pose human
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/human1.gif)
+- set up bones
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/posing.gif)
 - when you are done, go back to object mode
+
 ### Render
 - choose collection you want to render
 - press render button and waint until render is finished
