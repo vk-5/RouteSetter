@@ -15,6 +15,7 @@
 - Choose downloaded add-on file 
 - Click on 'Install Add-on'
 - Now you should see your addon in addon list
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/instalation1.gif)
 - Enable add-on by check box
 - Now you have installed and enabled addon
 - You can find add-on tab in 'N panel' of '3D viewport'
@@ -22,6 +23,7 @@
 - You should see some vertical tabs and one of them should be RouteSetter, probably the last one
 - Click on the tab and you are ready to build
 - Happy route setting!
+![](https://github.com/vk-5/RouteSetter/blob/master/gifs/instalation2.gif)
 
 ## Workflow
 ### Blender
@@ -40,10 +42,12 @@ If you are absolute beginer in Blender all you need before you start are just fe
 First thing you need to do every time is clicking on the first button called "Prepare new scene". 
 The reason of this is that Blender opens with default cube and other mess, so we need to clean it up and prepare Collections.
 
-Now when your screen is prepared you have three possibilites what you can do:
+Now when your screen is prepared you have five possibilites what you can do:
 1) Design a climbing wall with multiple routes in Boulder panel
 2) Create a path on a real rock in Rock panel
-3) Set up carabiners on wall or rock and simulate a fall of a climber, then you can see if carabiners are well placed in References panel
+3) Set up carabiners on wall or rock and simulate a fall of a climber, then you can see if carabiners are well placed in References panel and that there is no intersection
+4) Create a 3D model and add it to library
+5) Add and pose human character, so you can compare scale to other objects
 
 When you decide what you want to do I recommend you to hide the other two panels by clicking on the small arrow next to the name of the panel.
 All features all described in Features section below.
@@ -53,7 +57,7 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 ## Features
 
 ### Edit
-- this panel is useful for all three scenarios
+- this panel is useful for all five scenarios
 - I recommend leaving this panel visible.
 #### Prepare new scene
 - removes all objects, materials, collections etc.
@@ -143,10 +147,7 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/simulation.gif)
 #### Human reference
 - set high by slider
-- add human by button
-- select sceleton
-- move human close to your wall
-- go to pose mode and pose human
+- for posing go to pose mode with skeleton selected
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/human1.gif)
 - set up bones
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/posing.gif)
@@ -157,6 +158,7 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - press render button and waint until render is finished
 - rendering may take a while and for bigger scenes Blender can crash, saving file before rendering is highly recommended
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/render.gif)
+
 ### Obtaining new 3D models
 #### How model should look like
 - model has to have the origin at the bottom otherwise parts would go through the wall 
