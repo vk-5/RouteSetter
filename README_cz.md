@@ -8,11 +8,7 @@
 - If actual version of blender is higher than 2.93, donwload 2.93 LTS version from here https://www.blender.org/download/lts/.
 - Add-on has been developed since version 2.90.0 and is tested on actual 2.92.0 and 2.93.0 LTS Experimental build (stable version should be released at the end of May) which you can download on https://builder.blender.org/download
 ### Addon installation
-- --- Cant upload so big file (rocks, holds etc..) so instead of Download 'RouteSetter.zip' from gitHub do:
-- --- Download whole repo as zip, unzip the dir. Now you should have directory RouteSetter-master with addon files (.py files and more dictionaries)
-- --- If you have for example RouteSetter-master/RouteSetter-master/ addon files remove one dir from the path, it is caused by unzip.
-- --- Cosmetic thing rename RouteSetter-master to 
-- --- Now zip the whole RouteSetter directory again and continue
+- Download [addon](RouteSetter.zip) from repository
 - Open Blender
 - Go to Edit -> Preferences -> Add-ons
 - Click on 'Install...'

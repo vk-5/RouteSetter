@@ -88,7 +88,7 @@ def enum_previews_collections(self, context):
 
     pcoll = preview_collections["collections"]
     for collection in bpy.data.collections:
-        if collection.name.split(".")[0] in ["path", "route", "carabiners"]:
+        if collection.name.split(".")[0] in ["path", "route", "carabiners", "human"]:
             enum_items.append((collection.name, collection.name, ""))
     pcoll.collections_previews = enum_items
     return pcoll.collections_previews

@@ -8,22 +8,17 @@
 - If actual version of blender is higher than 2.93, donwload 2.93 LTS version from here https://www.blender.org/download/lts/.
 - Add-on has been developed since version 2.90.0 and is tested on actual 2.92.0 and 2.93.0 LTS Experimental build (stable version should be released at the end of May) which you can download on https://builder.blender.org/download
 ### Addon installation
-- --- Cant upload so big file (rocks, holds etc..) so instead of Download 'RouteSetter.zip' from gitHub do:
-- --- Download whole repo as zip, unzip the dir. Now you should have directory RouteSetter-master with addon files (.py files and more dictionaries)
-- --- If you have for example RouteSetter-master/RouteSetter-master/ addon files remove one dir from the path, it is caused by unzip.
-- --- Cosmetic thing rename RouteSetter-master to 
-- --- Now zip the whole RouteSetter directory again and continue
+- Download [add-on](RouteSetter.zip) from repository
 - Open Blender
 - Go to Edit -> Preferences -> Add-ons
 - Click on 'Install...'
 - Choose downloaded add-on file 
 - Click on 'Install Add-on'
 - Now you should see your addon in addon list
-- Enable add on by check box
+- Enable add-on by check box
 - Now you have installed and enabled addon
-- You can find addon tab in 'N panel' of '3D viewport'
-- '3D viewport' is the default viewport when you start Blender, by pressing N on you keyboard you hide/unhide 'N panel'
-- Now when you are in right viewport by pressing N on you keyboard you unhide 'N panel'
+- You can find add-on tab in 'N panel' of '3D viewport'
+- '3D viewport' is the default viewport with 3D scene and by pressing N on you keyboard, while having cursor in the vieport, will unhide 'N panel'
 - You should see some vertical tabs and one of them should be RouteSetter, probably the last one
 - Click on the tab and you are ready to build
 - Happy route setting!
@@ -102,8 +97,11 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - at the beginning holds are inserted into collection named "route" and drawn path is inserted into "path" collection
 - by this button you can add new collections and choose which you want to insert into
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_collection.gif)
-#### Draw path and Done
-- these two buttons serves for marking path
+#### Add marker
+- adds marker for start and top holds
+#### Diameter, Draw path and Done
+- these two buttons and slider serves for marking path
+- in slider you can set diametr of route
 - you have to start drawing by Draw path button
 - remember to draw only one line and press Done
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_done.gif)
@@ -139,6 +137,13 @@ You can save your render by pressing Crtl + S or go to Image -> Save / Save As i
 - remove all parts of the carabiner
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/remove_whole_carabiner.gif)
 #### Play animation
+#### Human reference
+- set high by slider
+- add human by button
+- select sceleton
+- move human close to your wall
+- go to pose mode and pose human
+- when you are done, go back to object mode
 ### Render
 - choose collection you want to render
 - press render button and waint until render is finished
