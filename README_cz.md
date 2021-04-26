@@ -1,6 +1,6 @@
 # RouteSetter
 
-[CZ documentation](README_cz.md)
+[EN documentation](README.md)
 
 ## Installation
 ### Blender installation
