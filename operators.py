@@ -206,6 +206,10 @@ class AddRiggedHumanOperator(bpy.types.Operator):
     bl_label = "Add human"
     bl_options = {'REGISTER', 'UNDO'}
 
+    @classmethod
+    def poll(self, context):
+        return bpy.context.mode == 'OBJECT'
+
     def execute(self, context):
         if "reference" not in bpy.data.collections.keys():
             self.report({'ERROR'},

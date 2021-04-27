@@ -8,6 +8,10 @@ class AddCarabinerOperator(bpy.types.Operator):
     bl_idname = "object.carabiner"
     bl_label = "Add carabiner"
 
+    @classmethod
+    def poll(self, context):
+        return bpy.context.mode == 'OBJECT'
+
     def execute(self, context):
         if "reference" not in bpy.data.collections.keys():
             self.report({'ERROR'},
@@ -23,6 +27,10 @@ class AddHelperPointsOperator(bpy.types.Operator):
     """Add points so chain will not go through any other object."""
     bl_idname = "object.helper_points"
     bl_label = "Add point"
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         if "reference" not in bpy.data.collections.keys():
@@ -69,7 +77,7 @@ class GenerateChainOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return "chain_big.001" not in bpy.data.objects.keys() and (
+        return bpy.context.mode == 'OBJECT' and "chain_big.001" not in bpy.data.objects.keys() and (
                     "carabiner_1.001" in bpy.data.objects.keys() or "helperParent.001" in bpy.data.objects.keys())
 
     def execute(self, context):
@@ -336,7 +344,7 @@ class PlaySimulationOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return "chain_big.001" in bpy.data.objects.keys()
+        return bpy.context.mode == 'OBJECT' and "chain_big.001" in bpy.data.objects.keys()
 
     def execute(self, context):
         bpy.context.scene.frame_set(0)
@@ -415,7 +423,7 @@ class RemoveFromUIlist(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.data.window_managers["WinMan"].carabiners_index != -1
+        return bpy.context.mode == 'OBJECT' and bpy.data.window_managers["WinMan"].carabiners_index != -1
 
     def execute(self, context):
         if bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name in bpy.data.objects.keys():
@@ -437,7 +445,7 @@ class SelectCarabinerFromUIlist(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.data.window_managers["WinMan"].carabiners_index != -1
+        return bpy.context.mode == 'OBJECT' and bpy.data.window_managers["WinMan"].carabiners_index != -1
 
     def execute(self, context):
         if bpy.data.window_managers["WinMan"].carabiners[bpy.data.window_managers["WinMan"].carabiners_index].name not in bpy.data.objects.keys():
@@ -478,7 +486,7 @@ class MarkRope(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return "chain_big.001" in bpy.data.objects.keys()
+        return bpy.context.mode == 'OBJECT' and "chain_big.001" in bpy.data.objects.keys()
 
     def execute(self, context):
         for obj in bpy.data.objects:

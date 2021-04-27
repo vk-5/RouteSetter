@@ -9,6 +9,10 @@ class CreateEmptyScene(bpy.types.Operator):
     bl_label = "Prepare new scene"
     bl_options = {'REGISTER', 'UNDO'}
 
+    @classmethod
+    def poll(self, context):
+        return bpy.context.mode == 'OBJECT'
+
     def execute(self, context):
         bpy.ops.object.select_all(action='SELECT')
         if bpy.context.selected_objects:
@@ -70,7 +74,7 @@ class AddWallFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.data.window_managers["WinMan"].walls_previews
+        return bpy.data.window_managers["WinMan"].walls_previews and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         if "walls" not in bpy.data.collections.keys():
@@ -94,7 +98,7 @@ class AddStructuresFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.data.window_managers["WinMan"].structures_previews
+        return bpy.data.window_managers["WinMan"].structures_previews and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         if "structures" not in bpy.data.collections.keys():
@@ -120,7 +124,7 @@ class AddHoldsFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.data.window_managers["WinMan"].holds_previews
+        return bpy.data.window_managers["WinMan"].holds_previews and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         number_of_routes = 0
@@ -150,7 +154,7 @@ class AddRocksFromCollection(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.data.window_managers["WinMan"].rocks_previews
+        return bpy.data.window_managers["WinMan"].rocks_previews and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         if "rocks" not in bpy.data.collections.keys():
@@ -171,6 +175,10 @@ class AddMarkerFromCollection(bpy.types.Operator):
     bl_idname = "object.marker"
     bl_label = "Add"
     bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.selected_objects and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         number_of_routes = 0

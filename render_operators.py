@@ -8,7 +8,7 @@ class RenderOperator(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return len(bpy.data.collections) > 1 and len(bpy.data.collections[bpy.data.window_managers[
+        return bpy.context.mode == 'OBJECT' and len(bpy.data.collections) > 1 and len(bpy.data.collections[bpy.data.window_managers[
             "WinMan"].collections_previews].objects) != 0
 
     def execute(self, context):
@@ -140,6 +140,10 @@ class RecalculateMaterial(bpy.types.Operator):
     bl_idname = "object.materials"
     bl_label = "Assign materials"
     bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(self, context):
+        return bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         if "walls" not in bpy.data.collections.keys():

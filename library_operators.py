@@ -11,7 +11,7 @@ class AddToWallLibrary(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects
+        return bpy.context.selected_objects and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         bpy.ops.object.join()
@@ -39,7 +39,7 @@ class AddToStructureLibrary(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects
+        return bpy.context.selected_objects and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         bpy.ops.object.join()
@@ -67,7 +67,7 @@ class AddToHoldLibrary(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects
+        return bpy.context.selected_objects and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         bpy.ops.object.join()
@@ -95,7 +95,7 @@ class AddToRockLibrary(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.context.selected_objects
+        return bpy.context.selected_objects and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
         bpy.ops.object.join()
