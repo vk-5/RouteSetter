@@ -88,7 +88,7 @@ def enum_previews_collections(self, context):
 
     pcoll = preview_collections["collections"]
     for collection in bpy.data.collections:
-        if collection.name.split(".")[0] in ["path", "route", "carabiners", "human"]:
+        if collection.name.split(".")[0] in ["path", "route", "carabiners"]:
             enum_items.append((collection.name, collection.name, ""))
     pcoll.collections_previews = enum_items
     return pcoll.collections_previews
@@ -177,8 +177,9 @@ def update_path_collections(self, context):
 
 
 class CARABINERS_objectCollection(PropertyGroup):
-    # only default name
-    pass
+    # default name
+    helper_point1: bpy.props.StringProperty(name="Point 1")
+    helper_point2: bpy.props.StringProperty(name="Point 2")
 
 
 classes = (

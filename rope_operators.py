@@ -13,22 +13,9 @@ class AddCarabinerOperator(bpy.types.Operator):
             self.report({'ERROR'},
                         "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
-
-        bpy.context.scene.frame_set(0)
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh(os.path.join("libraries", "carabiner.blend"), context, "carabiners")
-        for obj in bpy.context.selected_objects:
-            if "carabiner_1" in obj.name:
-                bpy.context.view_layer.objects.active = obj
-
-        carabiners = bpy.data.window_managers["WinMan"].carabiners
-        obj = carabiners.add()
-        obj.name = context.object.name
-        obj.obj_type = context.object.type
-        obj.obj_id = len(carabiners)
-        bpy.data.window_managers["WinMan"].carabiners_index = len(carabiners) - 1
-
-        move_with_snapping(self, context, context.active_object)
+            
+        add_rigid_body(context, "carabiner.blend", "carabiner_1")
+        move_with_snapping(self, context, context.active_object)   
         return {'FINISHED'}
 
 
@@ -43,22 +30,35 @@ class AddHelperPointsOperator(bpy.types.Operator):
                         "Corrupted collection hierarchy, press Pepare new scene to reset.")
             return {'CANCELLED'}
 
-        bpy.context.scene.frame_set(0)
-        bpy.ops.object.select_all(action='DESELECT')
-        add_mesh(os.path.join("libraries", "points.blend"), context, "carabiners")
-        for obj in bpy.context.selected_objects:
-            if "helperParent" in obj.name:
-                bpy.context.view_layer.objects.active = obj
-
-        carabiners = bpy.data.window_managers["WinMan"].carabiners
-        obj = carabiners.add()
-        obj.name = context.object.name
-        obj.obj_type = context.object.type
-        obj.obj_id = len(carabiners)
-        bpy.data.window_managers["WinMan"].carabiners_index = len(carabiners) - 1
-
-        move_with_snapping(self, context, context.active_object)
+        add_rigid_body(context, "points.blend", "helperParent")
+        move_with_snapping(self, context, context.active_object)   
         return {'FINISHED'}
+
+def add_rigid_body(context, file_name, parent_name):
+    point1 = None
+    point2 = None
+
+    bpy.context.scene.frame_set(0)
+    bpy.ops.object.select_all(action='DESELECT')
+    add_mesh(os.path.join("libraries", file_name), context, "carabiners")
+    for obj in bpy.context.selected_objects:
+        if parent_name in obj.name:
+            bpy.context.view_layer.objects.active = obj
+        if "helper_chain" in obj.name:
+            if point1 is None:
+                point1 = obj.name
+            else:
+                point2 = obj.name
+
+    carabiners = bpy.data.window_managers["WinMan"].carabiners
+    obj = carabiners.add()
+    obj.name = context.object.name
+    obj.obj_type = context.object.type
+    obj.obj_id = len(carabiners)
+    obj.helper_point1 = point1
+    obj.helper_point2 = point2
+    bpy.data.window_managers["WinMan"].carabiners_index = len(carabiners) - 1
+ 
 
 
 class GenerateChainOperator(bpy.types.Operator):
@@ -134,9 +134,9 @@ def prepare_coordinates(helper_meshes):
 
     bpy.ops.object.select_all(action='DESELECT')
     i = 0
-    for carabiner in bpy.data.window_managers["WinMan"].carabiners.keys():
-        vertex_a = get_vertex(helper_meshes.index(carabiner) * 2 + 1)
-        vertex_b = get_vertex(helper_meshes.index(carabiner) * 2 + 2)
+    for carabiner in bpy.data.window_managers["WinMan"].carabiners:
+        vertex_a = get_vertex(carabiner.helper_point1)
+        vertex_b = get_vertex(carabiner.helper_point2)
         coordinates.append([vertex_a, vertex_b])
         i += 1
 
@@ -144,11 +144,9 @@ def prepare_coordinates(helper_meshes):
     return coordinates
 
 
-def get_vertex(point_number):
-    point_number = add_zero_to_number(point_number)
-    point_number = "helper_chain." + point_number
-    point_number = bpy.data.objects[point_number]
-    return [point_number.location.x, point_number.location.y, point_number.location.z]
+def get_vertex(point_name):
+    point = bpy.data.objects[point_name]
+    return [point.location.x, point.location.y, point.location.z]
 
 
 def add_zero_to_number(number):
@@ -413,6 +411,7 @@ class RemoveFromUIlist(bpy.types.Operator):
     """Remove selected carabiner. If this button is disabled, no carabiner is choosen"""
     bl_idname = "object.remove_carabiner"
     bl_label = "Remove"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self, context):
@@ -434,6 +433,7 @@ class SelectCarabinerFromUIlist(bpy.types.Operator):
     """Select carabiner in scene. If this button is disabled, no carabiner is choosen or rope has been already generated, in that case roll back by ctrl + z"""
     bl_idname = "object.select_carabiner"
     bl_label = "Select"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self, context):
@@ -474,6 +474,7 @@ class MarkRope(bpy.types.Operator):
     """Mark rope intersecting with object. If this button is disabled, rope has not been generated yet"""
     bl_idname = "object.mark_rope"
     bl_label = "Intersection"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(self, context):

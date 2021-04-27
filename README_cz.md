@@ -151,54 +151,53 @@ Render uložíte klávesovou zkratkou Crtl + S ne Image -> Save / Save As v okn�
 - to může trvat déle a Blender se může neočekávaně zavřít
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/render.gif)
 
-### Obtaining new 3D models
-#### How model should look like
-- model has to have the origin at the bottom otherwise parts would go through the wall 
-- model should be located in the middle of the scene at coordinates X: 0 Y: 0 Z: 0
-- model should have some reasonable size based on real holds, walls etc
+### Získávání nových 3D modelů
+#### Jak má model vypadat
+- model musí mít počátek (origin) na spodu, jinak bz doch8yelo k pr;niku model;m se stěnou
+- model by se měl nacházet na souřadnicích X: 0 Y: 0 Z: 0
+- model by měl mít rozumnou velikost vzhledem k reálnému světu
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/origin_fix.gif)
-#### Importing
-- Blender supports importing of .obj .stl and .fbx file formats
-- if you have any 3D model which is in another format, it is very likely you will find a converter of 3D model formats
-- the simplest way of obtaining new 3D model is downloading it from the internet
-- you can also try asking some climbing center to provide you 3D design of their wall
-#### Mesh modelling
-- modelling is hard and can take years to learn properly so I will demonstate only easy step by step example, you can see all shortcuts I used in bottom left corner
-- press Prepare empty scene button in addon menu and add plane (shift + A -> Mesh -> Plane)
-- with plane selected press Tab on keyboard to switch to edit mode
+#### Importování
+- Blender podporuje importování formátů .obj .stl a .fbx 
+- pokud máte 3D model v jiném formátu, je velice pravděpodobné, že se vám podaří najít online převaděč do jednoho z těchto formátů
+- nejjednoduší cesta jak získat nové modely je stáhnout je z internetu
+- také je možnost dotázat se lezeckého centra o poskytnutí modelů
+#### Mesh
+- modelování je složité a učení může trvat roky, proto budu demostrovat jednoduché věci krok po kroku
+- všechny klávesové zkratky, které použiji můžete vidět v leveém dolním rohu
+- stiskněte tlačítko Prepare empty scene v záložce rozšíření a poté přidejte plochu (shift + A -> Mesh -> Plane)
+- vyberte plochu a tabulátorem se přesuňte do editačního módu
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/mesh_modelling1.gif)
-- now you can edit mesh as you like by selecting some vertices, edges or faces
-- common operations are rotation, moving, scaling and extruding
-- keyboard shortcuts are rotation (R), moving (G), scaling (S) and extruding (E)
-- when you start the operating it can be approved by left button on mouse or canceled by right button on mouse
-- you can also press X, Y or Z when the operation is active to set the direction
+- nyní můžete vybrat vrchol, hranu nebo plochu a upravit je
+- běžné operace jsou rotace (R), zvětšení (S), posunutí (G) a vysunutí (E)
+- operaci potvrdíte levým tlačítkem myši nebo zrušíte pravým
+- stisknutí kláves X, Y, Z při aktivované operaci nastaví směr pohybu
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/mesh_modelling2.gif)
-- when you are done with editing pres A to select all, then press G and Z and put your mesh all the way above its origin (orange point)
-- at the end press Tab again to get to object mode also check if your model meets the requirements mentioned above
+- když máte model hotový stiskněte A pro vybrání všech bodů a G + Z, myší posuňte model tak aby všechny body byly nad oranžovým bodem a potvrďte
+- na konec se přesuňte zpět do objektového módu tabulátorem
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/mesh_modelling3.gif)
-#### Boolean modelling
-- you have to have some object at the beggining, for example cube (shift + A -> Mesh -> Cube)
-- now you can add another cubes, spheres etc, position them and subtract them from the first one
+#### Boolean
+- na počátku musíte mít nějaký obejkt, například kostku (shift + A -> Mesh -> Cube)
+- nyní můžete přidat další objekty a odečíst je nebo přičíst
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/boolean_modelling1.gif)
-- at the end you have to apply all modifiers
+- na konci musíte potvrdit všechny modifikátory
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/boolean_modelling2.gif)
-- check if your model meets the mentioned requirements
-#### Sculpting
-- suitable for rocks and holds with organic look
-- you have to have some object at the beggining for example cube (shift + A -> Mesh -> Cube)
-- add subdivision surface modifier and apply it
-- now switch to sculpt mode
+- zkontroluje jestli model upspokojuje požadavky zmíněné výše
+#### Sochání
+- vhodné pro skály a modely s organickým vzhledem
+- na začátku musíte mít nějaký objekt, například kostku (shift + A -> Mesh -> Cube)
+- přidáte modifikátor pro rozdělení povrchů a aplikujete jej
+- nyní se přesuňte do sculpt módu
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/sculpting1.gif)
-- sculpt your desired shape with available brushes
-- switch back to object mode
+- vysochejte tvar pomocí dostupných nástrojů
+- přesuňte se zpět do objektového módu
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/sculpting2.gif)
-- sculpted surfaces are never perfectly flat, so it is good to subtract cube at the bottom to make it flat (see Boolean modelling)
+- vysochaný povrch není nikdy perfektně rovný, proto je dobré na konec odečíst kostku a tím zarovnat povrch (více v Boolean modelování)
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/sculpting3.gif)
-- check if your model meets the mentioned requirements
-#### Photogrammetry
-- complex technique of getting real world objects into 3D scene
-- this technique can be useful for creating rocks from real world
-- good camera is a required and for big rocks you need drone or plane
+- zkontroluje jestli model upspokojuje požadavky zmíněné výše
+#### Fotogrametrie
+- složitá technika, která umožňuje vytvořit modely z fotek reálného světa
+- je zapotřebí mít dobrý foťák a pro velké objekty jako jsou skály také dron
 
 
 
