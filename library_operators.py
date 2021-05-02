@@ -14,8 +14,9 @@ class AddToWallLibrary(bpy.types.Operator):
         return bpy.context.selected_objects and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
-        bpy.ops.object.join()
         objs = prepare_objects(set(bpy.context.selected_objects), "wall.001")
+        bpy.ops.object.join()
+        objs = set(bpy.context.selected_objects)
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 os.path.join("libraries", "walls"))
         name = get_file_name(filepath, "wall")
@@ -40,8 +41,9 @@ class AddToStructureLibrary(bpy.types.Operator):
         return bpy.context.selected_objects and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
-        bpy.ops.object.join()
         objs = prepare_objects(set(bpy.context.selected_objects), "structure.001")
+        bpy.ops.object.join()
+        objs = set(bpy.context.selected_objects)
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 os.path.join("libraries", "structures"))
         name = get_file_name(filepath, "structure")
@@ -66,8 +68,9 @@ class AddToHoldLibrary(bpy.types.Operator):
         return bpy.context.selected_objects and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
-        bpy.ops.object.join()
         objs = prepare_objects(set(bpy.context.selected_objects), "hold.001")
+        bpy.ops.object.join()
+        objs = set(bpy.context.selected_objects)
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 os.path.join("libraries", "holds"))
         name = get_file_name(filepath, "hold")
@@ -92,8 +95,9 @@ class AddToRockLibrary(bpy.types.Operator):
         return bpy.context.selected_objects and bpy.context.mode == 'OBJECT'
 
     def execute(self, context):
-        bpy.ops.object.join()
         objs = prepare_objects(set(bpy.context.selected_objects), "rock.001")
+        bpy.ops.object.join()
+        objs = set(bpy.context.selected_objects)
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 os.path.join("libraries", "rocks"))
         name = get_file_name(filepath, "rock")
