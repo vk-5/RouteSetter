@@ -125,6 +125,7 @@ def enum_path_previews_collections(self, context):
 
 
 def enum_previews_from_directory(directory, pcoll, enum_items):
+    # This code is from Blender API template
     if directory and os.path.exists(directory):
         image_paths = []
         for fn in os.listdir(directory):
