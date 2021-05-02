@@ -15,14 +15,12 @@ class AddToWallLibrary(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.object.join()
-        ob = set(bpy.context.selected_objects)
-        for obj in bpy.context.selected_objects:
-            obj.name = "wall.001"
+        objs = prepare_objects(set(bpy.context.selected_objects), "wall.001")
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 os.path.join("libraries", "walls"))
         name = get_file_name(filepath, "wall")
 
-        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
+        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), objs, fake_user=True)
         assign_material("Walls", (0.9, 0.9, 0.9, 1))
         focus_camera(rotation=(math.radians(85), math.radians(0), math.radians(20)))
         focus_light(rotation=(math.radians(45), math.radians(-45), math.radians(0)))
@@ -43,14 +41,12 @@ class AddToStructureLibrary(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.object.join()
-        ob = set(bpy.context.selected_objects)
-        for obj in bpy.context.selected_objects:
-            obj.name = "structure.001"
+        objs = prepare_objects(set(bpy.context.selected_objects), "structure.001")
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 os.path.join("libraries", "structures"))
         name = get_file_name(filepath, "structure")
 
-        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
+        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), objs, fake_user=True)
         assign_material("Structures", (0.5, 0.5, 0.5, 1))
         focus_camera(rotation=(math.radians(10), math.radians(10), math.radians(0)))
         focus_light(rotation=(math.radians(45), math.radians(-45), math.radians(0)))
@@ -71,14 +67,12 @@ class AddToHoldLibrary(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.object.join()
-        ob = set(bpy.context.selected_objects)
-        for obj in bpy.context.selected_objects:
-            obj.name = "hold.001"
+        objs = prepare_objects(set(bpy.context.selected_objects), "hold.001")
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 os.path.join("libraries", "holds"))
         name = get_file_name(filepath, "hold")
 
-        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
+        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), objs, fake_user=True)
         assign_material("Holds", (0.1, 0.1, 0.1, 1))
         focus_camera(rotation=(math.radians(60), math.radians(0), math.radians(30)))
         focus_light(rotation=(math.radians(45), math.radians(-45), math.radians(0)))
@@ -99,14 +93,12 @@ class AddToRockLibrary(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.object.join()
-        ob = set(bpy.context.selected_objects)
-        for obj in bpy.context.selected_objects:
-            obj.name = "rock.001"
+        objs = prepare_objects(set(bpy.context.selected_objects), "rock.001")
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 os.path.join("libraries", "rocks"))
         name = get_file_name(filepath, "rock")
 
-        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), ob, fake_user=True)
+        bpy.data.libraries.write(os.path.join(filepath, name + ".blend"), objs, fake_user=True)
         assign_material("Rocks", (0.1, 0.1, 0.1, 1))
         focus_camera(rotation=(math.radians(85), math.radians(0), math.radians(20)))
         focus_light(rotation=(math.radians(45), math.radians(-45), math.radians(0)))
@@ -114,6 +106,18 @@ class AddToRockLibrary(bpy.types.Operator):
         bpy.context.scene.render.filepath = os.path.join(filepath, name + ".png")
         bpy.ops.render.render(write_still=True)
         return {'FINISHED'}
+
+def prepare_objects(objs, name):
+    to_remove = []
+    for obj in objs:
+        if obj.type == 'MESH':
+            obj.name = name
+        else:
+            to_remove.append(obj)
+    for obj in to_remove:
+        obj.select_set(False)
+        objs.remove(obj)
+    return objs
 
 
 def get_file_name(filepath, name):

@@ -373,11 +373,12 @@ def prepare_rigid_world():
 def prepare_collisions():
     bpy.ops.object.select_all(action='SELECT')
     for obj in bpy.context.selected_objects:
-        if "carabiner_" not in obj.name and "chain_" not in obj.name and "weight_" not in obj.name:
-            bpy.context.view_layer.objects.active = obj
-            bpy.ops.rigidbody.object_add()
-            bpy.context.object.rigid_body.enabled = False
-            bpy.context.object.rigid_body.collision_shape = 'MESH'
+        if obj.type == 'MESH':
+            if "carabiner_" not in obj.name and "chain_" not in obj.name and "weight_" not in obj.name:
+                bpy.context.view_layer.objects.active = obj
+                bpy.ops.rigidbody.object_add()
+                bpy.context.object.rigid_body.enabled = False
+                bpy.context.object.rigid_body.collision_shape = 'MESH'
 
 
 class MoveUpUIlist(bpy.types.Operator):
