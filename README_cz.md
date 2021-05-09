@@ -100,8 +100,8 @@ Render uložíte klávesovou zkratkou Crtl + S ne Image -> Save / Save As v okn�
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/add_marker.gif)
 #### Diameter, Draw path and Done
 - tyto dvě tlačítka slouží pro označení cesty na skále
-- kleslení zahájíte tlačítkem "Draw"
-- nakleslete pouze jednu čáru a stiskněte "Done"
+- kreslení zahájíte tlačítkem "Draw"
+- nakreslete pouze jednu čáru a stiskněte "Done"
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_done.gif)
 - na posuvníku můžete nastavit průměr označení
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/draw_diameter.gif)
@@ -148,7 +148,7 @@ Render uložíte klávesovou zkratkou Crtl + S ne Image -> Save / Save As v okn�
 ### Render
 - vyberte kolekci pro renderování
 - stiskněte tlačítko render a počtejte než výpočet skončí
-- to může trvat déle a Blender se může neočekávaně zavřít
+- renderování může chvíli trvat a Blender se může nečekaně ukončit (například z důvodu nedostatku výpočetní nebo paměťové kapacity), proto doporučuji uložit scénu před renderováním
 ![](https://github.com/vk-5/RouteSetter/blob/master/gifs/render.gif)
 
 ### Získávání nových 3D modelů
